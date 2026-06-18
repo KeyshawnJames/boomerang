@@ -221,3 +221,41 @@ boomerang/
   user wants to attempt even the tricky plumbing with heavy support. Expect this
   to be the slowest part; Claude provides structure and unblocks rather than just
   handing over finished integrations.
+
+## Git & GitHub Workflow
+
+> First-time-builder reference. The model chosen is **trunk-based development with
+> short-lived feature branches** — deliberately *not* Gitflow (the
+> `develop`/`release`/`hotfix` model), which is overkill for a 1–2 person team and
+> built for large orgs shipping versioned software. See `learning.md` for the *why*.
+
+**The core rule:** `main` is always deployable. Never commit directly to `main`.
+
+**The loop, per task** (your `execution.md` tasks are sized to be one branch each):
+
+1. **Branch off `main`** for one task: `git checkout main && git pull && git checkout -b feat/backend-auth-jwt`
+2. **Do the work**, committing in small conventional-style commits as you go.
+3. **Push the branch** and **open a Pull Request** on GitHub.
+4. **CodeRabbit reviews it** automatically — read its feedback (this is where a lot
+   of the learning happens), address what matters, push fixes to the same branch.
+5. **Squash-merge** the PR into `main`, then **delete the branch**.
+6. Repeat. Keep branches short-lived (a day or two), small, and single-purpose.
+
+**Branch naming** — `type/area-short-description`. Because this is a monorepo (one
+backend + three apps), include the *area* so the name says what + where:
+
+- `feat/backend-auth-jwt`, `feat/client-retailer-picker`, `feat/driver-job-feed`
+- `fix/backend-qr-token-collision`, `chore/docker-postgres`, `docs/execution-plan`
+
+Types mirror the commit convention: `feat`, `fix`, `chore`, `docs`, `refactor`, `test`.
+
+**Commit messages** — conventional style, imperative mood, one logical change each:
+`feat(client): add login screen` · `fix(backend): validate qr_token on pickup`.
+
+**Why PRs even as a near-solo dev:** the business partner sees what changed via the
+PR, and CodeRabbit catches issues before they reach `main`. Small PRs review faster
+and teach more than one giant one.
+
+**Protect `main` (one-time GitHub setup):** in repo Settings → Branches, add a rule
+on `main` requiring a PR before merging (and optionally a passing review). This makes
+the "never commit to `main`" rule enforced, not just a promise.

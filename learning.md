@@ -58,6 +58,30 @@ remembering. Appended to continuously, not just at the end.
   NativeWind brings Tailwind to React Native. Often easier to read than RN's
   StyleSheet because the styles sit right on the component.
 
+- **Branching strategies (trunk-based vs Gitflow):** A *branching strategy* is the
+  team's agreed rules for how code moves from "being written" to "in main." Two
+  common ones: **Gitflow** uses long-lived `develop` + `release` + `hotfix`
+  branches — powerful but heavy, built for big teams shipping versioned releases.
+  **Trunk-based development** keeps one main branch that's always deployable, and
+  you make short-lived feature branches off it, merge them back fast, and delete
+  them. For a 1–2 person app, trunk-based is the right call — Gitflow's extra
+  branches are pure overhead you'd never use. (Full Boomerang workflow lives in
+  `technical.md` → Git & GitHub Workflow.)
+
+- **Pull Request (PR):** A request to merge one branch into another (here, a
+  feature branch into `main`), opened on GitHub. It's a review checkpoint, not a
+  formality: your partner sees the change, and CodeRabbit comments on it before it
+  reaches `main`. The point of small PRs is faster review and more learning per
+  change — a giant PR is hard to review and hides mistakes.
+
+- **Squash-merge:** When merging a PR, "squash" collapses all the branch's little
+  commits into one tidy commit on `main`. Keeps `main`'s history readable
+  (one clean commit per feature) instead of cluttered with "wip" / "fix typo" noise.
+
+- **Branch protection:** A GitHub setting on `main` that *enforces* "no direct
+  commits — must go through a PR." Turns the rule from a personal promise into
+  something the platform won't let you break by accident.
+
 ## Patterns & Best Practices
 
 - **Base table + role-specific profile table:** One `User` table with a `role`
@@ -83,3 +107,6 @@ remembering. Appended to continuously, not just at the end.
   any multi-sided app — this mental checklist transfers to the next idea.
 - Decide native vs cross-platform by counting codebases you can realistically
   maintain, not by chasing the shiniest design feature.
+- Match your Git workflow to team size: trunk-based + short-lived feature branches
+  + PRs is the sane default for small projects; reach for heavier models like
+  Gitflow only when a large team and versioned releases actually demand it.
