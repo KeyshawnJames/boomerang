@@ -58,53 +58,105 @@ remembering. Appended to continuously, not just at the end.
   NativeWind brings Tailwind to React Native. Often easier to read than RN's
   StyleSheet because the styles sit right on the component.
 
-- **Branching strategies (trunk-based vs Gitflow):** A *branching strategy* is the
-  team's agreed rules for how code moves from "being written" to "in main." Two
-  common ones: **Gitflow** uses long-lived `develop` + `release` + `hotfix`
-  branches — powerful but heavy, built for big teams shipping versioned releases.
-  **Trunk-based development** keeps one main branch that's always deployable, and
-  you make short-lived feature branches off it, merge them back fast, and delete
-  them. For a 1–2 person app, trunk-based is the right call — Gitflow's extra
-  branches are pure overhead you'd never use. (Full Boomerang workflow lives in
-  `technical.md` → Git & GitHub Workflow.)
+- **What a "branch" even is (and branching strategies):** Git lets you make a
+  *branch* — a parallel copy of the whole project where you can experiment without
+  touching the working version everyone relies on. Think of `main` as the clean,
+  published version of a document, and a branch as "Save As… my-draft" where you
+  scribble freely; when the draft is good, you merge it back into the original. A
+  *branching strategy* is just the team's agreed rules for how those drafts flow
+  back into `main`. Two common ones:
+    - **Gitflow** — keeps several long-lived branches (`develop`, `release`,
+      `hotfix`) running at once. Powerful, but it's a lot of machinery, designed for
+      big companies that ship numbered versions (v1.2, v1.3…) to lots of customers.
+    - **Trunk-based development** — keeps *one* permanent branch (`main`) that's
+      always in a working, shippable state. For each new piece of work you branch
+      off, do the work, merge back quickly (within a day or two), and delete the
+      branch. Far simpler.
+  For a 1–2 person app, trunk-based wins — Gitflow's extra branches would just be
+  overhead you'd never actually use. (Boomerang's exact rules: `technical.md` → Git
+  & GitHub Workflow.)
 
-- **Pull Request (PR):** A request to merge one branch into another (here, a
-  feature branch into `main`), opened on GitHub. It's a review checkpoint, not a
-  formality: your partner sees the change, and CodeRabbit comments on it before it
-  reaches `main`. The point of small PRs is faster review and more learning per
-  change — a giant PR is hard to review and hides mistakes.
+- **Pull Request (PR) — the "please review and merge my draft" button:** A PR is how
+  you propose merging your branch into `main` on GitHub. Despite the name, nothing is
+  "pulled" by you — you're *asking* for your changes to be pulled in. It opens a page
+  showing exactly what you changed (every added/removed line, highlighted), where
+  people (and bots) can comment before it's accepted. Why bother when you could merge
+  directly? Three reasons: (1) it's a safety gate — a chance to catch mistakes before
+  they hit the always-working `main`; (2) your business partner can see what changed;
+  (3) CodeRabbit (the AI reviewer) automatically reads it and leaves feedback, which
+  is genuinely a teaching moment. Rule of thumb: keep PRs *small* — one feature each.
+  A small PR is easy to review and easy to learn from; a giant one hides bugs and is
+  exhausting to read.
 
-- **Squash-merge:** When merging a PR, "squash" collapses all the branch's little
-  commits into one tidy commit on `main`. Keeps `main`'s history readable
-  (one clean commit per feature) instead of cluttered with "wip" / "fix typo" noise.
+- **Squash-merge — "tidy up the draft into one clean entry":** While working on a
+  branch you'll often make lots of little messy commits ("wip", "fix typo", "actually
+  fix it"). When you finally merge the PR, *squashing* mashes all those little commits
+  into a single clean one on `main`. So `main`'s history reads like a tidy table of
+  contents — one entry per feature — instead of every scribble you made along the way.
+  Your messy steps still happened; they just don't clutter the permanent record.
 
-- **Branch protection:** A GitHub setting on `main` that *enforces* "no direct
-  commits — must go through a PR." Turns the rule from a personal promise into
-  something the platform won't let you break by accident.
+- **Branch protection — a lock that enforces the rules:** "Never commit directly to
+  `main`" is a good rule, but a rule you can break by accident is fragile. Branch
+  protection is a GitHub setting that makes the rule *physically enforced*: it refuses
+  any direct change to `main` and requires everything to go through a PR first. It
+  turns a personal promise ("I'll be careful") into a guardrail the tooling won't let
+  you cross — which is exactly what you want as a beginner, because the most dangerous
+  mistakes are the accidental ones.
 
-- **`.env` vs `.env.example` (the secrets pattern):** Real secrets (DB password, API
-  keys) go in `.env`, which is *gitignored* so it never reaches GitHub. A committed
-  `.env.example` lists the same keys with blank/fake values as a template, so others
-  know which secrets the app needs without seeing the real ones. Standard everywhere.
-  (Full walkthrough in `setup.md`.)
+- **`.env` vs `.env.example` — keeping secrets out of GitHub:** Your app needs secret
+  values to run: the database password, payment (Stripe) keys, the key used to sign
+  login tokens. These must NEVER end up on GitHub — even a private repo is the wrong
+  place, because secrets leak the moment the repo is shared, cloned, or made public by
+  mistake. The standard solution is two files:
+    - `.env` — holds the *real* secret values. It's listed in `.gitignore`, so git
+      pretends it doesn't exist and it never gets uploaded. It lives only on your
+      machine.
+    - `.env.example` — a *template* that's safe to commit. It lists the same setting
+      *names* but with blank or fake values, e.g. `JWT_SECRET=change-me`. Its job is
+      to tell anyone setting up the project, "here are the secrets you need to fill
+      in," without handing over the actual values.
+  So a new teammate runs `cp .env.example .env`, fills in real values, and they're
+  set — and nobody's real keys ever touched GitHub. (Full walkthrough in `setup.md`.)
 
-- **Docker / docker-compose for local services:** Instead of installing Postgres
-  directly on your machine, Docker runs it in an isolated, disposable container.
-  `docker-compose.yml` describes the service; `docker compose up -d` starts it. Makes
-  the dev database reproducible — anyone gets an identical setup with one command.
+- **Docker / docker-compose — a disposable, identical computer-in-a-box:** Your
+  backend needs a PostgreSQL database to talk to. You *could* install Postgres
+  directly on your Mac, but that's fiddly to set up, easy to misconfigure, and a pain
+  to fully remove later. **Docker** solves this by running software inside a
+  *container* — a lightweight, sealed-off mini-environment that's separate from the
+  rest of your computer. **docker-compose** is a way to describe the containers you
+  want in a single file (`docker-compose.yml`), then start them all with one command
+  (`docker compose up -d`) and stop them with another (`docker compose down`). The big
+  win: it's *reproducible and disposable*. Everyone on the project gets a byte-for-byte
+  identical Postgres with one command, and if it ever gets messed up you just delete
+  the container and recreate it — no trace left on your actual machine. (The word
+  "image" you'll see, e.g. `postgres:16`, is the pre-built blueprint a container is
+  started from.)
 
-- **`pyproject.toml` / dependency files:** Listing every library a project needs in
-  one file (with a separate `[dev]` group for dev-only tools like pytest) makes the
-  environment reproducible — anyone can recreate it, and there's a record of what the
-  project depends on. Beats installing packages ad-hoc and forgetting what you added.
+- **`pyproject.toml` — the project's labelled ingredient list:** Real projects depend
+  on many outside libraries (FastAPI, the database driver, etc.). Rather than
+  installing them one-by-one and hoping you remember which ones, you list them all in
+  `pyproject.toml`. Think of it like a recipe's ingredient list: anyone can read it
+  and recreate the exact same kitchen. One command (`pip install -e ".[dev]"`) reads
+  the file and installs everything. There's usually a separate `[dev]` group for tools
+  you only need *while building* (like the test runner `pytest`) but not when the app
+  is actually running for real users — no reason to ship those.
 
-- **Virtualenv:** An isolated Python environment per project, so each project's
-  libraries don't collide with another's. You activate it, then `pip install` only
-  affects that project.
+- **Virtualenv — a separate toolbox per project:** Different projects often need
+  *different versions* of the same library, and installing everything into one shared
+  pile on your computer eventually causes collisions ("project A needs v1, project B
+  needs v2"). A **virtual environment** (virtualenv) is a private, isolated Python
+  setup that belongs to just one project — its own little toolbox. You "activate" it
+  in your terminal, and from then on `pip install` only adds tools to *that* project's
+  toolbox, leaving your system and other projects untouched. It's a folder you can
+  safely delete and rebuild from `pyproject.toml` anytime.
 
-- **`__init__.py` makes a folder a Python package:** An (often empty) `__init__.py`
-  tells Python a folder can be imported from (`from app.models import User`). Without
-  it, the import fails. It's why the backend's empty folders already have one.
+- **`__init__.py` — the file that says "this folder is importable":** In Python, for
+  one file to use code from another folder (e.g. `from app.models import User`), that
+  folder has to be recognized as a *package*. The way you mark a folder as a package
+  is by putting a file literally named `__init__.py` inside it — and it's allowed to
+  be completely empty; its mere *presence* is the signal. That's why the backend's
+  otherwise-empty folders (`core/`, `models/`, `api/`…) each already contain one: so
+  that once we write real code, the different parts can import from each other.
 
 ## Patterns & Best Practices
 
