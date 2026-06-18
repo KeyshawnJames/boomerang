@@ -157,19 +157,39 @@ remembering. Appended to continuously, not just at the end.
   So a new teammate runs `cp .env.example .env`, fills in real values, and they're
   set — and nobody's real keys ever touched GitHub. (Full walkthrough in `setup.md`.)
 
-- **Docker / docker-compose — a disposable, identical computer-in-a-box:** Your
-  backend needs a PostgreSQL database to talk to. You *could* install Postgres
-  directly on your Mac, but that's fiddly to set up, easy to misconfigure, and a pain
-  to fully remove later. **Docker** solves this by running software inside a
-  *container* — a lightweight, sealed-off mini-environment that's separate from the
-  rest of your computer. **docker-compose** is a way to describe the containers you
-  want in a single file (`docker-compose.yml`), then start them all with one command
-  (`docker compose up -d`) and stop them with another (`docker compose down`). The big
-  win: it's *reproducible and disposable*. Everyone on the project gets a byte-for-byte
-  identical Postgres with one command, and if it ever gets messed up you just delete
-  the container and recreate it — no trace left on your actual machine. (The word
-  "image" you'll see, e.g. `postgres:16`, is the pre-built blueprint a container is
-  started from.)
+- **Docker — a disposable, identical computer-in-a-box:** Our backend needs a
+  PostgreSQL database to talk to. You *could* install Postgres directly on your Mac,
+  but that's fiddly, leaves a service running all the time, is annoying to remove
+  cleanly, and your partner would have to install the exact same version the exact
+  same way (the classic "works on my machine" trap). **Docker** avoids all that by
+  running software inside a **container** — a lightweight, sealed-off box holding an
+  app plus everything it needs, kept separate from the rest of your computer (like a
+  standardized shipping container that works the same on any ship).
+    - **Image vs container:** an *image* is the frozen blueprint (e.g. `postgres:16`,
+      an official pre-built snapshot you download); a *container* is a running copy
+      started *from* that image. Image = cookie cutter, container = cookie.
+
+- **`docker-compose.yml` — the recipe for our containers:** Starting a container by
+  hand is a long, flag-heavy terminal command. **Docker Compose** lets you write those
+  settings once in `docker-compose.yml` and then start everything with one short
+  command. Our file defines a single service, `db` (Postgres 16), and the two
+  non-obvious lines are:
+    - `ports: "5432:5432"` — a container is sealed by default; this pokes one hole so
+      the backend can reach the database. Format is `your-machine-port:container-port`,
+      which is why `.env` connects at `localhost:5432` (the left number = the door on
+      your side).
+    - `volumes:` — a container's data normally vanishes when the container is deleted.
+      A *volume* is storage kept *outside* the container, so the data (users, returns…)
+      survives `docker compose down` and restarts.
+  Everyday commands: `docker compose up -d` (start in background) · `docker compose
+  down` (stop) · `docker compose down -v` (stop AND wipe data for a fresh start).
+
+- **Where Docker fits in Boomerang (scope):** In *development*, Docker runs *only* the
+  Postgres database; the FastAPI backend itself runs normally (not in Docker) and
+  connects to it. In *production* we will NOT use this compose file — real users' data
+  goes on a managed Postgres host (Neon/Railway) that handles backups and uptime for
+  us. So this Docker setup is purely a local-dev convenience. (Containerizing the
+  backend too is possible later, but not needed for the MVP.)
 
 - **`pyproject.toml` — the project's labelled ingredient list:** Real projects depend
   on many outside libraries (FastAPI, the database driver, etc.). Rather than
