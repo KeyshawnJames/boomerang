@@ -1,7 +1,7 @@
 # Boomerang — Backend (FastAPI)
 
 The single FastAPI backend serving all three apps (REST + WebSockets), backed by
-PostgreSQL. See `../technical.md` for architecture and `../execution.md` for tasks.
+PostgreSQL. See `../docs/technical.md` for architecture and `../docs/execution.md` for tasks.
 
 ## Folder layout
 ```

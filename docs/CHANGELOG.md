@@ -13,6 +13,19 @@
 
 ## 2026-06-17
 
+### Docs cleanup — moved planning docs into `docs/`
+- **[Claude]** Moved all planning/doc markdown (`brainstorm`, `vision`, `technical`,
+  `execution`, `learning`, `setup`, `CHANGELOG`) into a single `docs/` folder to
+  declutter the repo root. `CLAUDE.md` stays at root so it keeps auto-loading.
+- **[Claude]** Updated all cross-references (app/backend READMEs, `CLAUDE.md` pointer
+  list, the `technical.md` repo-structure diagram) to the new `docs/` paths.
+
+### Docs deepened — beginner-friendly learning notes + commit preference
+- **[Claude]** Rewrote every `learning.md` concept to be understandable by a total
+  beginner — defining jargon, adding analogies and concrete examples.
+- **[Keyshawn]** Asked that commits be authored by him alone (no Claude co-author
+  trailer); saved as a standing preference.
+
 ### Started building — Milestone 1: repo & dev environment
 - **[Claude]** Scaffolded the monorepo skeleton: `backend/` (FastAPI folder shape
   with package `__init__.py` files) and `apps/client|driver|store/` placeholders.

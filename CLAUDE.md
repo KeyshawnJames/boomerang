@@ -15,13 +15,16 @@ piece**, and the user's **first app build**.
 
 ## Planning documents (source of truth)
 
-- `brainstorm.md` — Phase 1: idea, problem, users, goals
-- `vision.md` — Phase 2: features, MVP scope, user flows
-- `technical.md` — Phase 3: stack, architecture, data models, API, collab modes
-- `execution.md` — Phase 4: milestones + small ordered tasks, MVP-first
-- `learning.md` — running learning log (append continuously, not just at the end)
-- `setup.md` — how the repo/dev setup is wired and *why* (append new setup steps)
-- `CHANGELOG.md` — running story of what got done, by whom, over time (newest on top)
+> All planning/doc markdown lives in `docs/` (this `CLAUDE.md` stays at root so it
+> auto-loads). Paths below are relative to the repo root.
+
+- `docs/brainstorm.md` — Phase 1: idea, problem, users, goals
+- `docs/vision.md` — Phase 2: features, MVP scope, user flows
+- `docs/technical.md` — Phase 3: stack, architecture, data models, API, collab modes
+- `docs/execution.md` — Phase 4: milestones + small ordered tasks, MVP-first
+- `docs/learning.md` — running learning log (append continuously, not just at the end)
+- `docs/setup.md` — how the repo/dev setup is wired and *why* (append new setup steps)
+- `docs/CHANGELOG.md` — running story of what got done, by whom, over time (newest on top)
 
 ## Where we are
 

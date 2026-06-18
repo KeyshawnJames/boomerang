@@ -173,7 +173,10 @@ Single repo (light monorepo). One FastAPI backend, three Expo apps built in orde
 
 ```
 boomerang/
-├── CLAUDE.md, brainstorm.md, vision.md, technical.md, execution.md, learning.md
+├── CLAUDE.md                   # project context, auto-loaded (stays at root)
+├── docs/                       # all planning/doc markdown
+│   ├── brainstorm.md  vision.md  technical.md  execution.md
+│   └── learning.md    setup.md   CHANGELOG.md
 ├── backend/                    # FastAPI
 │   ├── app/
 │   │   ├── main.py
