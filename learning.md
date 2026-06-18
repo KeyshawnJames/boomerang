@@ -5,58 +5,97 @@ remembering. Appended to continuously, not just at the end.
 
 ## Key Concepts Learned
 
-- **"Uber for X" / on-demand marketplace pattern:** A platform that matches two+
-  sides (here: clients needing returns, drivers doing them) in real time. Always
-  brings the same four problems: matching/dispatch, real-time tracking,
-  multi-party payments, and trust/chain-of-custody. Recognizing the pattern means
-  you can borrow proven solutions instead of inventing from scratch.
+- **"Uber for X" / on-demand marketplace pattern:** A *marketplace* app is one that
+  connects two (or more) groups of people who need each other — here, clients who
+  want a return done and drivers willing to do it. "On-demand" means the matching
+  happens live, right when someone asks, like hailing an Uber rather than booking a
+  week ahead. The useful insight: almost every app of this shape runs into the same
+  four hard problems, so once you recognize the pattern you can reuse known solutions
+  instead of reinventing them. The four are: (1) **matching/dispatch** — pairing a
+  request with the right nearby person; (2) **real-time tracking** — showing live
+  location/status as things happen; (3) **multi-party payments** — money flowing
+  between three sides (client pays, platform takes a cut, driver gets paid); and
+  (4) **trust/chain-of-custody** — proving the handoff actually happened so nobody
+  can cheat or wrongly claim something went missing.
 
-- **Native vs cross-platform mobile:** Native (Swift for iOS, Kotlin for Android)
-  = best/latest platform look but two separate codebases. Cross-platform (React
-  Native + Expo, or Flutter) = one codebase for both, ships much faster, but can
-  lag the newest native design features. For a first app shipping to both stores,
-  cross-platform (RN/Expo) is the pragmatic pick.
+- **Native vs cross-platform mobile:** To build a phone app you pick one of two
+  routes. **Native** means writing a *separate* app for each platform in that
+  platform's own language — Swift for iPhone, Kotlin for Android — which looks and
+  feels the most "right" on each but means building and maintaining everything
+  *twice*. **Cross-platform** (React Native + Expo, or Flutter) means writing the app
+  *once* in a single codebase that runs on both iPhone and Android — far faster to
+  build and maintain, with the trade-off that you can occasionally lag a few months
+  behind the newest platform-specific design features. For a first app that needs to
+  reach both app stores without doubling the work, cross-platform (we chose React
+  Native + Expo) is the pragmatic pick.
 
-- **Liquid Glass is native-only:** Apple's newest design language (Liquid Glass)
-  is a SwiftUI/iOS feature. React Native can *approximate* a glassy look with blur
-  libraries but won't match it pixel-for-pixel. Chasing it natively isn't worth a
-  whole second codebase for a first app.
+- **Liquid Glass is native-only:** "Liquid Glass" is Apple's newest visual style —
+  that frosted, translucent, glassy look — and it's built into Apple's *native* iOS
+  toolkit (SwiftUI) only. Because we're using React Native (cross-platform), we can
+  get *close* to that look using blur/glass helper libraries, but we won't match it
+  pixel-for-pixel. The takeaway decision: chasing a perfect Liquid Glass look would
+  mean building a whole separate native iOS app, and that's not worth it for a first
+  project — "close enough" is the right call here.
 
-- **Relational vs document database:** When your data is highly interconnected
-  (users ↔ returns ↔ payments ↔ stores all referencing each other), a relational
-  DB like PostgreSQL fits. Document stores (e.g. MongoDB) shine for loosely
-  structured, self-contained documents. Boomerang's data is relational.
+- **Relational vs document database:** A *database* is where the app stores its data
+  permanently. There are two broad families. A **relational** database (like
+  PostgreSQL, which we're using) stores data in tables — like linked spreadsheets —
+  and is great when your data is heavily *interconnected* and you care about those
+  connections: a return belongs to a client, links to a store, has payments and
+  status events attached, etc. A **document** database (like MongoDB) stores each
+  record as a self-contained blob (like a folder of JSON files) and shines when
+  records are loosely structured and mostly stand on their own. Boomerang's data is a
+  web of relationships (users ↔ returns ↔ payments ↔ stores), so relational fits.
 
-- **Stripe Connect:** Stripe's product for *marketplaces* — lets the platform
-  collect a payment from one party (client), take a cut (platform fee), and pay
-  out a third party (driver). Different from a normal one-to-one Stripe charge.
-  Uses "Express accounts" (Stripe handles driver onboarding/identity), supports
-  Canada, and Instant Pay lets drivers cash out in ~30 min.
+- **Stripe Connect:** Stripe is a service that handles taking payments online so you
+  don't have to deal with banks and card networks yourself. Regular Stripe handles a
+  simple one-to-one charge (customer pays you). **Stripe Connect** is the version
+  built for *marketplaces*, where money has to split three ways: the client pays a
+  fee, the platform (Boomerang) keeps a cut, and the rest is paid out to a third party
+  (the driver). Connect manages that whole flow, including paying drivers. Useful
+  specifics for us: it uses "Express accounts" (Stripe handles the driver's signup and
+  identity checks for us), it supports Canada, and "Instant Pay" lets drivers cash out
+  in ~30 minutes instead of waiting days.
 
-- **Backend-as-a-Service (BaaS), e.g. Supabase:** A rented, pre-built backend —
-  bundles a Postgres database + ready-made auth + auto-generated APIs + file
-  storage + realtime, all hosted. Great when you DON'T want to write a backend.
-  We skipped it for Boomerang precisely because writing the FastAPI backend
-  ourselves IS the goal — using a BaaS would duplicate and hide the parts we want
-  to learn. Lesson: a BaaS is a time-saver, not a learning tool.
+- **Backend-as-a-Service (BaaS), e.g. Supabase:** The "backend" is the behind-the-
+  scenes half of an app — the server, the database, the login system — that the phone
+  app talks to. A **Backend-as-a-Service** is a company that *rents* you a ready-made
+  backend: database, user login, auto-generated APIs, file storage, all pre-built and
+  hosted for you (Supabase and Firebase are the popular ones). It's fantastic when you
+  want to skip writing a backend and just ship. We deliberately *skipped* it for
+  Boomerang because the whole point here is to *learn* how a backend works by building
+  the FastAPI one ourselves — a BaaS would hide exactly the parts we want to
+  understand. Lesson worth keeping: a BaaS is a *time-saver*, not a *learning* tool.
 
-- **Where a database "lives":** Code (FastAPI) and the database (Postgres) are
-  separate. In development you run Postgres locally (via Docker). To go live you
-  need a *managed Postgres host* (Neon, Railway, or Supabase-as-just-a-DB) so
-  backups/uptime aren't your manual job. This hosting choice can be deferred
-  until deploy time.
+- **Where a database "lives" (and "hosting"):** Your app code (the FastAPI backend)
+  and your database (PostgreSQL) are two *separate* programs that talk to each other —
+  the code asks, the database stores and answers. While building on your own computer,
+  you run the database locally (via Docker). But when the app goes live for real users
+  it needs to run on a computer that's always on, backed up, and reachable from the
+  internet — that's what a **managed host** provides (services like Neon or Railway run
+  Postgres for you so uptime and backups aren't your manual chore). We don't have to
+  pick that host yet; it's a decision we can safely defer until we're ready to deploy.
 
-- **JWT auth (rolling your own):** A JSON Web Token is a signed token the server
-  gives you at login; the app sends it on each request to prove who you are
-  (and, via a role claim, what you're allowed to do). Building it yourself in
-  FastAPI is a well-trodden, foundational thing to learn — the alternative
-  (Clerk) hides it as a black box.
+- **JWT auth (and what "auth" means):** "Auth" covers two things — *authentication*
+  (proving who you are, i.e. logging in) and *authorization* (what you're allowed to
+  do once in). A **JWT** (JSON Web Token) is the common way to handle this: when you
+  log in successfully, the server hands your app a *token* — basically a tamper-proof
+  digital wristband that says "this is user #42, role: driver." Your app then attaches
+  that token to every later request, so the server knows who's asking without making
+  you log in again each time. It's "signed" by the server, meaning the server can
+  detect if anyone tampered with it. We're building this ourselves in FastAPI (instead
+  of using a paid service like Clerk that hides it) precisely because it's a
+  foundational thing worth understanding.
 
-- **Tailwind / NativeWind:** Tailwind is "utility-first" styling — instead of
-  separate style rules, you put small classes right on the element
-  (`className="flex-1 bg-blue-500 p-4"` = fill space, blue background, padding).
-  NativeWind brings Tailwind to React Native. Often easier to read than RN's
-  StyleSheet because the styles sit right on the component.
+- **Tailwind / NativeWind (how the apps get styled):** "Styling" is how you control
+  what things look like — colors, spacing, sizes. The old-school way keeps style rules
+  in a separate place from the thing they style. **Tailwind** is a popular alternative
+  called "utility-first": you attach lots of tiny pre-named classes *directly* onto the
+  element, where each class does one small thing. For example
+  `className="flex-1 bg-blue-500 p-4"` reads as "fill the available space, blue
+  background, add padding." **NativeWind** is the library that brings Tailwind into
+  React Native. Many people find it easier because the styling sits right next to the
+  thing it affects, so you don't bounce between two files to understand one button.
 
 - **What a "branch" even is (and branching strategies):** Git lets you make a
   *branch* — a parallel copy of the whole project where you can experiment without
@@ -160,18 +199,35 @@ remembering. Appended to continuously, not just at the end.
 
 ## Patterns & Best Practices
 
-- **Base table + role-specific profile table:** One `User` table with a `role`
-  field, plus a separate `DriverProfile` for driver-only fields, instead of three
-  user tables or one bloated table full of nulls.
+- **Base table + role-specific profile table:** Boomerang has three kinds of people
+  (clients, drivers, stores) who share a lot (everyone has a name, email, password)
+  but also have role-specific details (only drivers have a vehicle and a location).
+  The clean way to model that is *one* shared `User` table with a `role` field for the
+  common stuff, plus a *separate* `DriverProfile` table for the driver-only fields.
+  The two bad alternatives this avoids: making three near-identical user tables
+  (lots of duplication), or one giant table where every driver-only column sits empty
+  ("null") for clients and stores (messy and error-prone). Add role-specific tables
+  only for the roles that actually need extra fields.
 
-- **Event log / append-only status events:** Instead of overwriting a single
-  `status` column, write a new `ReturnStatusEvent` row on every transition. You
-  get the user-facing timeline AND an audit/anti-fraud trail from the same table;
-  current status = the latest event.
+- **Event log / append-only status events:** A return moves through stages
+  (requested → picked up → at store → refunded → done). The naive approach is a single
+  `status` column you keep *overwriting* — but then you only ever know the *current*
+  state and lose the history. The better pattern is **append-only**: every time the
+  status changes, you *add a new row* to a `ReturnStatusEvent` table instead of editing
+  an old one. Two big payoffs from one design: (1) the rows in order *are* the
+  user-facing timeline, and (2) you automatically get a permanent audit trail (who did
+  what, when) that's invaluable for resolving fraud disputes. The "current status" is
+  simply the most recent event. ("Append-only" = you only ever add, never change or
+  delete — like a ledger.)
 
-- **Chain of custody:** QR code + timestamped photo at every handoff proves which
-  item moved and that it reached the store — protects against "driver lost it" and
-  "customer returned an empty box" disputes.
+- **Chain of custody:** Borrowed from how evidence is handled — it means having proof
+  of who was holding an item at every step, with no gaps. For Boomerang, at each
+  handoff (client → driver, driver → store) we capture a QR-code scan plus a
+  timestamped photo. That paper trail is what protects against disputes: a driver
+  falsely accused of losing an item can show the photo proving they delivered it, and
+  the store can't be tricked by a "customer returned an empty box" scam because the
+  item was photographed along the way. It's the "trust" leg of the four marketplace
+  problems, made concrete.
 
 ## Mistakes / Misunderstandings
 
@@ -179,10 +235,18 @@ remembering. Appended to continuously, not just at the end.
 
 ## Reusable Knowledge for Future Projects
 
-- The four marketplace problems (matching, real-time, payments, trust) recur in
-  any multi-sided app — this mental checklist transfers to the next idea.
-- Decide native vs cross-platform by counting codebases you can realistically
-  maintain, not by chasing the shiniest design feature.
-- Match your Git workflow to team size: trunk-based + short-lived feature branches
-  + PRs is the sane default for small projects; reach for heavier models like
-  Gitflow only when a large team and versioned releases actually demand it.
+- The four marketplace problems (matching, real-time tracking, multi-party payments,
+  trust/chain-of-custody) show up in *any* app that connects multiple sides of people.
+  Keep this as a mental checklist — the next marketplace idea will hit the same four,
+  and you'll already know the shape of each.
+- Choose native vs cross-platform by asking "how many separate codebases can I
+  realistically build and maintain?" — not by chasing the single shiniest design
+  feature one platform has. For a small team, one shared codebase usually wins.
+- Match your Git workflow to your team size. Trunk-based (one always-working `main` +
+  small short-lived branches + pull requests) is the sane default for solo/small
+  projects. Only reach for heavier systems like Gitflow when a large team shipping
+  numbered releases to many customers actually needs that extra machinery.
+- The "template + real file" secrets pattern (`.env.example` committed, `.env`
+  gitignored) and the "list dependencies in one file" pattern (`pyproject.toml`,
+  `package.json`, etc.) are universal — almost every project in every language uses
+  some version of both. Learning them once pays off everywhere.
