@@ -25,6 +25,8 @@ piece**, and the user's **first app build**.
 - `docs/learning.md` — running learning log (append continuously, not just at the end)
 - `docs/setup.md` — how the repo/dev setup is wired and *why* (append new setup steps)
 - `docs/CHANGELOG.md` — running story of what got done, by whom, over time (newest on top)
+- `README.md` (root) — public-facing project overview (what it is, stack, structure,
+  getting-started); keep in sync when stack/structure/status changes meaningfully
 
 ## Where we are
 
@@ -97,3 +99,6 @@ piece**, and the user's **first app build**.
 - Keep the planning docs updated in place when revisiting a phase.
 - Add a `CHANGELOG.md` entry (newest on top) when a meaningful chunk of work lands.
 - When new setup/infra is added, append the how-and-why to `setup.md`.
+- Keep the root `README.md` in sync when the stack, repo structure, or project status
+  changes meaningfully (it's the public/portfolio-facing overview).
+- Commits authored by Keyshawn only — no `Co-Authored-By: Claude` trailer.

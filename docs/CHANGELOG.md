@@ -13,6 +13,11 @@
 
 ## 2026-06-18
 
+### Added root `README.md`
+- **[Claude]** Wrote the public/portfolio-facing `README.md` (what Boomerang is, how
+  it works, stack, repo structure, docs index, getting-started). Registered it in
+  `CLAUDE.md` with a working agreement to keep it in sync as the project evolves.
+
 ### Learning — Docker explained
 - **[Claude]** Expanded the Docker notes in `learning.md` (what it is, what
   `docker-compose.yml` does line-by-line, and where Docker fits in Boomerang — local
