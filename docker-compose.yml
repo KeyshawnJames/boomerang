@@ -1,0 +1,22 @@
+# Local development services for Boomerang.
+# Brings up a PostgreSQL database so the backend has something to connect to.
+# Usage:  docker compose up -d     (start in background)
+#         docker compose down      (stop)
+services:
+  db:
+    image: postgres:16
+    container_name: boomerang-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: boomerang
+      POSTGRES_PASSWORD: boomerang
+      POSTGRES_DB: boomerang
+    ports:
+      # host:container — connect from your machine at localhost:5432
+      - "5432:5432"
+    volumes:
+      # persists the data so it survives `docker compose down`
+      - boomerang_pgdata:/var/lib/postgresql/data
+
+volumes:
+  boomerang_pgdata:

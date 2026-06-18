@@ -1,0 +1,26 @@
+[project]
+name = "boomerang-backend"
+version = "0.1.0"
+description = "Boomerang FastAPI backend — on-demand returns marketplace"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115",          # web framework (REST + WebSockets)
+    "uvicorn[standard]>=0.30", # ASGI server that runs the app
+    "sqlmodel>=0.0.22",        # ORM: SQLAlchemy + Pydantic models for the DB
+    "alembic>=1.13",           # database migrations
+    "psycopg[binary]>=3.2",    # PostgreSQL driver
+    "pydantic-settings>=2.4",  # load config from environment / .env
+    "python-jose[cryptography]>=3.3",  # JWT encode/decode
+    "passlib[bcrypt]>=1.7",    # password hashing
+    "python-multipart>=0.0.9", # form/file uploads (photos at pickup)
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "httpx>=0.27",  # test client for calling the API in tests
+    "ruff>=0.6",    # linter / formatter
+]
+
+[tool.ruff]
+line-length = 100
