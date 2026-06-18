@@ -25,8 +25,10 @@ piece**, and the user's **first app build**.
 - ✅ Phase 1 (Idea Discovery) — done
 - ✅ Phase 2 (Vision Expansion) — done; name "Boomerang" kept
 - ✅ Phase 3 (Technical Planning) — done; stack, tooling, diagrams all locked
-- ⬜ Phase 4 (Execution Planning) — NEXT; not started
+- ✅ Phase 4 (Execution Planning) — done; `execution.md` has 14 milestones broken
+  into small tasks, MVP-first, as vertical slices (client → driver → store)
 - 🔄 Phase 5 (Learning Log) — ongoing
+- ⬜ NEXT: start executing Milestone 1 (repo & dev environment)
 
 ## Stack (locked)
 
@@ -67,10 +69,11 @@ piece**, and the user's **first app build**.
 
 - ✅ Tooling decided (see Stack above) and written into `technical.md`.
 - ✅ Repo-structure + system-architecture diagrams added to `technical.md`.
-- **NEXT: Phase 4 — Execution Planning** — break the MVP into small, ordered,
-  do-in-one-sitting tasks, MVP-first. Start with: repo/monorepo setup → backend
-  scaffolding (FastAPI + Postgres + Alembic + JWT auth) → first client-app
-  screens. Build order across apps: client → driver → store.
+- ✅ Phase 4 — Execution Planning complete; full task breakdown in `execution.md`
+  (14 milestones, MVP-first, vertical slices).
+- **NEXT: start building — Milestone 1 (repo & dev environment):** monorepo
+  skeleton, `.gitignore`, local Postgres via Docker, backend `pyproject.toml`.
+  Then M2 (backend boots) → M3 (schema, guided) → M4 (JWT auth) → M5 (client app).
 
 ## Working agreements
 
