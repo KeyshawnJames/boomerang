@@ -34,7 +34,16 @@ piece**, and the user's **first app build**.
 - ✅ Phase 4 (Execution Planning) — done; `execution.md` has 14 milestones broken
   into small tasks, MVP-first, as vertical slices (client → driver → store)
 - 🔄 Phase 5 (Learning Log) — ongoing
-- ⬜ NEXT: start executing Milestone 1 (repo & dev environment)
+- 🔄 Milestone 1 (repo & dev environment) — IN PROGRESS:
+  - ✅ Monorepo skeleton scaffolded (`backend/` + `apps/client|driver|store/`)
+  - ✅ `.gitignore`, `docker-compose.yml`, `.env.example`, `backend/pyproject.toml`
+  - ✅ Skeleton pushed to GitHub; planning docs consolidated into `docs/`
+  - ⬜ **RESUME HERE:** create Python virtualenv + install backend deps
+        (`pip install -e ".[dev]"` from `backend/`) — collab mode for this boilerplate
+        is explain-as-you-go (Claude gives commands, user runs them locally)
+  - ⬜ Set up CodeRabbit on the repo (GitHub web UI)
+  - ⬜ Enable branch protection on `main` (GitHub web UI; after skeleton — done)
+- ⬜ THEN: Milestone 2 — write `app/main.py` (`/health`), backend boots for first time
 
 ## Stack (locked)
 

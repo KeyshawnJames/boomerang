@@ -11,6 +11,15 @@
 
 ---
 
+## 2026-06-18
+
+### Learning — Docker explained
+- **[Claude]** Expanded the Docker notes in `learning.md` (what it is, what
+  `docker-compose.yml` does line-by-line, and where Docker fits in Boomerang — local
+  dev DB only, managed host in prod) in response to questions from Keyshawn.
+- _Session paused here._ Milestone 1 resumes at: create virtualenv + install backend
+  deps. See `CLAUDE.md` → Where we are.
+
 ## 2026-06-17
 
 ### Docs cleanup — moved planning docs into `docs/`
