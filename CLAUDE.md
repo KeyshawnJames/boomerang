@@ -34,7 +34,12 @@ piece**, and the user's **first app build**.
 - **Mobile:** React Native + Expo — three apps, built client → driver → store
 - **Payments:** Stripe Connect (client fee → platform cut → driver payout)
 - **Real-time:** WebSockets via FastAPI · **Maps:** Google Maps/Mapbox + Expo Location
-- **Push:** Expo Notifications · **Auth:** JWT + role-based (client/driver/store)
+- **Push:** Expo Notifications · **Auth:** FastAPI JWT + role-based (NOT Clerk)
+- **Styling:** NativeWind v4 · **Nav:** Expo Router · **State:** TanStack Query + Zustand
+- **i18n:** expo-localization + i18next (EN/FR) · **Migrations:** Alembic
+- **Tooling:** CodeRabbit (PR review), PostHog (analytics/flags), EAS (build/ship);
+  Sentry later. No Supabase, no Clerk (we own the backend to learn it).
+- **DB hosting:** local Postgres (Docker) in dev; managed host (Neon/Railway) at deploy.
 
 ## Collaboration modes (IMPORTANT — honor these when coding)
 
@@ -60,14 +65,12 @@ piece**, and the user's **first app build**.
 
 ## Open / next up
 
-- **Tooling research requested** (user wants opinions, currency matters):
-  PostHog (analytics/flags), CodeRabbit (AI PR review), Clerk (auth — note: may
-  conflict with the "learn auth via FastAPI JWT" goal), NativeWind/Tailwind for
-  styling, plus suggest others (Sentry, EAS, Supabase, state/data libs).
-- **Project structure diagram** requested — repo layout + system architecture
-  diagram to be added (likely to `technical.md`).
-- Then **Phase 4: Execution Planning** — break MVP into small ordered tasks,
-  MVP-first, starting with project setup + client app.
+- ✅ Tooling decided (see Stack above) and written into `technical.md`.
+- ✅ Repo-structure + system-architecture diagrams added to `technical.md`.
+- **NEXT: Phase 4 — Execution Planning** — break the MVP into small, ordered,
+  do-in-one-sitting tasks, MVP-first. Start with: repo/monorepo setup → backend
+  scaffolding (FastAPI + Postgres + Alembic + JWT auth) → first client-app
+  screens. Build order across apps: client → driver → store.
 
 ## Working agreements
 

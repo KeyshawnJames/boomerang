@@ -30,6 +30,33 @@ remembering. Appended to continuously, not just at the end.
 - **Stripe Connect:** Stripe's product for *marketplaces* — lets the platform
   collect a payment from one party (client), take a cut (platform fee), and pay
   out a third party (driver). Different from a normal one-to-one Stripe charge.
+  Uses "Express accounts" (Stripe handles driver onboarding/identity), supports
+  Canada, and Instant Pay lets drivers cash out in ~30 min.
+
+- **Backend-as-a-Service (BaaS), e.g. Supabase:** A rented, pre-built backend —
+  bundles a Postgres database + ready-made auth + auto-generated APIs + file
+  storage + realtime, all hosted. Great when you DON'T want to write a backend.
+  We skipped it for Boomerang precisely because writing the FastAPI backend
+  ourselves IS the goal — using a BaaS would duplicate and hide the parts we want
+  to learn. Lesson: a BaaS is a time-saver, not a learning tool.
+
+- **Where a database "lives":** Code (FastAPI) and the database (Postgres) are
+  separate. In development you run Postgres locally (via Docker). To go live you
+  need a *managed Postgres host* (Neon, Railway, or Supabase-as-just-a-DB) so
+  backups/uptime aren't your manual job. This hosting choice can be deferred
+  until deploy time.
+
+- **JWT auth (rolling your own):** A JSON Web Token is a signed token the server
+  gives you at login; the app sends it on each request to prove who you are
+  (and, via a role claim, what you're allowed to do). Building it yourself in
+  FastAPI is a well-trodden, foundational thing to learn — the alternative
+  (Clerk) hides it as a black box.
+
+- **Tailwind / NativeWind:** Tailwind is "utility-first" styling — instead of
+  separate style rules, you put small classes right on the element
+  (`className="flex-1 bg-blue-500 p-4"` = fill space, blue background, padding).
+  NativeWind brings Tailwind to React Native. Often easier to read than RN's
+  StyleSheet because the styles sit right on the component.
 
 ## Patterns & Best Practices
 

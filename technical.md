@@ -15,7 +15,16 @@
 - **Real-time:** WebSockets served by FastAPI (driver location + status updates).
 - **Push notifications:** Expo Notifications.
 - **Auth:** FastAPI-issued JWT with role-based access control (client / driver /
-  store). Social login can come later.
+  store). Rolled in-house (not Clerk) — chosen to learn auth and avoid per-user
+  cost; Clerk kept as a fallback if auth becomes a time-sink. Social login later.
+- **Styling:** NativeWind v4 (Tailwind utility classes for React Native). Use v4,
+  not v5 (v5 is pre-release).
+- **Navigation:** Expo Router (file-based).
+- **Client data/state:** TanStack Query (server data + caching) + Zustand
+  (lightweight client state).
+- **Localization:** expo-localization + i18next — English/French toggle, built in
+  from day one.
+- **DB migrations:** Alembic.
 
 ### Design constraint: "Liquid Glass"
 
@@ -35,6 +44,32 @@ location to the backend, which relays it to the watching client over WebSocket.
 
 Build order is **client app → driver app → store app**, all against the one
 backend. The store app is the smallest (scan a QR, confirm acceptance).
+
+```
+   ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+   │ Client app  │    │ Driver app  │    │  Store app  │   Expo / React Native
+   └──────┬──────┘    └──────┬──────┘    └──────┬──────┘   (NativeWind, Expo Router)
+          │      REST  +  WebSocket (live)      │
+          └──────────────────┬──────────────────┘
+                             ▼
+                  ┌───────────────────────┐
+                  │     FastAPI backend    │
+                  │  auth (JWT, roles)     │
+                  │  returns + status FSM  │
+                  │  matching / dispatch   │
+                  │  realtime hub (WS)     │
+                  │  payments · notifs     │
+                  └───┬─────────┬────────┬─┘
+            ┌─────────┘         │        └─────────┐
+            ▼                   ▼                  ▼
+    ┌──────────────┐  ┌──────────────────┐  ┌──────────────────┐
+    │  PostgreSQL  │  │  Stripe Connect  │  │  Expo Push +     │
+    │  (+ Alembic) │  │  (fees/payouts)  │  │  Maps APIs       │
+    └──────────────┘  └──────────────────┘  └──────────────────┘
+
+   Cross-cutting: PostHog (analytics + feature flags) · Sentry later (errors)
+                  CodeRabbit (AI PR review) · EAS (cloud build / submit / OTA)
+```
 
 This is the classic "Uber for X" on-demand marketplace shape: a matching/dispatch
 problem (connect a return request to a nearby driver), a real-time tracking
@@ -56,6 +91,9 @@ problem, a multi-party payments problem, and a chain-of-custody/trust problem.
 ## Data Models
 
 > First draft — to be refined together when we build the schema (guided mode).
+> **One item per return for now.** Keep `item_description`/`photo_urls` on the
+> `ReturnRequest` for the MVP, but design so a future multi-item `Item` table
+> (FK to `ReturnRequest`) is a clean migration, not a rewrite.
 
 - **User** — `id`, `role` (client | driver | store_admin), `name`, `email`,
   `phone`, `password_hash`, `created_at`.
@@ -109,6 +147,65 @@ a `ReturnStatusEvent`.
 
 **Webhooks**
 - `POST /webhooks/stripe` — payment/payout events
+
+## Tooling & Services
+
+| Tool | Role | Verdict |
+|------|------|---------|
+| **CodeRabbit** | AI code review on PRs (teaches while reviewing) | ✅ Now — free tier covers private repos |
+| **PostHog** | Analytics + feature flags (+ session replay later) | ✅ Early, lightweight |
+| **Stripe Connect** | Marketplace payments; Express accounts (Canada), Instant Pay for drivers, v2 API | ✅ Core |
+| **EAS** | Cloud build / submit to stores / OTA updates | ✅ When building |
+| **NativeWind v4** | Tailwind styling for RN | ✅ Core (teach Tailwind as we go) |
+| **Sentry** | Error tracking | ⚠️ Later — overlaps PostHog; don't run both day one |
+| **Clerk** | Hosted auth | ❌ Skipped — using FastAPI JWT instead |
+| **Supabase** | Backend-as-a-Service | ❌ Skipped — we build our own backend |
+
+**Database hosting:** local Postgres (Docker) during development; pick a managed
+host (Neon / Railway / Supabase-as-DB-only) at deploy time. Decision deferred.
+
+**External cost notes:** Apple Developer $99/yr · Google Play $25 one-time ·
+Stripe 2.9% + 30¢ + 0.25% payout fee · EAS free tier = 15 builds/platform/month.
+
+## Project Structure
+
+Single repo (light monorepo). One FastAPI backend, three Expo apps built in order.
+
+```
+boomerang/
+├── CLAUDE.md, brainstorm.md, vision.md, technical.md, execution.md, learning.md
+├── backend/                    # FastAPI
+│   ├── app/
+│   │   ├── main.py
+│   │   ├── core/               # config, security (JWT), db session
+│   │   ├── models/             # SQLModel tables
+│   │   ├── schemas/            # Pydantic request/response models
+│   │   ├── api/                # routers: auth, returns, drivers, stores, webhooks
+│   │   ├── services/           # matching, payments, notifications
+│   │   └── realtime/           # WebSocket hub
+│   ├── alembic/                # migrations
+│   ├── tests/
+│   └── pyproject.toml
+└── apps/
+    ├── client/                 # Expo app — build FIRST
+    │   ├── app/                # Expo Router screens
+    │   ├── components/
+    │   ├── lib/                # api client, auth, posthog
+    │   ├── hooks/
+    │   └── locales/            # en.json, fr.json (i18n)
+    ├── driver/                 # Expo app — build SECOND
+    └── store/                  # Expo app (minimal) — build THIRD
+```
+
+## Locked Decisions & Constraints
+
+- **Auth:** FastAPI JWT, role-based — not Clerk.
+- **Styling:** NativeWind v4 (teach Tailwind alongside RN).
+- **One item per return** for MVP; multi-item is a future clean migration.
+- **i18n from day one:** English/French toggle (expo-localization + i18next).
+- **Quebec / Canadian rules:** follow Quebec + Canadian return & payment regulations.
+- **DB hosting deferred:** local Postgres now, managed host at deploy.
+- **No Supabase, no Clerk** — we own the backend to learn it.
 
 ## Collaboration Mode by Stack Component
 
