@@ -82,6 +82,30 @@ remembering. Appended to continuously, not just at the end.
   commits — must go through a PR." Turns the rule from a personal promise into
   something the platform won't let you break by accident.
 
+- **`.env` vs `.env.example` (the secrets pattern):** Real secrets (DB password, API
+  keys) go in `.env`, which is *gitignored* so it never reaches GitHub. A committed
+  `.env.example` lists the same keys with blank/fake values as a template, so others
+  know which secrets the app needs without seeing the real ones. Standard everywhere.
+  (Full walkthrough in `setup.md`.)
+
+- **Docker / docker-compose for local services:** Instead of installing Postgres
+  directly on your machine, Docker runs it in an isolated, disposable container.
+  `docker-compose.yml` describes the service; `docker compose up -d` starts it. Makes
+  the dev database reproducible — anyone gets an identical setup with one command.
+
+- **`pyproject.toml` / dependency files:** Listing every library a project needs in
+  one file (with a separate `[dev]` group for dev-only tools like pytest) makes the
+  environment reproducible — anyone can recreate it, and there's a record of what the
+  project depends on. Beats installing packages ad-hoc and forgetting what you added.
+
+- **Virtualenv:** An isolated Python environment per project, so each project's
+  libraries don't collide with another's. You activate it, then `pip install` only
+  affects that project.
+
+- **`__init__.py` makes a folder a Python package:** An (often empty) `__init__.py`
+  tells Python a folder can be imported from (`from app.models import User`). Without
+  it, the import fails. It's why the backend's empty folders already have one.
+
 ## Patterns & Best Practices
 
 - **Base table + role-specific profile table:** One `User` table with a `role`

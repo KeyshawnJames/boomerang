@@ -18,7 +18,10 @@ piece**, and the user's **first app build**.
 - `brainstorm.md` — Phase 1: idea, problem, users, goals
 - `vision.md` — Phase 2: features, MVP scope, user flows
 - `technical.md` — Phase 3: stack, architecture, data models, API, collab modes
+- `execution.md` — Phase 4: milestones + small ordered tasks, MVP-first
 - `learning.md` — running learning log (append continuously, not just at the end)
+- `setup.md` — how the repo/dev setup is wired and *why* (append new setup steps)
+- `CHANGELOG.md` — running story of what got done, by whom, over time (newest on top)
 
 ## Where we are
 
@@ -80,3 +83,5 @@ piece**, and the user's **first app build**.
 - Git: commit at real milestones with conventional messages; push to `origin`
   (private repo: https://github.com/KeyshawnJames/boomerang).
 - Keep the planning docs updated in place when revisiting a phase.
+- Add a `CHANGELOG.md` entry (newest on top) when a meaningful chunk of work lands.
+- When new setup/infra is added, append the how-and-why to `setup.md`.
