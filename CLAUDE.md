@@ -24,8 +24,8 @@ piece**, and the user's **first app build**.
 
 - ✅ Phase 1 (Idea Discovery) — done
 - ✅ Phase 2 (Vision Expansion) — done; name "Boomerang" kept
-- 🔄 Phase 3 (Technical Planning) — drafted; finishing tooling decisions
-- ⬜ Phase 4 (Execution Planning) — not started
+- ✅ Phase 3 (Technical Planning) — done; stack, tooling, diagrams all locked
+- ⬜ Phase 4 (Execution Planning) — NEXT; not started
 - 🔄 Phase 5 (Learning Log) — ongoing
 
 ## Stack (locked)
