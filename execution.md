@@ -45,6 +45,9 @@
 - [ ] Add `.env.example` (DB URL, JWT secret, Stripe keys placeholder) and a real local `.env` (gitignored)
 - [ ] Connect the GitHub remote (`origin`) and push the initial monorepo skeleton
 - [ ] Set up CodeRabbit on the repo (PR review) — confirm it comments on a throwaway PR
+- [ ] Enable branch protection on `main` (GitHub → Settings → Branches): require a
+      PR before merging so direct commits are blocked. Do this *after* the skeleton
+      is pushed; require a PR but not a second-person approval (near-solo dev)
 
 ### Milestone 2: Backend foundation
 
