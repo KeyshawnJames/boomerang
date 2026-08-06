@@ -7,16 +7,16 @@ const { Logo, Wordmark, Icon, ICONS, Button, Card, Merchant, StatusPill, TabBar 
 // Data — Montreal retailers + seed history (CAD)
 // ─────────────────────────────────────────────────────────────
 const STORES = [
-{ id: 'simons', name: 'Simons', label: 'S', bg: '#1B2A4A', tag: 'Apparel', window: '30 days', addr: 'Carrefour Laval', dist: '4.2 km' },
-{ id: 'aritzia', name: 'Aritzia', label: 'A', bg: '#111111', tag: 'Apparel', window: '14 days', addr: 'Sainte-Catherine O', dist: '2.1 km' },
-{ id: 'bestbuy', name: 'Best Buy', label: 'BB', bg: '#1D4ED8', tag: 'Electronics', window: '15 days', addr: 'Marché Central', dist: '5.8 km' },
-{ id: 'ssense', name: 'SSENSE', label: 'S', bg: '#0A0A0A', tag: 'Apparel', window: '30 days', addr: 'Saint-Sulpice', dist: '3.0 km' },
-{ id: 'zara', name: 'Zara', label: 'Z', bg: '#1A1A1A', tag: 'Apparel', window: '30 days', addr: 'Eaton Centre', dist: '1.6 km' },
-{ id: 'sephora', name: 'Sephora', label: 'SP', bg: '#161616', tag: 'Beauty', window: '30 days', addr: 'Sainte-Catherine O', dist: '1.9 km' },
-{ id: 'mec', name: 'MEC', label: 'M', bg: '#0F6B3F', tag: 'Outdoor', window: '1 year', addr: 'Marché Central', dist: '5.5 km' },
-{ id: 'cantire', name: 'Canadian Tire', label: 'CT', bg: '#C8102E', tag: 'Home', window: '90 days', addr: 'Saint-Laurent', dist: '6.3 km' },
-{ id: 'apple', name: 'Apple', label: '', bg: '#1C1C1E', tag: 'Electronics', window: '14 days', addr: 'Sainte-Catherine O', dist: '2.0 km' },
-{ id: 'lulu', name: 'lululemon', label: 'lu', bg: '#C2122E', tag: 'Athletic', window: '30 days', addr: 'Sainte-Catherine O', dist: '2.2 km' }];
+{ id: 'simons', name: 'Simons', label: 'S', bg: '#1B2A4A', tag: 'Apparel', window: '30 days', windowDays: 30, addr: 'Carrefour Laval', dist: '4.2 km' },
+{ id: 'aritzia', name: 'Aritzia', label: 'A', bg: '#111111', tag: 'Apparel', window: '14 days', windowDays: 14, addr: 'Sainte-Catherine O', dist: '2.1 km' },
+{ id: 'bestbuy', name: 'Best Buy', label: 'BB', bg: '#1D4ED8', tag: 'Electronics', window: '15 days', windowDays: 15, addr: 'Marché Central', dist: '5.8 km' },
+{ id: 'ssense', name: 'SSENSE', label: 'S', bg: '#0A0A0A', tag: 'Apparel', window: '30 days', windowDays: 30, addr: 'Saint-Sulpice', dist: '3.0 km' },
+{ id: 'zara', name: 'Zara', label: 'Z', bg: '#1A1A1A', tag: 'Apparel', window: '30 days', windowDays: 30, addr: 'Eaton Centre', dist: '1.6 km' },
+{ id: 'sephora', name: 'Sephora', label: 'SP', bg: '#161616', tag: 'Beauty', window: '30 days', windowDays: 30, addr: 'Sainte-Catherine O', dist: '1.9 km' },
+{ id: 'mec', name: 'MEC', label: 'M', bg: '#0F6B3F', tag: 'Outdoor', window: '1 year', windowDays: 365, addr: 'Marché Central', dist: '5.5 km' },
+{ id: 'cantire', name: 'Canadian Tire', label: 'CT', bg: '#C8102E', tag: 'Home', window: '90 days', windowDays: 90, addr: 'Saint-Laurent', dist: '6.3 km' },
+{ id: 'apple', name: 'Apple', label: '', bg: '#1C1C1E', tag: 'Electronics', window: '14 days', windowDays: 14, addr: 'Sainte-Catherine O', dist: '2.0 km' },
+{ id: 'lulu', name: 'lululemon', label: 'lu', bg: '#C2122E', tag: 'Athletic', window: '30 days', windowDays: 30, addr: 'Sainte-Catherine O', dist: '2.2 km' }];
 
 
 const SEED_RETURNS = [
@@ -33,6 +33,76 @@ const WINDOWS = [
 { id: 'today', title: 'Today, 4:00 – 6:00 PM', sub: 'Afternoon window', fee: 2.99 },
 { id: 'eve', title: 'Today, 7:00 – 9:00 PM', sub: 'Evening window', fee: 2.99 },
 { id: 'tmrw', title: 'Tomorrow, 9:00 – 11:00 AM', sub: 'Morning window', fee: 1.99, badge: 'Cheapest' }];
+
+
+// ─────────────────────────────────────────────────────────────
+// Eligibility questionnaire — the safeguard before we dispatch
+// a driver. Every answer carries an outcome: pass | warn | block.
+// `{window}` in a prompt is replaced with the store's return window.
+// Mirrors the v1 question set in docs/technical.md.
+// ─────────────────────────────────────────────────────────────
+const ELIGIBILITY_QUESTIONS = [
+{ code: 'purchase_window', prompt: 'When did you buy it?', help: 'This store accepts returns within {window}.',
+  options: [
+  { value: 'inside', label: 'Within {window}', outcome: 'pass' },
+  { value: 'unsure', label: "I'm not sure", outcome: 'warn', why: "You're not sure the purchase is still inside the {window} window." },
+  { value: 'outside', label: 'Longer than {window} ago', outcome: 'block', why: 'The purchase is outside this store’s {window} return window.' }] },
+
+{ code: 'proof_of_purchase', prompt: 'Do you have proof of purchase?', help: 'A receipt, order confirmation email, or order number.',
+  options: [
+  { value: 'receipt', label: 'Yes — receipt or order email', outcome: 'pass' },
+  { value: 'order_no', label: 'Just the order number', outcome: 'pass' },
+  { value: 'none', label: 'No proof of purchase', outcome: 'block', why: 'Stores will not process a return without proof of purchase.' }] },
+
+{ code: 'used_worn', prompt: 'Has it been used, worn, or washed?', help: 'Be honest — the store will check.',
+  options: [
+  { value: 'no', label: 'No, it’s unused', outcome: 'pass' },
+  { value: 'tried', label: 'Tried on only', outcome: 'pass' },
+  { value: 'yes', label: 'Yes, I’ve used or worn it', outcome: 'block', why: 'Used or worn items are not accepted for a standard return.' }] },
+
+{ code: 'tags_attached', prompt: 'Are the original tags still attached?',
+  options: [
+  { value: 'yes', label: 'Yes, still attached', outcome: 'pass' },
+  { value: 'no_tags', label: 'The item never had tags', outcome: 'pass' },
+  { value: 'removed', label: 'Tags were removed', outcome: 'warn', why: 'The tags have been removed — some stores refuse returns without them.' }] },
+
+{ code: 'packaging', prompt: 'What about the original packaging?',
+  options: [
+  { value: 'sealed', label: 'Sealed / unopened', outcome: 'pass' },
+  { value: 'opened', label: 'Opened but complete', outcome: 'pass' },
+  { value: 'missing', label: 'Parts or packaging missing', outcome: 'warn', why: 'Packaging or parts are missing — the store may reduce or refuse the refund.' }] },
+
+{ code: 'damage', prompt: 'Is the item damaged?', help: 'A defect it arrived with is still returnable. Damage you caused is not.',
+  options: [
+  { value: 'none', label: 'No damage', outcome: 'pass' },
+  { value: 'defective', label: 'Defective when I got it', outcome: 'pass' },
+  { value: 'mine', label: 'I damaged it', outcome: 'block', why: 'Items damaged after purchase are not eligible for a return.' }] },
+
+{ code: 'final_sale', prompt: 'Was it final sale or clearance?', help: 'Also covers non-returnable categories — gift cards, opened cosmetics, underwear.',
+  options: [
+  { value: 'no', label: 'No, regular purchase', outcome: 'pass' },
+  { value: 'unsure', label: "I'm not sure", outcome: 'warn', why: 'You’re not sure whether this was a final-sale purchase.' },
+  { value: 'yes', label: 'Yes, final sale or non-returnable', outcome: 'block', why: 'Final-sale and non-returnable items cannot be returned.' }] }];
+
+
+// Fill {window} placeholders from the selected store.
+function fillWindow(text, store) {
+  return (text || '').replace(/\{window\}/g, (store && store.window) || 'the return window');
+}
+
+// Roll the answers up into one outcome. Any block wins, then any warn.
+function eligibilityOutcome(questions, answers) {
+  const picked = questions.
+  map((q) => ({ q, opt: q.options.find((o) => o.value === answers[q.code]) })).
+  filter((x) => x.opt);
+  const blocks = picked.filter((x) => x.opt.outcome === 'block');
+  const warns = picked.filter((x) => x.opt.outcome === 'warn');
+  return {
+    outcome: blocks.length ? 'ineligible' : warns.length ? 'eligible_with_warnings' : 'eligible',
+    blocks, warns,
+    answered: picked.length === questions.length };
+
+}
 
 
 // ─────────────────────────────────────────────────────────────
@@ -402,5 +472,6 @@ function ProfileScreen() {
 
 Object.assign(window, {
   STORES, SEED_RETURNS, REASONS, WINDOWS,
+  ELIGIBILITY_QUESTIONS, fillWindow, eligibilityOutcome,
   QRCode, MapView, HomeScreen, ReturnsScreen, WalletScreen, ProfileScreen
 });

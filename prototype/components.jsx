@@ -71,6 +71,8 @@ const ICONS = {
   sparkle: 'M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z',
   phone:   'M5 4h3l1.5 4-2 1.5a11 11 0 0 0 5 5l1.5-2 4 1.5v3a2 2 0 0 1-2 2A15 15 0 0 1 3 6a2 2 0 0 1 2-2Z',
   map:     'M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Zm0 0v14m6-12v14',
+  alert:   'M12 3.5 21 19H3l9-15.5ZM12 10v4m0 2.5h.01',
+  ban:     'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM5.6 5.6l12.8 12.8',
 };
 
 function Icon({ name, size = 22, color = 'currentColor', strokeWidth = 1.8, fill = 'none', style }) {
@@ -149,6 +151,48 @@ function Card({ children, style, onClick, pad = 18, glow }) {
         ...style,
       }}
     >{children}</div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Choice — a single-select row (radio circle + label + hint).
+// Used by the eligibility questionnaire and the pickup-window picker.
+// ─────────────────────────────────────────────────────────────
+function Choice({ label, hint, selected, onClick, tone = 'emerald', last, right }) {
+  const [press, setPress] = React.useState(false);
+  const accent = `var(--${tone})`;
+  return (
+    <div
+      onClick={onClick}
+      onMouseDown={() => setPress(true)}
+      onMouseUp={() => setPress(false)}
+      onMouseLeave={() => setPress(false)}
+      onTouchStart={() => setPress(true)}
+      onTouchEnd={() => setPress(false)}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 12,
+        padding: '13px 14px', cursor: 'pointer',
+        borderBottom: last ? 'none' : '1px solid var(--line-2)',
+        transition: 'transform 0.14s ease, background 0.2s ease',
+        transform: press ? 'scale(0.99)' : 'scale(1)',
+        background: selected ? 'var(--mint-tint)' : 'transparent',
+      }}
+    >
+      <div style={{
+        width: 21, height: 21, borderRadius: '50%', flexShrink: 0,
+        border: `2px solid ${selected ? accent : 'var(--line)'}`,
+        background: selected ? accent : 'transparent',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        transition: 'all 0.18s ease',
+      }}>
+        {selected && <Icon name="checkSm" size={12} color="#fff" strokeWidth={3} />}
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 14.5, fontWeight: 600, letterSpacing: -0.1 }}>{label}</div>
+        {hint && <div style={{ fontSize: 12.5, color: 'var(--muted)', fontWeight: 500, marginTop: 2 }}>{hint}</div>}
+      </div>
+      {right}
+    </div>
   );
 }
 
@@ -292,6 +336,6 @@ function StatusPill({ tone = 'mint', children, icon }) {
 }
 
 Object.assign(window, {
-  Logo, Wordmark, Icon, ICONS, Button, Card, Merchant,
+  Logo, Wordmark, Icon, ICONS, Button, Card, Choice, Merchant,
   StepBar, FlowHeader, BottomBar, TabBar, StatusPill,
 });

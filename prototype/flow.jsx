@@ -1,6 +1,21 @@
 // flow.jsx — Tàpick return flow screens (store → details → eligibility → schedule → review → QR → matching → tracking → done)
 
-const { Logo, Wordmark, Icon, Button, Card, Merchant, StatusPill, FlowHeader, BottomBar, QRCode, MapView, STORES, REASONS, WINDOWS } = window;
+const { Logo, Wordmark, Icon, Button, Card, Choice, Merchant, StatusPill, FlowHeader, BottomBar, QRCode, MapView, STORES, REASONS, WINDOWS, ELIGIBILITY_QUESTIONS, fillWindow, eligibilityOutcome } = window;
+
+// small square check for the attestation / acknowledgement rows
+function CheckBox({ on, tone = 'emerald' }) {
+  return (
+    <div style={{
+      width: 21, height: 21, borderRadius: 6, flexShrink: 0, marginTop: 1,
+      border: `2px solid ${on ? `var(--${tone})` : 'var(--line)'}`,
+      background: on ? `var(--${tone})` : 'transparent',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      transition: 'all 0.18s ease',
+    }}>
+      {on && <Icon name="checkSm" size={12} color="#fff" strokeWidth={3} />}
+    </div>
+  );
+}
 
 // ─────────────────────────────────────────────────────────────
 // 1 · Select store
@@ -117,64 +132,153 @@ function DetailsScreen({ flow, set, next, back }) {
 // 3 · Eligibility & policy
 // ─────────────────────────────────────────────────────────────
 function EligibilityScreen({ flow, set, next, back }) {
-  const [checking, setChecking] = React.useState(true);
-  React.useEffect(() => { const t = setTimeout(() => setChecking(false), 1700); return () => clearTimeout(t); }, []);
-  const policy = [
-    { t: `Within ${flow.store.window} of purchase`, ok: true },
-    { t: 'Original tags & packaging', ok: true },
-    { t: 'Proof of purchase on file', ok: true },
-    { t: 'Refund to original payment', ok: true },
-  ];
+  const prev = flow.eligibility || {};
+  const [answers, setAnswers] = React.useState(prev.answers || {});
+  const [attested, setAttested] = React.useState(false);
+  const [ack, setAck] = React.useState(false);
+  const scroller = React.useRef(null);
+
+  const store = flow.store;
+  const fill = (t) => fillWindow(t, store);
+  const { outcome, blocks, warns, answered } = eligibilityOutcome(ELIGIBILITY_QUESTIONS, answers);
+  const blocked = outcome === 'ineligible';
+
+  // an answer that disqualifies the return invalidates any prior sign-off
+  const pick = (code, value) => {
+    setAnswers(a => ({ ...a, [code]: value }));
+    setAck(false); setAttested(false);
+  };
+
+  // "Change my answers" — clear only what disqualified it, jump back to the top
+  const clearBlocking = () => {
+    setAnswers(a => {
+      const nextA = { ...a };
+      blocks.forEach(b => delete nextA[b.q.code]);
+      return nextA;
+    });
+    if (scroller.current) scroller.current.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const canContinue = answered && !blocked && attested && (!warns.length || ack);
+
+  const tone = blocked ? 'danger' : warns.length ? 'amber' : 'emerald';
+  const tint = (pct) => `color-mix(in srgb, var(--${tone}) ${pct}%, transparent)`;
+
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', paddingTop: 54, background: 'var(--bg)' }}>
       <FlowHeader onBack={back} step={2} total={5} label="Eligibility" />
-      <div className="tp-scroll" style={{ flex: 1, overflowY: 'auto', padding: '16px 20px 130px' }}>
-        {/* verify hero */}
-        <div style={{ textAlign: 'center', padding: '14px 0 22px' }}>
-          <div style={{ position: 'relative', width: 92, height: 92, margin: '0 auto 16px' }}>
-            {checking ? (
-              <>
-                <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', border: '4px solid var(--line)' }} />
-                <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', border: '4px solid transparent', borderTopColor: 'var(--emerald)', animation: 'tp-spin 0.9s linear infinite' }} />
-                <Icon name="shield" size={36} color="var(--emerald)" style={{ position: 'absolute', inset: 0, margin: 'auto' }} />
-              </>
-            ) : (
-              <div style={{ width: 92, height: 92, borderRadius: '50%', background: 'var(--mint-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'tp-pop 0.4s cubic-bezier(0.34,1.56,0.64,1)' }}>
-                <Icon name="shield" size={44} color="var(--emerald)" strokeWidth={2} />
+      <div ref={scroller} className="tp-scroll" style={{ flex: 1, overflowY: 'auto', padding: '16px 20px 150px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 11, marginBottom: 6 }}>
+          <div style={{ width: 38, height: 38, borderRadius: 12, background: 'var(--mint-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Icon name="shield" size={20} color="var(--emerald)" strokeWidth={2} />
+          </div>
+          <div style={{ fontSize: 22, fontWeight: 800, letterSpacing: -0.6 }}>A few quick checks</div>
+        </div>
+        <div style={{ fontSize: 13.5, color: 'var(--muted)', fontWeight: 500, marginBottom: 18, lineHeight: 1.45 }}>
+          {store.name} accepts returns within {store.window}. Answer honestly — if the
+          store refuses the item because something here was wrong, the pickup fee isn't
+          refunded.
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {ELIGIBILITY_QUESTIONS.map((q, qi) => {
+            const chosen = answers[q.code];
+            const opt = q.options.find(o => o.value === chosen);
+            const bad = opt && opt.outcome !== 'pass';
+            return (
+              <Card key={q.code} pad={0} style={{
+                borderRadius: 20, overflow: 'hidden',
+                border: bad ? `1.5px solid var(--${opt.outcome === 'block' ? 'danger' : 'amber'})` : '1px solid var(--line-2)',
+              }}>
+                <div style={{ padding: '14px 15px 10px' }}>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'baseline' }}>
+                    <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--muted-2)', fontFamily: 'IBM Plex Mono' }}>{qi + 1}</span>
+                    <span style={{ fontSize: 15.5, fontWeight: 800, letterSpacing: -0.3 }}>{fill(q.prompt)}</span>
+                  </div>
+                  {q.help && <div style={{ fontSize: 12.5, color: 'var(--muted)', fontWeight: 500, marginTop: 3, paddingLeft: 18 }}>{fill(q.help)}</div>}
+                </div>
+                {q.options.map((o, i) => (
+                  <Choice
+                    key={o.value}
+                    label={fill(o.label)}
+                    selected={chosen === o.value}
+                    last={i === q.options.length - 1}
+                    tone={o.outcome === 'block' ? 'danger' : o.outcome === 'warn' ? 'amber' : 'emerald'}
+                    onClick={() => pick(q.code, o.value)}
+                  />
+                ))}
+              </Card>
+            );
+          })}
+        </div>
+
+        {/* verdict — only once every question has an answer */}
+        {answered && (
+          <div style={{ marginTop: 18, borderRadius: 20, padding: 16, animation: 'tp-fade-up 0.3s ease',
+            background: tint(9), border: `1.5px solid ${tint(45)}` }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: blocked || warns.length ? 10 : 0 }}>
+              <Icon name={blocked ? 'ban' : warns.length ? 'alert' : 'shield'} size={22} color={`var(--${tone})`} strokeWidth={2} />
+              <div style={{ fontSize: 16.5, fontWeight: 800, letterSpacing: -0.3, color: `var(--${tone})` }}>
+                {blocked ? 'We can’t take this return' : warns.length ? 'We can try, but no guarantee' : 'Looks eligible'}
+              </div>
+            </div>
+
+            {(blocked ? blocks : warns).map(({ q, opt }) => (
+              <div key={q.code} style={{ display: 'flex', gap: 8, alignItems: 'flex-start', marginBottom: 7 }}>
+                <div style={{ width: 5, height: 5, borderRadius: '50%', background: `var(--${tone})`, marginTop: 7, flexShrink: 0 }} />
+                <div style={{ fontSize: 13.5, fontWeight: 600, lineHeight: 1.45 }}>{fill(opt.why)}</div>
+              </div>
+            ))}
+
+            {blocked && (
+              <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${tint(30)}` }}>
+                <div style={{ fontSize: 13.5, fontWeight: 800, marginBottom: 6 }}>Returning it yourself</div>
+                <div style={{ fontSize: 13, color: 'var(--muted)', fontWeight: 500, lineHeight: 1.5 }}>
+                  Bring the item to {store.name} at {store.addr} with your proof of purchase.
+                  Staff can sometimes make an exception in person — we can’t make that call
+                  for them, and we won’t charge you for a trip that’s going to be refused.
+                </div>
+              </div>
+            )}
+
+            {!blocked && !!warns.length && (
+              <div onClick={() => setAck(v => !v)} style={{ display: 'flex', gap: 11, alignItems: 'flex-start', marginTop: 12, paddingTop: 12, borderTop: `1px solid ${tint(30)}`, cursor: 'pointer' }}>
+                <CheckBox on={ack} tone="amber" />
+                <div style={{ fontSize: 13, fontWeight: 600, lineHeight: 1.45 }}>
+                  I understand {store.name} may still refuse this return, and the pickup fee
+                  is charged either way.
+                </div>
               </div>
             )}
           </div>
-          <div style={{ fontSize: 22, fontWeight: 800, letterSpacing: -0.5 }}>
-            {checking ? 'Checking eligibility…' : 'Eligible for return'}
-          </div>
-          <div style={{ fontSize: 14, color: 'var(--muted)', fontWeight: 500, marginTop: 4, maxWidth: 280, marginInline: 'auto' }}>
-            {checking ? `Reviewing ${flow.store.name}'s return policy` : `${flow.store.name} accepts this return for a full refund`}
-          </div>
-        </div>
+        )}
 
-        <Card pad={6} style={{ borderRadius: 20, opacity: checking ? 0.5 : 1, transition: 'opacity 0.4s' }}>
-          {policy.map((p, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '13px 14px', borderBottom: i < policy.length - 1 ? '1px solid var(--line-2)' : 'none' }}>
-              <div style={{ width: 26, height: 26, borderRadius: '50%', background: checking ? 'var(--line)' : 'var(--mint-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.3s', transitionDelay: `${i * 0.1}s` }}>
-                {!checking && <Icon name="checkSm" size={15} color="var(--emerald)" strokeWidth={2.6} />}
-              </div>
-              <div style={{ fontSize: 14.5, fontWeight: 600, flex: 1 }}>{p.t}</div>
+        {/* attestation */}
+        {answered && !blocked && (
+          <Card pad={15} onClick={() => setAttested(v => !v)} style={{ borderRadius: 20, marginTop: 12, display: 'flex', gap: 11, alignItems: 'flex-start', border: attested ? '1.5px solid var(--emerald)' : '1px solid var(--line-2)' }}>
+            <CheckBox on={attested} />
+            <div style={{ fontSize: 13, fontWeight: 600, lineHeight: 1.45 }}>
+              I confirm these answers are accurate. If {store.name} refuses this return
+              because the information above is wrong, the pickup fee is non-refundable.
             </div>
-          ))}
-        </Card>
-
-        <div style={{ width: '100%', marginTop: 14, background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 16, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12, opacity: 0.5 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 11, background: 'var(--mint-tint)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Icon name="chat" size={19} color="var(--forest)" />
-          </div>
-          <div style={{ flex: 1, textAlign: 'left' }}>
-            <div style={{ fontSize: 14.5, fontWeight: 700 }}>Questions about the policy?</div>
-            <div style={{ fontSize: 12.5, color: 'var(--muted)', fontWeight: 500 }}>Support chat — coming soon</div>
-          </div>
-        </div>
+          </Card>
+        )}
       </div>
+
       <BottomBar>
-        <Button disabled={checking} iconRight="arrowR" onClick={next}>{checking ? 'Verifying…' : 'Continue'}</Button>
+        {blocked ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <Button variant="light" icon="refresh" onClick={clearBlocking}>Change my answers</Button>
+            <Button variant="ghost" size="md" onClick={back}>Cancel this return</Button>
+          </div>
+        ) : (
+          <Button disabled={!canContinue} iconRight="arrowR" onClick={() => {
+            set({ eligibility: { answers, outcome, attestedAt: new Date().toISOString() } });
+            next();
+          }}>
+            {!answered ? `${Object.keys(answers).length} of ${ELIGIBILITY_QUESTIONS.length} answered` : 'Confirm & continue'}
+          </Button>
+        )}
       </BottomBar>
     </div>
   );
@@ -210,7 +314,11 @@ function ScheduleScreen({ flow, set, next, back }) {
                 borderRadius: 18, border: on ? '1.5px solid var(--emerald)' : '1px solid var(--line-2)',
                 display: 'flex', alignItems: 'center', gap: 13, boxShadow: on ? '0 6px 20px rgba(15,157,99,0.14)' : 'var(--shadow)',
               }}>
-                <div style={{ width: 22, height: 22, borderRadius: '50%', border: on ? '7px solid var(--emerald)' : '2px solid var(--line)', transition: 'all 0.15s', flexShrink: 0 }} />
+                <div style={{ width: 21, height: 21, borderRadius: '50%', flexShrink: 0, transition: 'all 0.18s ease',
+                  border: `2px solid ${on ? 'var(--emerald)' : 'var(--line)'}`, background: on ? 'var(--emerald)' : 'transparent',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {on && <Icon name="checkSm" size={12} color="#fff" strokeWidth={3} />}
+                </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{ fontSize: 15, fontWeight: 700 }}>{w.title}</span>
@@ -236,6 +344,7 @@ function ScheduleScreen({ flow, set, next, back }) {
 // ─────────────────────────────────────────────────────────────
 function ReviewScreen({ flow, set, next, back }) {
   const w = WINDOWS.find(x => x.id === flow.window) || WINDOWS[0];
+  const warned = flow.eligibility && flow.eligibility.outcome === 'eligible_with_warnings';
   const Row = ({ label, value, mono }) => (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '13px 0', borderBottom: '1px solid var(--line-2)', gap: 16 }}>
       <span style={{ fontSize: 13.5, color: 'var(--muted)', fontWeight: 600, flexShrink: 0 }}>{label}</span>
@@ -257,6 +366,12 @@ function ReviewScreen({ flow, set, next, back }) {
             </div>
           </div>
           <Row label="Reason" value={flow.reason} />
+          <Row label="Eligibility" value={
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: warned ? 'var(--amber)' : 'var(--emerald)' }}>
+              <Icon name={warned ? 'alert' : 'shield'} size={14} color="currentColor" strokeWidth={2.2} />
+              {warned ? 'Confirmed — with warnings' : 'Confirmed by you'}
+            </span>
+          } />
           <Row label="Pickup from" value="4849 Av. Papineau" />
           <Row label="Pickup time" value={w.title} />
           <Row label="Refund to" value="Visa •••• 4921" mono />
