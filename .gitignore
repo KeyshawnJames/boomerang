@@ -26,3 +26,6 @@ yarn-error.*
 .DS_Store
 .idea/
 .vscode/
+
+# ---- Tool artifacts ----
+.playwright-mcp/

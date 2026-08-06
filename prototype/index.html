@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Boomerang — Returns, picked up.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink:      #0B1F18;
+    --forest:   #0B3D2E;
+    --forest-2: #0F4A38;
+    --emerald:  #0F9D63;
+    --mint:     #34D399;
+    --mint-2:   #6EE7B7;
+    --mint-soft:#E3F7EE;
+    --mint-tint:#F1FBF6;
+    --btn-grad: linear-gradient(180deg, #12A66A, #0B7A4B);
+    --bg:       #F4F6F5;
+    --surface:  #FFFFFF;
+    --line:     rgba(11,31,24,0.09);
+    --line-2:   rgba(11,31,24,0.06);
+    --muted:    #5C6B64;
+    --muted-2:  #6B7A71;
+    --amber:    #E8A33D;
+    --danger:   #E5544B;
+    --shadow:   0 1px 2px rgba(11,31,24,0.04), 0 6px 20px rgba(11,31,24,0.06);
+    --shadow-lg:0 8px 40px rgba(11,31,24,0.12);
+    --r-lg: 28px;
+    --r-md: 20px;
+    --r-sm: 14px;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: #E7EAE8;
+    font-family: 'Manrope', -apple-system, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    color: var(--ink);
+  }
+  #root {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px;
+  }
+  /* hide scrollbars inside the device for a clean app feel */
+  .tp-scroll::-webkit-scrollbar { width: 0; height: 0; }
+  .tp-scroll { scrollbar-width: none; -ms-overflow-style: none; }
+
+  /* screen transitions */
+  @keyframes tp-push-in {
+    from { transform: translateX(26px); }
+    to   { transform: translateX(0); }
+  }
+  @keyframes tp-pop-in {
+    from { transform: translateX(-26px); }
+    to   { transform: translateX(0); }
+  }
+  @keyframes tp-fade-up {
+    from { transform: translateY(14px); }
+    to   { transform: translateY(0); }
+  }
+  @keyframes tp-sheet-up {
+    from { transform: translateY(40px); }
+    to   { transform: translateY(0); }
+  }
+  @keyframes tp-pop {
+    0%   { transform: scale(0.6); }
+    60%  { transform: scale(1.08); }
+    100% { transform: scale(1); }
+  }
+  @keyframes tp-spin { to { transform: rotate(360deg); } }
+  @keyframes tp-pulse-ring {
+    0%   { transform: scale(0.7); opacity: 0.7; }
+    100% { transform: scale(2.4); opacity: 0; }
+  }
+  .tp-map-ring { transform-box: fill-box; transform-origin: center; animation: tp-pulse-ring 1.9s ease-out infinite; }
+  @keyframes tp-bob {
+    0%,100% { transform: translateY(0); }
+    50%     { transform: translateY(-5px); }
+  }
+  @keyframes tp-dash { to { stroke-dashoffset: 0; } }
+  @keyframes tp-shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .screen-push { animation: tp-push-in 0.28s cubic-bezier(0.22,0.61,0.36,1); }
+  .screen-pop  { animation: tp-pop-in 0.28s cubic-bezier(0.22,0.61,0.36,1); }
+  .stagger > * { animation: tp-fade-up 0.5s cubic-bezier(0.22,0.61,0.36,1) forwards; }
+
+  button { font-family: inherit; cursor: pointer; }
+  input, textarea { font-family: inherit; }
+
+  /* reduce motion */
+  .reduce-motion *, .reduce-motion *::before, .reduce-motion *::after {
+    animation-duration: 0.001s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.05s !important;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001s !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.05s !important;
+    }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="ios-frame.jsx"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="components.jsx"></script>
+<script type="text/babel" src="screens.jsx"></script>
+<script type="text/babel" src="flow.jsx"></script>
+<script type="text/babel" src="app.jsx"></script>
+</body>
+</html>

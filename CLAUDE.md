@@ -25,8 +25,18 @@ piece**, and the user's **first app build**.
 - `docs/learning.md` — running learning log (append continuously, not just at the end)
 - `docs/setup.md` — how the repo/dev setup is wired and *why* (append new setup steps)
 - `docs/CHANGELOG.md` — running story of what got done, by whom, over time (newest on top)
+- `docs/research/` — ad hoc write-ups for open questions that come up mid-build
+  (e.g. `driver-card-access.md`), not part of the phase sequence
 - `README.md` (root) — public-facing project overview (what it is, stack, structure,
   getting-started); keep in sync when stack/structure/status changes meaningfully
+
+## Other project folders
+
+- `presentation/` — the pitch/portfolio deck (`Boomerang.pptx`) plus its build
+  pipeline; see `presentation/README.md`.
+- `prototype/` — standalone React/JSX interactive UI mockup (not the real Expo
+  apps), deployed at https://boomerang-prototype.netlify.app; see
+  `prototype/README.md`. Source for the UI screenshots used in the deck.
 
 ## Where we are
 

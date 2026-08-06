@@ -50,6 +50,8 @@ boomerang/
 │   ├── client/        # Expo app — built 1st
 │   ├── driver/        # Expo app — built 2nd
 │   └── store/         # Expo app (minimal) — built 3rd
+├── prototype/         # standalone React/JSX UI mockup (not the real Expo apps)
+├── presentation/      # pitch/portfolio deck + build pipeline
 └── docker-compose.yml # local Postgres for development
 ```
 
@@ -64,6 +66,7 @@ The full plan lives in [`docs/`](docs/):
 - [`setup.md`](docs/setup.md) — how the dev setup is wired, and *why* (beginner-friendly)
 - [`learning.md`](docs/learning.md) — running log of concepts learned along the way
 - [`CHANGELOG.md`](docs/CHANGELOG.md) — what got done, when, by whom
+- [`research/`](docs/research/) — ad hoc write-ups for open questions that come up mid-build
 
 ## Getting started (development)
 
