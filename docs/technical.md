@@ -100,20 +100,60 @@ problem, a multi-party payments problem, and a chain-of-custody/trust problem.
 - **DriverProfile** — `user_id`, vehicle info, `is_available`, `current_lat`,
   `current_lng`, rating aggregate, Stripe account id.
 - **Retailer** — `id`, `name`, `logo_url`, default `return_policy` text/fields.
-- **Store** — `id`, `retailer_id`, `address`, `lat`, `lng`, optional policy
-  overrides (return window, condition rules).
+- **Store** — `id`, `retailer_id`, `address`, `lat`, `lng`, `return_window_days`
+  (int — the questionnaire needs a number, not prose), optional policy overrides
+  (condition rules).
 - **ReturnRequest** — `id`, `client_id`, `store_id`, `retailer_id`,
   `item_description`, `photo_urls`, `order_number`, `reason`, `status`,
-  `qr_token`, `pickup_fee`, `driver_id` (nullable), timestamps.
+  `qr_token`, `pickup_fee`, `driver_id` (nullable), `eligibility_outcome`
+  (eligible | eligible_with_warnings), `eligibility_attested_at`,
+  `eligibility_policy_version`, timestamps.
 - **ReturnStatusEvent** — `id`, `return_id`, `status`, `actor_id`, `photo_url`
   (custody proof), `created_at`. Powers both the timeline and the audit trail.
+- **EligibilityQuestion** — `id`, `code` (stable slug), `prompt_en`, `prompt_fr`,
+  `help_en`, `help_fr`, `options` (JSON: `value`, `label_en`, `label_fr`,
+  `outcome` = pass | warn | block), `sort_order`, `active`, `version`.
+- **ReturnEligibilityAnswer** — `id`, `return_id`, `question_code`,
+  `prompt_snapshot`, `answer_value`, `answer_label_snapshot`, `outcome`,
+  `created_at`. Snapshot the text so editing a question later never rewrites
+  history — same append-only reasoning as `ReturnStatusEvent`.
+- **BlockedRequestLog** — `id`, `client_id`, `store_id`,
+  `blocking_question_codes`, `created_at`. A blocked attempt never creates a
+  `ReturnRequest`, so this is the only way to measure how much loss the gate
+  prevents (and to spot questions that are too strict).
 - **Payment** — `id`, `return_id`, `client_id`, `amount`, `platform_fee`,
   `driver_payout`, `stripe_payment_intent_id`, `status`.
 - **Rating** — `id`, `return_id`, `driver_id`, `client_id`, `stars`, `comment`.
 
 **Status state machine:** `requested → driver_assigned → picked_up → at_store →
-accepted → refund_issued → completed` (plus `cancelled`). Each transition writes
-a `ReturnStatusEvent`.
+accepted → refund_issued → completed` (plus `cancelled`). At `at_store` the
+branch is `accepted | refused` — `refused` is a terminal state for "the store
+turned the item away," distinct from `cancelled`, and it's what we compare back
+against the client's eligibility attestation. Each transition writes a
+`ReturnStatusEvent`.
+
+### Eligibility attestation
+
+Before a return can be created, the client answers a short questionnaire
+(condition, tags, packaging, proof of purchase, purchase date vs the store's
+`return_window_days`, final-sale category). Every answer carries an outcome:
+
+- any `block` → the request is refused up front, no `ReturnRequest` row, a
+  `BlockedRequestLog` row instead;
+- else any `warn` → `eligible_with_warnings`, which requires an explicit
+  client acknowledgment before the request is created;
+- else → `eligible`.
+
+**The server re-evaluates the answers; the client is not a trust boundary.** The
+app renders the questions and previews the outcome for UX, but `POST /returns`
+re-runs the evaluation against the store's live policy and rejects anything that
+doesn't hold. The stored answers + `eligibility_attested_at` are the evidence
+trail when a store refuses an item or a client disputes a fee.
+
+For the MVP the question set is **generic + the store's own return window**;
+per-retailer question sets and blocking rules are a later, clean migration (the
+`EligibilityQuestion` table is already keyed to support it). See
+`docs/research/return-eligibility-attestation.md` for the reasoning.
 
 ## API Endpoints (high-level)
 
@@ -124,8 +164,12 @@ a `ReturnStatusEvent`.
 **Client**
 - `GET /retailers` — list retailers (+ logos)
 - `GET /retailers/{id}/stores` — store locations
-- `GET /stores/{id}/policy` — return eligibility/policy
-- `POST /returns` — create a return request (item, photos, order #, reason)
+- `GET /stores/{id}/policy` — return window/condition rules **plus the localized
+  eligibility question set** (one call feeds one screen)
+- `POST /returns` — create a return request (item, photos, order #, reason,
+  `eligibility_answers[]`, `attested`, `acknowledged_warnings`); re-evaluates
+  eligibility server-side and returns `422` with the blocking question codes if
+  the item doesn't qualify
 - `GET /returns/{id}` — status + timeline
 - `GET /returns` — client's return history
 - `POST /returns/{id}/pay` — pay pickup fee (Stripe)
@@ -140,6 +184,8 @@ a `ReturnStatusEvent`.
 
 **Store**
 - `POST /returns/{id}/accept` — scan QR, verify, confirm acceptance
+- `POST /returns/{id}/refuse` — store turns the item away; records a reason and
+  sets status `refused`
 - `POST /returns/{id}/refund-issued` — mark refund issued
 
 **Real-time**

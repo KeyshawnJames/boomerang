@@ -11,6 +11,33 @@
 
 ---
 
+## 2026-08-06
+
+### Return eligibility questionnaire (attestation gate)
+- **[Claude]** Acted on partner feedback: we were dispatching drivers on the client's
+  word alone, with no check that the item actually met the store's return conditions.
+  Added an eligibility questionnaire between item capture and payment — seven
+  questions whose answers are `pass` / `warn` / `block`. A blocking answer refuses the
+  request before any money changes hands and points the client at returning it
+  themselves; warnings require an explicit "the store may still refuse this"
+  acknowledgment. Every answer is stored against the return with a timestamped
+  attestation, which is the evidence trail if a store refuses an item or a client
+  disputes the fee.
+- **[Claude]** Schema + API in `technical.md`: `EligibilityQuestion`,
+  `ReturnEligibilityAnswer` (with prompt/label snapshots so history can't be rewritten),
+  `BlockedRequestLog`, three new `ReturnRequest` fields, `return_window_days` on
+  `Store`, and a `refused` terminal status off `at_store`. `GET /stores/{id}/policy`
+  now carries the question set; `POST /returns` re-evaluates the answers server-side.
+- **[Claude]** Tasks folded into existing milestones — M3 (models + seed), M6
+  (endpoint), M7 (evaluator, gating, client screen), M12 (`POST /returns/{id}/refuse`
+  in the store app). No new milestone.
+- **[Claude]** Prototype: replaced the fake `EligibilityScreen` (a 1700 ms spinner and
+  a hardcoded all-green checklist) with the real questionnaire, including the blocked
+  and warning states. Extracted a shared `Choice` row component. Verified all three
+  paths in the browser.
+- **[Claude]** Wrote `docs/research/return-eligibility-attestation.md` — what the
+  attestation does and doesn't protect against, and the Quebec/Canada angle.
+
 ## 2026-06-18
 
 ### Added root `README.md`

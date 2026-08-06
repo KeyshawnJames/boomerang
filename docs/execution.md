@@ -22,7 +22,7 @@
 4. **Auth & accounts** — register/login, JWT, role-based access
 5. **Client app bootstrap** — Expo app runs, nav, styling, i18n, talks to backend
 6. **Retailer & store browsing** — backend endpoints + client screens
-7. **Create a return** — item capture, QR authorization, status state machine
+7. **Create a return** — item capture, eligibility gate, QR authorization, status machine
 8. **Payments (Stripe Connect)** — fee charge before booking (guided, hard infra)
 9. **Status timeline & push notifications** — events → timeline UI → Expo push
 10. **Driver app + matching/dispatch** — job feed, accept, geo matching
@@ -62,14 +62,19 @@
 
 - [ ] Create `app/models/user.py` — `User` (id, role enum, name, email, phone, password_hash, created_at)
 - [ ] Create `app/models/driver.py` — `DriverProfile` (user_id FK, vehicle info, is_available, current_lat/lng, rating aggregate, stripe_account_id)
-- [ ] Create `app/models/retailer.py` — `Retailer` (id, name, logo_url, return_policy) and `Store` (id, retailer_id FK, address, lat, lng, policy overrides)
-- [ ] Create `app/models/return_request.py` — `ReturnRequest` with all fields incl. `item_description`/`photo_urls` on the row (one-item-per-return), `qr_token`, `status`, `driver_id` nullable
+- [ ] Create `app/models/retailer.py` — `Retailer` (id, name, logo_url, return_policy) and `Store` (id, retailer_id FK, address, lat, lng, `return_window_days`, policy overrides)
+- [ ] Create `app/models/return_request.py` — `ReturnRequest` with all fields incl. `item_description`/`photo_urls` on the row (one-item-per-return), `qr_token`, `status`, `driver_id` nullable, `eligibility_outcome`, `eligibility_attested_at`, `eligibility_policy_version`
 - [ ] Create `app/models/status_event.py` — `ReturnStatusEvent` (return_id FK, status, actor_id, photo_url, created_at)
+- [ ] Create `app/models/eligibility.py` — `EligibilityQuestion` (code, prompt_en/fr,
+      options JSON with per-answer `outcome`, sort_order, active, version),
+      `ReturnEligibilityAnswer` (return_id FK, question_code, prompt/label snapshots,
+      answer_value, outcome), `BlockedRequestLog` (client_id, store_id, blocking codes)
 - [ ] Create `app/models/payment.py` and `app/models/rating.py`
-- [ ] Define the status enum: `requested → driver_assigned → picked_up → at_store → accepted → refund_issued → completed` (+ `cancelled`)
+- [ ] Define the status enum: `requested → driver_assigned → picked_up → at_store → accepted → refund_issued → completed` (+ `refused`, `cancelled`)
 - [ ] Initialize Alembic (`alembic init`), point it at the SQLModel metadata
 - [ ] Generate and run the first migration; confirm all tables exist in Postgres
 - [ ] Write a `seed.py` that inserts 2–3 Montreal retailers + store locations for dev
+- [ ] Seed the v1 eligibility question set (EN/FR) — purchase window, proof of purchase, used/worn, tags, packaging, damage, final sale
 
 ### Milestone 4: Auth & accounts *(guided)*
 
@@ -96,23 +101,28 @@
 ### Milestone 6: Retailer & store browsing
 
 - [ ] Backend: `GET /retailers` (list + logos) and `GET /retailers/{id}/stores`
-- [ ] Backend: `GET /stores/{id}/policy` — return window / condition rules
+- [ ] Backend: `GET /stores/{id}/policy` — return window / condition rules, plus the active eligibility question set localized to the request's language
 - [ ] Client: retailer picker screen (logos, list) fetching `/retailers`
 - [ ] Client: store-location selection screen for the chosen retailer
-- [ ] Client: eligibility/policy display screen for the selected store
+- [ ] Client: policy summary for the selected store (the questionnaire itself lives in M7, after item capture)
 
 ### Milestone 7: Create a return
 
-- [ ] Backend: `app/schemas/returns.py` — create-return request/response models
-- [ ] Backend: `POST /returns` — create a `ReturnRequest` (status `requested`), generate a unique `qr_token`, compute `pickup_fee`
+- [ ] Backend: `app/schemas/returns.py` — create-return request/response models (incl. `eligibility_answers[]`, `attested`, `acknowledged_warnings`)
+- [ ] Backend: `app/services/eligibility.py` — evaluate answers against the store's live policy, return outcome (`eligible` / `eligible_with_warnings` / `ineligible`) + blocking question codes. The client previews this, the server decides it
+- [ ] Backend: `POST /returns` — run the eligibility evaluator first; on `ineligible` write a `BlockedRequestLog` and return `422` with the blocking codes (no `ReturnRequest`); on warnings require `acknowledged_warnings`
+- [ ] Backend: `POST /returns` — create a `ReturnRequest` (status `requested`), generate a unique `qr_token`, compute `pickup_fee`, persist the `ReturnEligibilityAnswer` rows + `eligibility_attested_at`
 - [ ] Backend: write the first `ReturnStatusEvent` on creation (status = `requested`)
 - [ ] Backend: a small status-transition helper/service that validates allowed transitions and writes an event each time
 - [ ] Backend: `GET /returns/{id}` (status + timeline) and `GET /returns` (client history)
 - [ ] Backend: decide photo storage for `photo_urls` (local dir for dev now; note S3/cloud as deploy task)
 - [ ] Client: item-capture screen — camera for item + receipt photos (expo-camera), order number, reason
+- [ ] Client: eligibility questionnaire screen — questions from `/stores/{id}/policy`, pass / warn / block states, and the attestation confirm before Continue
+- [ ] Client: blocked state — name the disqualifying answer, show self-return guidance, offer "change my answers" or cancel; no path forward to payment
 - [ ] Client: up-front pricing screen showing the pickup fee before confirming
 - [ ] Client: generate/display the QR return authorization (from `qr_token`)
 - [ ] Confirm end-to-end: client creates a return, sees it in history with a QR
+- [ ] Confirm end-to-end: a disqualifying answer is refused before payment, and the same answers posted directly to the API are refused too (server-side, not just UI)
 
 ### Milestone 8: Payments — Stripe Connect *(guided, hard infra — expect this to be slow)*
 
@@ -157,8 +167,10 @@
 - [ ] Driver app: "arrived at store" → transition to `at_store`
 - [ ] Scaffold `apps/store` minimal Expo app (login as store_admin, single scan screen)
 - [ ] Backend: `POST /returns/{id}/accept` — store scans QR, verify, transition to `accepted`
+- [ ] Backend: `POST /returns/{id}/refuse` — store turns the item away; record a reason, transition to `refused`
 - [ ] Backend: `POST /returns/{id}/refund-issued` — mark refund issued, then `completed`
 - [ ] Store app: scan-to-accept screen → confirm acceptance → mark refund issued
+- [ ] Store app: refuse action on the same screen, with the client's eligibility attestation shown beside it so the refusal can be checked against what they declared
 - [ ] Confirm full chain of custody end-to-end: create → pay → match → pickup (QR+photo) → store accept → refund → completed
 
 ### Milestone 13: Ratings, history, earnings

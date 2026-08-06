@@ -91,6 +91,14 @@ piece**, and the user's **first app build**.
   localization in from the start rather than retrofitting.
 - **Quebec / Canadian rules** — follow Quebec + Canadian return and payment
   regulations.
+- **Eligibility attestation gate** (partner feedback, 2026-08-06) — before a return
+  can be created, the client answers a questionnaire (condition, tags, packaging,
+  proof of purchase, purchase date, final sale) and attests the answers are accurate.
+  Hard-block on definite disqualifiers, soft-warn + explicit acknowledgment on
+  ambiguous ones. Sits after item capture, **before payment**. MVP uses a generic
+  question set + each store's `return_window_days`; a per-retailer rule engine is a
+  later migration. The server re-evaluates the answers — the client is not a trust
+  boundary. See `docs/research/return-eligibility-attestation.md`.
 
 ## Open / next up
 

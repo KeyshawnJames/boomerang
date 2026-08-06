@@ -249,6 +249,22 @@ remembering. Appended to continuously, not just at the end.
   item was photographed along the way. It's the "trust" leg of the four marketplace
   problems, made concrete.
 
+- **The client app is not a trust boundary:** The eligibility questionnaire renders in
+  the mobile app and shows the client an instant verdict — but the backend re-runs the
+  whole evaluation on `POST /returns` before creating anything. That looks like
+  pointless duplicated work until you realize *anyone can skip the app entirely* and
+  post straight to the API with `attested: true`. A check that only lives in the client
+  isn't a check; it's a suggestion. The general rule: validate in the client for fast,
+  friendly feedback, and validate again on the server because that's the only copy an
+  attacker can't edit. Same reason a disabled button is never real security.
+
+- **Snapshot the text, not just the answer:** Each stored eligibility answer keeps a
+  copy of the exact question wording the client saw, not only a foreign key to the
+  question. If we reword a question next year, every historical answer would silently
+  start reading as an answer to the *new* wording. An audit trail that changes after
+  the fact isn't an audit trail. Same instinct as storing the price paid on an order
+  line instead of joining to the product's current price.
+
 ## Mistakes / Misunderstandings
 
 - _(none yet)_

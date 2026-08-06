@@ -16,8 +16,11 @@ Launch market: **Montreal**. Three-sided marketplace: **clients** · **drivers**
 
 ## How it works
 
-1. A **client** picks a retailer + store, photographs the item and receipt, sees the
-   pickup fee up front, pays, and gets a QR return authorization.
+1. A **client** picks a retailer + store, photographs the item and receipt, then answers
+   a short eligibility questionnaire and attests the answers are accurate — items that
+   clearly don't meet the store's return conditions are refused before any money changes
+   hands. If it passes, they see the pickup fee up front, pay, and get a QR return
+   authorization.
 2. A nearby **driver** accepts the job, navigates to the client, scans the QR + takes
    a custody photo at pickup, then drives to the store.
 3. The **store** scans the QR to accept the return and marks the refund issued.
