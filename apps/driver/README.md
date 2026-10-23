@@ -1,4 +1,4 @@
 # Boomerang — Driver App
 
-Expo / React Native app for **drivers** (accepting jobs, pickups, store handoffs).
-**Build order: SECOND.** Scaffolded in Milestone 10 of `../../docs/execution.md`.
+Expo / React Native app for **drivers**: job feed, pickup scan + photo, carrier drop-off
+proof, earnings. Scaffolded in milestone M6; see [`docs/roadmap.md`](../../docs/roadmap.md).

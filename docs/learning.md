@@ -1,7 +1,12 @@
 # Learning Log: Boomerang
 
-Personal notes from building Boomerang — concepts, patterns, and things worth
-remembering. Appended to continuously, not just at the end.
+Personal notes from building Boomerang: concepts, patterns, and things worth
+remembering.
+
+> Since 2026-10-23 Claude writes the code ([ADR 0002](decisions/0002-claude-builds-user-merges.md)),
+> so this is now an occasional "concepts worth knowing" log rather than a running tutorial.
+> The day-to-day "why" lives in PR descriptions and `decisions/`. Some notes below describe
+> the earlier plan (e.g. three apps, pip): see `architecture.md` for the current setup.
 
 ## Key Concepts Learned
 
@@ -112,7 +117,7 @@ remembering. Appended to continuously, not just at the end.
       off, do the work, merge back quickly (within a day or two), and delete the
       branch. Far simpler.
   For a 1–2 person app, trunk-based wins — Gitflow's extra branches would just be
-  overhead you'd never actually use. (Boomerang's exact rules: `technical.md` → Git
+  overhead you'd never actually use. (Boomerang's exact rules: `architecture.md` → Git
   & GitHub Workflow.)
 
 - **Pull Request (PR) — the "please review and merge my draft" button:** A PR is how
@@ -155,7 +160,7 @@ remembering. Appended to continuously, not just at the end.
       to tell anyone setting up the project, "here are the secrets you need to fill
       in," without handing over the actual values.
   So a new teammate runs `cp .env.example .env`, fills in real values, and they're
-  set — and nobody's real keys ever touched GitHub. (Full walkthrough in `setup.md`.)
+  set — and nobody's real keys ever touched GitHub. (Run instructions in `development.md`.)
 
 - **Docker — a disposable, identical computer-in-a-box:** Our backend needs a
   PostgreSQL database to talk to. You *could* install Postgres directly on your Mac,

@@ -1,132 +1,119 @@
 # Vision: Boomerang
 
-## Product Overview
+> Updated 2026-10-23 for the carrier-first MVP ([ADR 0003](../decisions/0003-carrier-first-mvp.md)).
+> The original partner-store vision is kept below as phase 2.
 
-Boomerang is an on-demand mobile app that handles retail returns for people who
-don't want to go to the store themselves. A client requests a pickup, a driver
-collects the item, and the driver completes the return at the retailer — with a
-QR-based chain of custody and a live status timeline keeping every party honest
-and informed from request to refund.
+## Product overview
 
-It is a three-sided marketplace:
+Boomerang is an on-demand mobile app that handles returns for people who don't want to deal
+with them. The client books a pickup, a driver collects the package, and the driver drops it
+at the carrier, with a scan-and-photo chain of custody and a live status timeline from
+request to drop-off.
 
-- **Clients** request and pay for return pickups.
-- **Drivers** accept jobs, pick up items, and complete returns at the store.
-- **Retailers (partner stores)** scan a QR code to accept the return and confirm
-  the refund.
+The MVP is a **two-sided marketplace**:
 
-The launch market is **Montreal**, starting with a handful of small/local (and
-potentially larger local) retailers who agree to use the store-side scan app.
+- **Clients** book and pay for return pickups.
+- **Drivers** accept jobs, collect packages, and drop them at carrier locations (Canada Post,
+  UPS, Purolator…).
 
-## Core Features
+The retailer issued the return label or QR code, and it refunds the client automatically
+once the carrier scans the package. Boomerang never handles refund money.
+
+Launch market: **Montreal**.
+
+## Core features (MVP)
 
 **Client app**
-- Retailer picker (real retailer list + logos) → store-location selection
-- Return eligibility questionnaire — a short set of condition/policy questions
-  the client answers and attests to before booking. Ineligible items are refused
-  up front with self-return guidance; borderline ones proceed only after an
-  explicit "the store may still refuse this" acknowledgment
-- Item capture: photos of item + receipt/order number, return reason
-- Per-return QR authorization
-- Live driver tracking on a map
-- Status timeline: Requested → Driver assigned → Picked up → At store → Accepted
-  → Refund issued → Done
-- Push notifications on every status change
-- Pickup-fee payment + optional driver tip
-- Driver ratings
-- Return history
-- Pricing transparency (fee shown up front before booking)
+- Choose who the return is for (Amazon, Simons, …), then add the return label or QR code:
+  upload the QR image, or confirm a printed label is on the package.
+- **Eligibility gate**: a short checklist the client answers and attests to before paying.
+  - Has the merchant approved the return?
+  - Is the label or QR attached?
+  - Is the package sealed?
+  - Does it contain anything prohibited (batteries, liquids…)?
+  
+  Disqualified packages are refused before payment. Borderline ones need an explicit
+  acknowledgment.
+- Pickup address and time window. The fee is shown up front, with all fees included.
+- Pay the pickup fee, with an optional tip.
+- Live driver tracking on a map.
+- Status timeline: Requested → Driver assigned → Picked up → Dropped off → Done, with a
+  push notification at each step.
+- Return history, and a rating for the driver.
 
 **Driver app**
-- Job feed of nearby pickup requests (accept / decline)
-- Two-leg navigation: to the client, then to the store
-- QR scan + photo proof at pickup
-- QR handoff + confirmation at the store
-- Earnings dashboard
+- Job feed of nearby pickups (accept / decline).
+- Navigation to the client, then to the nearest suitable drop-off location.
+- At pickup: scan the label or QR, and photograph the package.
+- At drop-off: a photo, plus the carrier receipt or tracking number.
+- Earnings view.
 
-**Store app (minimal)**
-- Scan-to-accept: store scans the QR, confirms the return, marks refund issued
+**Platform**
+- Accounts and auth for two roles (client, driver), with an admin role for the founders.
+- Chain of custody: a timestamped scan and photo at every handoff.
+- Eligibility attestation stored against each return, as the evidence trail.
+- Payments: the client pays Boomerang, and Boomerang pays drivers (Stripe Connect).
+- English and French, with French first-class (Quebec).
 
-**Platform-wide**
-- Three-role accounts & auth (client / driver / store)
-- Chain of custody: QR + timestamped photos at every handoff (anti-fraud / proof)
-- Eligibility attestation: the client's answers are stored against the return, so
-  there's a record of what they declared if a store refuses the item — this
-  protects Boomerang with both the client and the retail partner
-- Payments infrastructure: collect client fees, pay out drivers (marketplace
-  take-rate model)
+## Hard rules
 
-## MVP Scope
+- No cash refunds, ever. Refund money never touches a Boomerang account.
+- Drivers never handle a client's payment card.
+- The server decides eligibility. What the app shows is only a preview.
 
-**Included in MVP:**
-- Montreal only
-- Client app: retailer + store selection, eligibility questionnaire + attestation
-  (blocks ineligible returns before payment), item capture, QR
-  authorization, live driver map tracking, status timeline, push notifications,
-  pickup-fee payment, ratings, return history, up-front pricing
-- Driver app: job feed, navigation, QR scan + photo proof at pickup, QR handoff
-  at store, basic earnings view
-- Store app: minimal scan-to-accept + confirm refund
-- A few partner retailers (small/local, possibly larger local) using the store app
-- On-demand pickups
-- Full QR + photo chain of custody
-- Payments: client pays pickup fee to Boomerang; Boomerang pays drivers
+## MVP scope
 
-**Explicitly excluded from MVP (for now):**
-- Batching multiple returns into one driver trip (designed for, not built yet)
-- Scheduled (vs on-demand) pickups
-- Multi-item / multi-store returns in a single pickup
-- Refund-amount detail tracking beyond a status flag
-- Retailer self-onboarding portal, store analytics dashboard
-- Driver identity verification, insurance/liability handling
-- In-app support chat & formal dispute resolution. Note the eligibility
-  attestation is *not* this — it's an evidence trail and an up-front gate, with
-  no in-app process for arguing about the outcome afterwards
-- Per-retailer eligibility rule engine (MVP uses a generic question set plus each
-  store's return window; the schema is designed so this is a clean migration)
-- Auto-detecting returnable items from email receipts
-- Cities beyond Montreal
+**In:** Montreal only; on-demand pickups; one package per return; label/QR carrier returns;
+the client and driver apps above.
 
-## User Flow
+**Out (for now):**
+- Partner-store returns and the store portal (phase 2).
+- Batching several returns into one trip.
+- Scheduled or recurring pickups.
+- Multi-package returns.
+- Refund-amount tracking.
+- Driver identity checks and insurance.
+- In-app support chat and disputes.
+- Parsing email receipts.
+- Cities beyond Montreal.
 
-**Client (happy path):**
-1. Opens Boomerang, taps "New return"
-2. Selects the retailer, then the specific store location
-3. Photographs the item + receipt, enters order number and return reason
-4. Answers the eligibility questionnaire (condition, tags, packaging, proof of
-   purchase, purchase date, final sale) and attests the answers are accurate. An
-   ineligible item is refused here — before any payment — with an explanation of
-   which answer disqualified it and how to return it themselves
-5. Sees the pickup fee up front and confirms + pays
-6. App generates a QR return authorization
-7. A driver is matched; client watches the driver approach on the map
-8. Driver arrives; client hands over the item; driver scans QR + photographs it
-9. Client follows the status timeline: Picked up → At store → Accepted → Refund
-   issued → Done, with a push notification at each step
-10. Client rates the driver
+## User flows
 
-**Driver:**
-1. Sees a nearby pickup request in the job feed, accepts it
-2. Navigates to the client, scans the QR + photographs the item at pickup
-3. Navigates to the store
-4. Store scans/confirms the QR to accept the return
-5. Job marked complete; earnings update
+**Client**
+1. Taps "New return" and picks the retailer.
+2. Adds the label or QR, and photographs the package.
+3. Answers the eligibility checklist and attests to it. If an answer disqualifies the
+   package, it's refused here, before payment, with an explanation.
+4. Sets the pickup address and window, sees the full price, and pays.
+5. A driver is matched. The client watches them approach.
+6. Hands over the package. The driver scans it and takes a photo.
+7. Follows the timeline: Picked up → Dropped off → Done.
+8. Rates the driver.
 
-**Store:**
-1. Driver arrives with the item and QR
-2. Store opens the scan app, scans the QR, verifies the item
-3. Confirms acceptance and marks the refund issued — closing the loop
-4. Or refuses the item, with a reason. The client's eligibility attestation is
-   shown alongside, so a refusal can be checked against what they declared
+**Driver**
+1. Accepts a nearby job.
+2. Navigates to the client, then scans and photographs the package.
+3. Navigates to a drop-off location and hands the package to the carrier.
+4. Records drop-off proof (a photo, plus the receipt or tracking number). The job completes
+   and earnings update.
 
-## Future Features
+## Phase 2 — partner stores
 
-- Batching multiple returns to the same store/mall for one driver
-- Refund-amount tracking as a headline feature ("Refund of $48.20 issued ✓")
-- Scheduled pickups and recurring users
-- Multi-item / multi-store single pickups
-- Retailer self-service onboarding + analytics dashboard
-- Driver identity verification, background checks, insurance
-- In-app support and dispute resolution
-- Email-receipt parsing to auto-suggest returnable items
-- Expansion to additional cities
+The original vision: the driver completes an **in-store** return at a partner retailer, the
+store scans the QR in a small **web portal**, and marks the refund issued.
+
+- Per-retailer eligibility rules.
+- The refund-outcome preview: "card refund, 3–5 days" / "store credit only".
+- A per-location policy database: which stores accept what. This is the long-term moat.
+
+## Future
+
+- Batching returns to the same carrier or mall.
+- Refund-amount tracking ("Refund of $48.20 issued ✓").
+- Scheduled pickups.
+- Multi-package and multi-destination pickups.
+- Retailer self-onboarding and analytics.
+- Driver verification and insurance.
+- In-app support.
+- Email-receipt parsing.
+- More cities.

@@ -1,6 +1,12 @@
 # The Return Eligibility Attestation
 
-**Status:** decided — folded into `vision.md`, `technical.md`, `execution.md`
+**Status:** decided. Folded into `product/vision.md` and `architecture.md`.
+
+> **Update 2026-10-23:** the MVP is now carrier-first ([ADR 0003](../decisions/0003-carrier-first-mvp.md)).
+> The reasoning below (gate before payment, server re-checks, snapshot answers, block/warn/pass)
+> carries over unchanged, but the MVP questions are now carrier concerns: merchant approval,
+> label ready, package sealed, prohibited items, drop-off deadline. See the table in
+> `architecture.md`. The store-policy questions below return with partner stores in phase 2.
 **Date:** 2026-08-06
 **Question:** Boomerang dispatches a driver on the client's word alone. What stops
 us paying for a pickup the store was always going to refuse — and who eats the cost
@@ -127,5 +133,5 @@ blocking rules are stored in the same `EligibilityQuestion` table keyed by `code
 - [ ] Decide whether a blocked attempt should offer anything beyond self-return
       guidance (a discounted "we'll try anyway" tier? probably not at MVP)
 - [ ] Legal review of the attestation wording before partner contracts
-- [ ] Reconcile with `driver-card-access.md` — the refund-outcome preview
-      ("card refund" / "store credit only") belongs on the same screen
+- [ ] Phase 2: the refund-outcome preview ("card refund" / "store credit only") belongs on
+      the same screen as the store-policy questions
