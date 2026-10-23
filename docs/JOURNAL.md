@@ -31,6 +31,14 @@
 - **[Claude]** Reorganized `docs/` (architecture, roadmap, development, decisions, journal)
   and rewrote vision/architecture/roadmap for the carrier-first MVP.
 - **[Claude]** Consolidated Claude Code tooling on Superpowers; removed GSD (ADR 0008).
+- **[Claude]** Repo tooling:
+  - CI on every PR: secret scan, backend lint and tests, plus a single `ci-ok` gate.
+  - A Conventional-Commit PR title check, Dependabot, and PR/issue templates.
+  - A lefthook pre-commit hook (gitleaks + ruff), git-cliff changelog config, and a
+    `/ship` skill.
+  - A Claude Code hook that blocks Claude from merging PRs or pushing to `main`.
+  - The backend moved to uv + Python 3.13, with PyJWT/pwdlib replacing python-jose/passlib.
+  - Local DB is now PostGIS 18.
 
 ## 2026-08-06
 

@@ -1,10 +1,10 @@
 # Local development services for Boomerang.
-# Brings up a PostgreSQL database so the backend has something to connect to.
+# Postgres + PostGIS (geo queries for nearby drivers / drop-off locations).
 # Usage:  docker compose up -d     (start in background)
-#         docker compose down      (stop)
+#         docker compose down      (stop; data persists in the volume)
 services:
   db:
-    image: postgres:16
+    image: postgis/postgis:18-3.6
     container_name: boomerang-db
     restart: unless-stopped
     environment:
@@ -12,11 +12,10 @@ services:
       POSTGRES_PASSWORD: boomerang
       POSTGRES_DB: boomerang
     ports:
-      # host:container — connect from your machine at localhost:5432
       - "5432:5432"
     volumes:
-      # persists the data so it survives `docker compose down`
-      - boomerang_pgdata:/var/lib/postgresql/data
+      # new volume name: Postgres 18 can't read the old postgres:16 data directory
+      - boomerang_pg18:/var/lib/postgresql
 
 volumes:
-  boomerang_pgdata:
+  boomerang_pg18:

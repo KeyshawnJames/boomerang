@@ -1,0 +1,18 @@
+version: 2
+updates:
+  - package-ecosystem: uv
+    directory: /backend
+    schedule:
+      interval: weekly
+    groups:
+      backend:
+        patterns: ["*"]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]
+  # npm/pnpm entry is added in M3 with the first app. Expo SDK packages will be ignored
+  # there and upgraded with `npx expo install --fix` instead.

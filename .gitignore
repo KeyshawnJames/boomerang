@@ -33,3 +33,16 @@ yarn-error.*
 # ---- Local-only (never pushed: repo is public) ----
 docs/private/
 presentation/
+
+# ---- Claude Code: commit only project config + our own skills ----
+.claude/*
+!.claude/settings.json
+!.claude/hooks/
+.claude/hooks/gsd-*
+.claude/hooks/managed-hooks-registry.cjs
+.claude/hooks/package.json
+.claude/hooks/lib/
+!.claude/skills/
+.claude/skills/*
+!.claude/skills/ship/
+skills-lock.json
