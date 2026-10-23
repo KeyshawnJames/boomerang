@@ -29,3 +29,7 @@ yarn-error.*
 
 # ---- Tool artifacts ----
 .playwright-mcp/
+
+# ---- Local-only (never pushed: repo is public) ----
+docs/private/
+presentation/
