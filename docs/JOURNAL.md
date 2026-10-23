@@ -14,6 +14,11 @@
 
 ## 2026-10-23
 
+### The backend boots
+- **[Claude]** First real code: the API starts up and answers a `/health` check, with settings
+  read from `.env` and only the Expo dev origin allowed for browser calls. CI now runs real
+  tests instead of tolerating "no tests yet". (#7)
+
 ### Reset: Claude builds, carrier-first MVP, public repo
 - **[Keyshawn]** Dropped the "I write the backend myself" learning mode: Claude now builds
   everything, we plan together, and Keyshawn merges every PR (ADR 0002).
