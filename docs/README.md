@@ -13,5 +13,5 @@
 | [`learning.md`](learning.md) | Concepts worth knowing (occasional notes) |
 | [`coding-guidelines/`](coding-guidelines/) | Behavioral coding rules for Claude Code |
 
-`CHANGELOG.md` at the repo root is generated from commit history by git-cliff. Don't edit it
-by hand.
+`CHANGELOG.md` at the repo root is generated from commit history by git-cliff when each
+milestone closes (see the `/ship` skill). Don't edit it by hand.
