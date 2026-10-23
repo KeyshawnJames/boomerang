@@ -57,8 +57,7 @@ jobs:
       - run: uv sync --locked
       - run: uv run ruff check .
       - run: uv run ruff format --check .
-      # shortcut: exit code 5 means "no tests collected"; drop the `|| …` once M1 adds tests
-      - run: uv run pytest || [ $? -eq 5 ]
+      - run: uv run pytest
 
   # The only required check on main: passes when every job above passed or was skipped.
   ci-ok:
