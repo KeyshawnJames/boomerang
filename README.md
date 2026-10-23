@@ -1,104 +1,78 @@
 # Boomerang
 
-**On-demand returns, handled for you.** Boomerang is a mobile marketplace — think
-"Uber for retail returns": a client requests a pickup, a driver collects the item and
-completes the return at the retailer, with a QR-based chain of custody and a live
-status timeline keeping every party honest and informed from request to refund.
+**On-demand returns, handled for you.** Boomerang is a mobile marketplace, "Uber for
+returns". A client books a pickup, a driver collects the package and drops it at the
+carrier, and a scan-and-photo chain of custody plus a live status timeline keep everyone
+informed from request to drop-off.
 
-Launch market: **Montreal**. Three-sided marketplace: **clients** · **drivers** ·
-**partner stores**.
+Launch market: **Montreal**. MVP: **label/QR returns** (Amazon-style) dropped at Canada
+Post, UPS or Purolator, with **clients** and **drivers**. Partner-store returns come in
+phase 2.
 
-> **Status:** 🏗️ Early development. Planning is complete (see [`docs/`](docs/)); the
-> backend + apps are being built MVP-first, in the order client → driver → store.
-> Current milestone: repo & dev-environment setup.
+> **Status:** 🏗️ Early development. Planning is done and the stack was re-evaluated in
+> October 2026. Current milestone: see [`docs/roadmap.md`](docs/roadmap.md).
+>
+> Live UI prototype: https://boomerang-prototype.netlify.app
 
 ---
 
 ## How it works
 
-1. A **client** picks a retailer + store, photographs the item and receipt, then answers
-   a short eligibility questionnaire and attests the answers are accurate — items that
-   clearly don't meet the store's return conditions are refused before any money changes
-   hands. If it passes, they see the pickup fee up front, pay, and get a QR return
-   authorization.
-2. A nearby **driver** accepts the job, navigates to the client, scans the QR + takes
-   a custody photo at pickup, then drives to the store.
-3. The **store** scans the QR to accept the return and marks the refund issued.
-4. The client follows a live status timeline (Requested → Picked up → At store →
-   Accepted → Refund issued → Done) with a push notification at each step.
+1. A **client** picks the retailer, adds the return label or QR code, and photographs the
+   package. They answer a short eligibility checklist (merchant approved? label ready?
+   sealed? nothing prohibited?) and attest to it. Packages that can't go are refused before
+   any money changes hands.
+2. They see the full price up front, pay, and a nearby **driver** is matched.
+3. The driver scans the label, photographs the package at pickup, and drops it at a carrier
+   location with photo and receipt proof.
+4. The client follows a live timeline (Requested → Picked up → Dropped off → Done), with a
+   push notification at each step. The retailer refunds the client directly once the
+   carrier scans the package.
 
 ## Tech stack
 
 | Layer | Choice |
 |-------|--------|
-| Backend | FastAPI (Python) + PostgreSQL (SQLModel/SQLAlchemy), Alembic migrations |
-| Mobile | React Native + Expo (three apps), NativeWind v4, Expo Router |
-| State/data | TanStack Query + Zustand |
-| Auth | FastAPI-issued JWT, role-based (client / driver / store) |
-| Payments | Stripe Connect (client fee → platform cut → driver payout) |
-| Real-time | WebSockets (FastAPI) for live driver location + status |
-| Maps / push | Google Maps/Mapbox + Expo Location · Expo Notifications |
-| i18n | expo-localization + i18next (EN/FR from day one) |
-| Tooling | CodeRabbit (PR review) · PostHog (analytics/flags) · EAS (build/ship) |
+| Backend | FastAPI (Python 3.13, uv) + PostgreSQL/PostGIS (SQLModel), Alembic |
+| Mobile | Two Expo apps (client, driver), SDK 58, Expo Router, NativeWind |
+| API contract | Typed client generated from OpenAPI (hey-api + TanStack Query) |
+| Auth | FastAPI JWT (PyJWT, argon2), role-based |
+| Payments | Stripe Connect (Accounts v2) |
+| Real-time | FastAPI WebSockets: live driver location + status |
+| Maps / push | react-native-maps + expo-location · Expo Notifications |
+| i18n | English / French (French first-class, for Quebec) |
+| Hosting | AWS ca-central-1 (Montreal), for Quebec's Law 25 |
+| Tooling | GitHub Actions CI · Claude Code · CodeRabbit · EAS · PostHog (opt-in) |
 
 ## Repository structure
 
 ```
 boomerang/
-├── README.md          # you are here
-├── CLAUDE.md          # project context for AI-assisted sessions (auto-loaded)
-├── docs/              # all planning & reference docs (see below)
-├── backend/           # FastAPI backend (one backend serves all three apps)
+├── backend/        FastAPI backend (serves both apps)
 ├── apps/
-│   ├── client/        # Expo app — built 1st
-│   ├── driver/        # Expo app — built 2nd
-│   └── store/         # Expo app (minimal) — built 3rd
-├── prototype/         # standalone React/JSX UI mockup (not the real Expo apps)
-├── presentation/      # pitch/portfolio deck + build pipeline
-└── docker-compose.yml # local Postgres for development
+│   ├── client/     Expo app for clients
+│   └── driver/     Expo app for drivers
+├── packages/       shared code (generated API client)
+├── docs/           product, architecture, roadmap, decisions (ADRs), journal
+├── prototype/      standalone React UI mockup (the Netlify prototype)
+└── docker-compose.yml   local Postgres + PostGIS
 ```
 
-## Documentation
+Start with [`docs/README.md`](docs/README.md) for the full docs index.
 
-The full plan lives in [`docs/`](docs/):
+## Development
 
-- [`brainstorm.md`](docs/brainstorm.md) — the idea, problem, users, goals
-- [`vision.md`](docs/vision.md) — features, MVP scope, user flows
-- [`technical.md`](docs/technical.md) — stack, architecture, data models, API, git workflow
-- [`execution.md`](docs/execution.md) — milestones + task breakdown (MVP-first)
-- [`setup.md`](docs/setup.md) — how the dev setup is wired, and *why* (beginner-friendly)
-- [`learning.md`](docs/learning.md) — running log of concepts learned along the way
-- [`CHANGELOG.md`](docs/CHANGELOG.md) — what got done, when, by whom
-- [`research/`](docs/research/) — ad hoc write-ups for open questions that come up mid-build
+See [`docs/development.md`](docs/development.md).
 
-## Getting started (development)
+## How we work
 
-> Work in progress — these are the intended steps as the backend comes online.
-
-**Prerequisites:** Docker, Python 3.11+, Node + Expo (for the apps, later).
-
-```bash
-# 1. Start the local Postgres database
-docker compose up -d
-
-# 2. Set up the backend
-cd backend
-python -m venv .venv && source .venv/bin/activate
-pip install -e ".[dev]"
-
-# 3. Configure environment
-cp ../.env.example ../.env   # then fill in real values
-
-# 4. Run the API (once Milestone 2 adds app/main.py)
-uvicorn app.main:app --reload
-```
-
-## Contributing / workflow
-
-Trunk-based: `main` is always deployable. Work happens on short-lived feature
-branches (`feat/...`, `fix/...`), merged via Pull Request with CodeRabbit review. See
-[`technical.md` → Git & GitHub Workflow](docs/technical.md) for the full conventions.
+- Trunk-based: `main` is protected. Every change goes through a PR with CI and AI review,
+  and is squash-merged with a Conventional Commit title.
+- Code is written with [Claude Code](https://claude.com/claude-code). Each decision is
+  recorded in [`docs/decisions/`](docs/decisions/), and each PR adds a line to
+  [`docs/JOURNAL.md`](docs/JOURNAL.md).
 
 ---
 
-_Private project. © Keyshawn James._
+© Keyshawn James. All rights reserved. The source is visible for portfolio purposes; no
+license is granted for reuse.

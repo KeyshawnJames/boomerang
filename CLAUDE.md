@@ -1,122 +1,84 @@
-# Boomerang — Project Context
+# Boomerang
 
-> Auto-loaded context for any Claude Code session started in this folder.
-> This project is being planned with the **project-planner** skill. The full
-> plan lives in the markdown files below — read them to reconstruct state.
+On-demand returns marketplace, Montreal. Carrier-first MVP: a client books a pickup for a
+label/QR return, a driver collects it and drops it at Canada Post, UPS or Purolator, with a
+scan-and-photo chain of custody and a live status timeline. Two Expo apps (client, driver)
+plus one FastAPI backend. A real product and a portfolio piece; the repo is **public**.
 
-## What this is
+- Current milestone and order: `docs/roadmap.md`. Live tasks: GitHub Issues/Milestones.
+- What and why: `docs/product/vision.md`, `docs/architecture.md`, `docs/decisions/` (ADRs).
 
-Boomerang is an on-demand "Uber for returns" mobile app: a client requests a
-return pickup, a driver collects the item and completes the return at the
-retailer, with a QR-based chain of custody and a live status timeline. It's a
-three-sided marketplace (clients, drivers, retailers/stores). Launch market:
-**Montreal**. It is a **real product** (user + a business partner), a **portfolio
-piece**, and the user's **first app build**.
+## How we work (ADR 0002)
 
-## Planning documents (source of truth)
+- **Claude writes all code.** Keyshawn plans with Claude and **merges every PR**. Never
+  merge a PR, push to `main`, or force-push; a hook blocks these.
+- **One issue → one branch (`type/area-desc`) → one PR.** Never commit on `main`.
+- PR titles use Conventional Commits (`feat(backend): …`); CI checks them, and squash-merge
+  turns the title into the commit on `main`.
+- Commits are authored by Keyshawn only. **No `Co-Authored-By` trailer.**
+- Workflow per feature: Superpowers. brainstorm (only if behavior is unclear) →
+  writing-plans → TDD implementation → verification → `/code-review` (`/security-review` for
+  auth/payments) → `/ship`.
+- Use `/ship` to open PRs. It runs the checks, adds the `docs/JOURNAL.md` line, and fills the
+  PR template.
+- Any real decision (scope, stack, architecture, process) gets an ADR in `docs/decisions/`.
+- PR descriptions, journal lines and ADRs are written in plain English, for Keyshawn and his
+  non-technical business partner, whatever output-style plugin is active.
+- Keep `README.md` in sync when the stack, structure or status changes meaningfully.
+- Nothing business-sensitive goes in the repo. Strategy and partner material lives in
+  `docs/private/` (gitignored).
 
-> All planning/doc markdown lives in `docs/` (this `CLAUDE.md` stays at root so it
-> auto-loads). Paths below are relative to the repo root.
+## Commands
 
-- `docs/brainstorm.md` — Phase 1: idea, problem, users, goals
-- `docs/vision.md` — Phase 2: features, MVP scope, user flows
-- `docs/technical.md` — Phase 3: stack, architecture, data models, API, collab modes
-- `docs/execution.md` — Phase 4: milestones + small ordered tasks, MVP-first
-- `docs/learning.md` — running learning log (append continuously, not just at the end)
-- `docs/setup.md` — how the repo/dev setup is wired and *why* (append new setup steps)
-- `docs/CHANGELOG.md` — running story of what got done, by whom, over time (newest on top)
-- `docs/research/` — ad hoc write-ups for open questions that come up mid-build
-  (e.g. `driver-card-access.md`), not part of the phase sequence
-- `README.md` (root) — public-facing project overview (what it is, stack, structure,
-  getting-started); keep in sync when stack/structure/status changes meaningfully
+```bash
+docker compose up -d                       # Postgres + PostGIS
+cd backend && uv sync                      # backend deps (Python 3.13)
+uv run fastapi dev app/main.py             # run API
+uv run pytest                              # tests (real PostGIS via testcontainers)
+uv run ruff check . && uv run ruff format .
+uv run alembic revision --autogenerate -m "…" && uv run alembic upgrade head
+pnpm install                               # JS workspaces (repo root)
+pnpm --filter api generate                 # regenerate typed API client after API changes
+```
 
-## Other project folders
+## Repo map
 
-- `presentation/` — the pitch/portfolio deck (`Boomerang.pptx`) plus its build
-  pipeline; see `presentation/README.md`.
-- `prototype/` — standalone React/JSX interactive UI mockup (not the real Expo
-  apps), deployed at https://boomerang-prototype.netlify.app; see
-  `prototype/README.md`. Source for the UI screenshots used in the deck.
+- `backend/`: FastAPI. `app/{core,models,schemas,api,services,realtime}`, `alembic/`, `tests/`
+- `apps/client`, `apps/driver`: Expo SDK 58 apps (development builds, not Expo Go)
+- `packages/api`: **generated** client. Never hand-edit; regenerate.
+- `docs/`: see `docs/README.md`. `prototype/`: standalone React mockup, not the real app.
 
-## Where we are
+## Domain guardrails
 
-- ✅ Phase 1 (Idea Discovery) — done
-- ✅ Phase 2 (Vision Expansion) — done; name "Boomerang" kept
-- ✅ Phase 3 (Technical Planning) — done; stack, tooling, diagrams all locked
-- ✅ Phase 4 (Execution Planning) — done; `execution.md` has 14 milestones broken
-  into small tasks, MVP-first, as vertical slices (client → driver → store)
-- 🔄 Phase 5 (Learning Log) — ongoing
-- 🔄 Milestone 1 (repo & dev environment) — IN PROGRESS:
-  - ✅ Monorepo skeleton scaffolded (`backend/` + `apps/client|driver|store/`)
-  - ✅ `.gitignore`, `docker-compose.yml`, `.env.example`, `backend/pyproject.toml`
-  - ✅ Skeleton pushed to GitHub; planning docs consolidated into `docs/`
-  - ⬜ **RESUME HERE:** create Python virtualenv + install backend deps
-        (`pip install -e ".[dev]"` from `backend/`) — collab mode for this boilerplate
-        is explain-as-you-go (Claude gives commands, user runs them locally)
-  - ⬜ Set up CodeRabbit on the repo (GitHub web UI)
-  - ⬜ Enable branch protection on `main` (GitHub web UI; after skeleton — done)
-- ⬜ THEN: Milestone 2 — write `app/main.py` (`/health`), backend boots for first time
+- **The server decides eligibility.** The app only previews it. `POST /returns` re-evaluates
+  every answer, writes `BlockedRequestLog` on a block, and snapshots question text on each
+  answer.
+- **All status changes go through the one status-machine service.** Each writes a
+  `ReturnStatusEvent`. Never update `status` directly.
+- **Money:** no cash refunds, ever. Refunds go retailer → client directly and never touch
+  Boomerang. Drivers never handle client cards.
+- **Quebec (ADR 0007):**
+  - French is first-class, and the fallback when the device language isn't EN/FR. Every
+    user-facing string goes in both `en` and `fr` locale files.
+  - Driver location is tracked **only during an active job**, after an explanation.
+  - Analytics are opt-in. Consent is collected per purpose.
+  - Prices shown include all fees. Tips are calculated on the pre-tax amount.
+- **Data residency:** personal data is hosted in AWS ca-central-1 only.
+- **One package per return.** Design so a multi-package `Item` table is a clean migration.
 
-## Stack (locked)
+## Stack notes (ADR 0005)
 
-- **Backend:** FastAPI (Python) + PostgreSQL (SQLModel/SQLAlchemy)
-- **Mobile:** React Native + Expo — three apps, built client → driver → store
-- **Payments:** Stripe Connect (client fee → platform cut → driver payout)
-- **Real-time:** WebSockets via FastAPI · **Maps:** Google Maps/Mapbox + Expo Location
-- **Push:** Expo Notifications · **Auth:** FastAPI JWT + role-based (NOT Clerk)
-- **Styling:** NativeWind v4 · **Nav:** Expo Router · **State:** TanStack Query + Zustand
-- **i18n:** expo-localization + i18next (EN/FR) · **Migrations:** Alembic
-- **Tooling:** CodeRabbit (PR review), PostHog (analytics/flags), EAS (build/ship);
-  Sentry later. No Supabase, no Clerk (we own the backend to learn it).
-- **DB hosting:** local Postgres (Docker) in dev; managed host (Neon/Railway) at deploy.
+- Auth: PyJWT + pwdlib[argon2] (not python-jose or passlib). Sync SQLModel sessions.
+  PostGIS `geography` + `ST_DWithin` for proximity.
+- Stripe Connect **Accounts v2** (not Express). Use test keys only in dev.
+- NativeWind **v4** (v5 is still an RC). Pin `@hey-api/openapi-ts` to an exact version.
+- Before writing code against a library API, check the current docs (context7 or the Expo
+  MCP) rather than memory.
 
-## Collaboration modes (IMPORTANT — honor these when coding)
+## Coding guidelines
 
-- **React Native + Expo:** *Explain-as-you-go* — Claude writes the code, walks
-  through it line-by-line on non-obvious parts (user has no prior RN experience).
-- **FastAPI backend:** *Guided* — user writes the Boomerang-specific code; Claude
-  scaffolds and checks their work.
-- **Database / data modeling:** *Guided* — design the schema together.
-- **Hard infra (real-time, Stripe, maps, push):** *Guided* — user attempts the
-  tricky plumbing with heavy support; expect this to be the slowest part.
-- **Overall style:** Guided — give structure, let the user attempt, step in to
-  help and explain when stuck. User is comfortable with FastAPI/Python; new to
-  mobile/RN.
+Source: [forrestchang/andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills).
 
-## Decisions locked since technical.md draft
+@docs/coding-guidelines/CLAUDE.md
 
-- **One item per return for now**; design schema so adding a multi-item `Item`
-  table later is a clean migration, not a repaint.
-- **i18n from day one** — app must support an English/French toggle; build
-  localization in from the start rather than retrofitting.
-- **Quebec / Canadian rules** — follow Quebec + Canadian return and payment
-  regulations.
-- **Eligibility attestation gate** (partner feedback, 2026-08-06) — before a return
-  can be created, the client answers a questionnaire (condition, tags, packaging,
-  proof of purchase, purchase date, final sale) and attests the answers are accurate.
-  Hard-block on definite disqualifiers, soft-warn + explicit acknowledgment on
-  ambiguous ones. Sits after item capture, **before payment**. MVP uses a generic
-  question set + each store's `return_window_days`; a per-retailer rule engine is a
-  later migration. The server re-evaluates the answers — the client is not a trust
-  boundary. See `docs/research/return-eligibility-attestation.md`.
-
-## Open / next up
-
-- ✅ Tooling decided (see Stack above) and written into `technical.md`.
-- ✅ Repo-structure + system-architecture diagrams added to `technical.md`.
-- ✅ Phase 4 — Execution Planning complete; full task breakdown in `execution.md`
-  (14 milestones, MVP-first, vertical slices).
-- **NEXT: start building — Milestone 1 (repo & dev environment):** monorepo
-  skeleton, `.gitignore`, local Postgres via Docker, backend `pyproject.toml`.
-  Then M2 (backend boots) → M3 (schema, guided) → M4 (JWT auth) → M5 (client app).
-
-## Working agreements
-
-- Git: commit at real milestones with conventional messages; push to `origin`
-  (private repo: https://github.com/KeyshawnJames/boomerang).
-- Keep the planning docs updated in place when revisiting a phase.
-- Add a `CHANGELOG.md` entry (newest on top) when a meaningful chunk of work lands.
-- When new setup/infra is added, append the how-and-why to `setup.md`.
-- Keep the root `README.md` in sync when the stack, repo structure, or project status
-  changes meaningfully (it's the public/portfolio-facing overview).
-- Commits authored by Keyshawn only — no `Co-Authored-By: Claude` trailer.
+Worked examples (read on demand): `docs/coding-guidelines/EXAMPLES.md`

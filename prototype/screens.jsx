@@ -39,7 +39,7 @@ const WINDOWS = [
 // Eligibility questionnaire — the safeguard before we dispatch
 // a driver. Every answer carries an outcome: pass | warn | block.
 // `{window}` in a prompt is replaced with the store's return window.
-// Mirrors the v1 question set in docs/technical.md.
+// Original partner-store question set (phase 2); the carrier-first MVP set is in docs/architecture.md.
 // ─────────────────────────────────────────────────────────────
 const ELIGIBILITY_QUESTIONS = [
 { code: 'purchase_window', prompt: 'When did you buy it?', help: 'This store accepts returns within {window}.',

@@ -1,15 +1,36 @@
-# Changelog
+# Journal
 
-> A running log of how Boomerang evolves over time — what got done, by whom, and why.
-> Newest entries at the top. Both the user (Keyshawn) and Claude add entries here so
-> there's a shared, human-readable record beyond raw git history.
+> The human story of Boomerang: what got done, by whom, and why. Newest on top.
+> One short entry per merged PR (Claude adds it via `/ship`), plus anything worth
+> remembering that isn't a PR. Tag who did it: **[Claude]** or **[Keyshawn]**.
 >
-> **Convention:** each dated section groups the work done that day. Tag who did it —
-> **[Claude]** or **[Keyshawn]** — and keep the *why* short. Phases refer to the
-> project-planner workflow (see `CLAUDE.md`). This complements git: git has every
-> tiny commit; this file has the story.
+> This complements, not duplicates: the commit history has every change,
+> `CHANGELOG.md` (generated) lists them, and `docs/decisions/` has the reasoning behind
+> real decisions.
+>
+> Before 2026-10-23 this file was `docs/CHANGELOG.md`.
 
 ---
+
+## 2026-10-23
+
+### Reset: Claude builds, carrier-first MVP, public repo
+- **[Keyshawn]** Dropped the "I write the backend myself" learning mode: Claude now builds
+  everything, we plan together, and Keyshawn merges every PR (ADR 0002).
+- **[Keyshawn]** Narrowed the MVP to label/QR returns dropped at carriers (Canada Post, UPS,
+  Purolator). Two apps (client + driver), no store app and no retailer sign-ups needed to
+  launch. Partner stores move to phase 2 (ADRs 0003, 0004).
+- **[Claude]** Re-evaluated the stack against October 2026 releases: PyJWT + pwdlib instead
+  of the unmaintained python-jose/passlib, uv + Python 3.13, PostGIS, Expo SDK 58, pnpm
+  workspaces, a generated typed API client, Stripe Accounts v2, hosting in Montreal for
+  Quebec's Law 25 (ADRs 0005, 0007).
+- **[Claude]** Rewrote git history before making the repo public: business strategy docs
+  removed (now local-only in `docs/private/`) and commit emails switched to GitHub's
+  noreply address. gitleaks scan clean. Repo made public for free branch protection and
+  secret scanning (ADR 0006).
+- **[Claude]** Reorganized `docs/` (architecture, roadmap, development, decisions, journal)
+  and rewrote vision/architecture/roadmap for the carrier-first MVP.
+- **[Claude]** Consolidated Claude Code tooling on Superpowers; removed GSD (ADR 0008).
 
 ## 2026-08-06
 
