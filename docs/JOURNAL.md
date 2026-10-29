@@ -21,6 +21,9 @@
 - **[Claude]** Added tables for the eligibility checklist, the answers each client gave, blocked
   attempts, payments and ratings. Answers keep a copy of the question's wording, so editing a
   question later never changes what a client agreed to. (#11)
+- **[Claude]** One command now fills the database with starter data: four Montreal retailers,
+  seven real Canada Post, UPS and Purolator drop-off spots downtown (from OpenStreetMap), and
+  the five eligibility questions in English and French. Running it twice adds nothing new. (#12)
 
 ### The backend talks to the database
 - **[Claude]** The API now connects to the database, and `/health` says whether the database is
