@@ -14,6 +14,7 @@
 
 ## 2026-10-29
 
+- **[Claude]** Added sign-up, log-in and "who am I" to the backend, plus checks that keep drivers' and clients' screens to the right people. Passwords are stored scrambled, and error messages come in French and English (#13)
 ### The core data model
 - **[Claude]** The database now has tables for users, drivers, retailers, carrier drop-off
   spots, returns and each return's status history, with map coordinates so we can find what's
