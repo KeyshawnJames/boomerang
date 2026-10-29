@@ -179,7 +179,7 @@ def upgrade() -> None:
         ),
         sa.ForeignKeyConstraint(
             ["driver_id"],
-            ["users.id"],
+            ["driver_profiles.user_id"],
         ),
         sa.ForeignKeyConstraint(
             ["dropoff_location_id"],

@@ -35,7 +35,9 @@ class ReturnRequest(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     client_id: uuid.UUID = Field(foreign_key="users.id", index=True)
     retailer_id: uuid.UUID = Field(foreign_key="retailers.id")
-    driver_id: uuid.UUID | None = Field(default=None, foreign_key="users.id", index=True)
+    driver_id: uuid.UUID | None = Field(
+        default=None, foreign_key="driver_profiles.user_id", index=True
+    )
     dropoff_location_id: uuid.UUID | None = Field(default=None, foreign_key="dropoff_locations.id")
 
     # Only the status-machine service changes this, and it writes a ReturnStatusEvent each time.

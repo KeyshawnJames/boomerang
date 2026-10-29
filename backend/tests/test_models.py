@@ -75,6 +75,7 @@ def test_new_return_is_requested_and_keeps_its_pickup_point(session: Session):
         "pickup_address",
         "pickup_location",
         "pickup_window_start",
+        "pickup_window_end",
         "label_type",
         "label_image_url",
         "carrier",
