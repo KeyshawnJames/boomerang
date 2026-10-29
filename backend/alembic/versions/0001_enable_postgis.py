@@ -24,4 +24,6 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     """Downgrade schema."""
-    op.execute("DROP EXTENSION IF EXISTS postgis")
+    # No-op: PostGIS belongs to the database (preinstalled in Docker, enabled in Supabase),
+    # and other extensions depend on it.
+    pass
