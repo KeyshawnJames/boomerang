@@ -37,6 +37,7 @@ uv run fastapi dev app/main.py             # run API
 uv run pytest                              # tests (real PostGIS via testcontainers)
 uv run ruff check . && uv run ruff format .
 uv run alembic revision --autogenerate -m "…" && uv run alembic upgrade head
+uv run python -m app.seed                  # Montreal seed data (safe to re-run)
 pnpm install                               # JS workspaces (repo root)
 pnpm --filter api generate                 # regenerate typed API client after API changes
 ```
