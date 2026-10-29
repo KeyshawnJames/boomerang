@@ -10,7 +10,7 @@
 | Backend | FastAPI, Python 3.13, managed with **uv** |
 | Database | PostgreSQL + **PostGIS**, via SQLModel (sync sessions), Alembic migrations. Hosted on **Supabase** (ca-central-1), used as plain Postgres ([ADR 0009](decisions/0009-supabase-for-the-database.md)) |
 | Auth | FastAPI-issued JWT (**PyJWT**), **pwdlib[argon2]** password hashing, role-based (client / driver / admin) |
-| Mobile | Two Expo apps (`client`, `driver`), **SDK 58** / React Native 0.88, development builds |
+| Mobile | Two Expo apps (`client`, `driver`), **SDK 58** / React Native 0.88, Expo Go for now, development builds later ([ADR 0010](decisions/0010-expo-go-for-now.md)) |
 | Monorepo | pnpm workspaces. Shared generated API client in `packages/api` |
 | API contract | `@hey-api/openapi-ts` (exact pinned version) generates a typed client + TanStack Query hooks from FastAPI's OpenAPI schema |
 | App libraries | Expo Router, NativeWind v4, TanStack Query, Zustand, expo-localization + i18next (EN/FR, French fallback) |

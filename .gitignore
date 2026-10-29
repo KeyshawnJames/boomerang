@@ -18,6 +18,12 @@ node_modules/
 .expo/
 dist/
 web-build/
+expo-env.d.ts
+.metro-health-check*
+*.tsbuildinfo
+# Generated native folders (Continuous Native Generation)
+apps/*/ios/
+apps/*/android/
 *.log
 npm-debug.*
 yarn-error.*

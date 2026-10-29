@@ -1,0 +1,8 @@
+packages:
+  - apps/*
+  - packages/*
+
+# Both ship prebuilt binaries; their install scripts are only a fallback.
+allowBuilds:
+  "@parcel/watcher": false
+  unrs-resolver: false

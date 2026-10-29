@@ -14,5 +14,27 @@ updates:
     groups:
       actions:
         patterns: ["*"]
-  # npm/pnpm entry is added in M3 with the first app. Expo SDK packages will be ignored
-  # there and upgraded with `npx expo install --fix` instead.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      js:
+        patterns: ["*"]
+    # The Expo SDK pins these; upgrade them with `npx expo install --fix` instead.
+    ignore:
+      - dependency-name: "expo"
+      - dependency-name: "expo-*"
+      - dependency-name: "@expo/*"
+      - dependency-name: "jest-expo"
+      - dependency-name: "eslint-config-expo"
+      - dependency-name: "react"
+      - dependency-name: "react-dom"
+      - dependency-name: "@types/react"
+      - dependency-name: "react-native"
+      - dependency-name: "react-native-*"
+      - dependency-name: "typescript"
+      - dependency-name: "jest"
+      # eslint-plugin-react (via eslint-config-expo) doesn't support ESLint 10 yet.
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]

@@ -45,7 +45,7 @@ pnpm --filter api generate                 # regenerate typed API client after A
 ## Repo map
 
 - `backend/`: FastAPI. `app/{core,models,schemas,api,services,realtime}`, `alembic/`, `tests/`
-- `apps/client`, `apps/driver`: Expo SDK 58 apps (development builds, not Expo Go)
+- `apps/client`, `apps/driver`: Expo SDK 58 apps, run in Expo Go for now (ADR 0010). See `apps/CLAUDE.md`
 - `packages/api`: **generated** client. Never hand-edit; regenerate.
 - `docs/`: see `docs/README.md`. `prototype/`: standalone React mockup, not the real app.
 
