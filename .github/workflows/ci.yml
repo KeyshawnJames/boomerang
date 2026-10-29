@@ -58,6 +58,9 @@ jobs:
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run pytest
+        env:
+          # Test-only value; CI has no .env.
+          JWT_SECRET: ci-test-secret-not-used-anywhere-real
 
   # The only required check on main: passes when every job above passed or was skipped.
   ci-ok:
