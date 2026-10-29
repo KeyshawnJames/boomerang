@@ -12,6 +12,14 @@
 
 ---
 
+## 2026-10-29
+
+### The backend talks to the database
+- **[Claude]** The API now connects to the database, and `/health` says whether the database is
+  reachable. Every test runs against a real throwaway copy of our database, built from the
+  same migration scripts we'll use in production. The local database moved to port 5433 so it
+  doesn't clash with a Postgres already installed on the laptop. (#8, #9)
+
 ## 2026-10-23
 
 ### The backend boots
