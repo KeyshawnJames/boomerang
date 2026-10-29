@@ -18,6 +18,9 @@
 - **[Claude]** The database now has tables for users, drivers, retailers, carrier drop-off
   spots, returns and each return's status history, with map coordinates so we can find what's
   nearby. Each test now starts from an empty database. (#10)
+- **[Claude]** Added tables for the eligibility checklist, the answers each client gave, blocked
+  attempts, payments and ratings. Answers keep a copy of the question's wording, so editing a
+  question later never changes what a client agreed to. (#11)
 
 ### The backend talks to the database
 - **[Claude]** The API now connects to the database, and `/health` says whether the database is
