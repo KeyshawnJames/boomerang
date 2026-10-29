@@ -9,7 +9,8 @@
 
 ## Current status
 
-**M0 — Reset**: in progress (2026-10-23).
+**M1 — Backend foundation** and **M2 — Schema + auth**: done (2026-10-29), tagged `m1` and
+`m2`. **M3 — Client app bootstrap** is next. M0 still has open chores (#3 to #6).
 
 ## Milestones
 

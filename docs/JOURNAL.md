@@ -14,6 +14,12 @@
 
 ## 2026-10-29
 
+### Milestones 1 and 2 are done
+- **[Claude]** The backend now has its foundation (database, migrations, real-database tests)
+  and its data and accounts layer (every table the MVP needs, Montreal starter data, sign-up,
+  log-in and role checks). Both milestones are tagged, and the changelog lists what each
+  contains. Next up: the client app. (M1, M2)
+
 ### People can sign up and log in
 - **[Claude]** Clients and drivers can now create an account, log in and stay logged in for a
   day. Each part of the API can be limited to drivers, clients or admins. Passwords are stored
