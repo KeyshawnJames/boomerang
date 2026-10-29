@@ -32,6 +32,8 @@ select = ["E", "F", "I", "UP", "B"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["app"]
+# The alembic/ migrations folder would otherwise make ruff treat the alembic package as ours.
+known-third-party = ["alembic"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
