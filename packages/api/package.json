@@ -1,0 +1,19 @@
+{
+  "name": "api",
+  "version": "0.1.0",
+  "private": true,
+  "exports": {
+    ".": "./src/client/index.ts",
+    "./client": "./src/client/client.gen.ts",
+    "./react-query": "./src/client/@tanstack/react-query.gen.ts"
+  },
+  "scripts": {
+    "generate": "uv run --directory ../../backend python -c \"import json; from app.main import app; spec = json.dumps(app.openapi(), indent=2); open('../packages/api/openapi.json', 'w').write(spec + '\\n')\" && openapi-ts"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.105.0"
+  },
+  "devDependencies": {
+    "@hey-api/openapi-ts": "0.99.0"
+  }
+}

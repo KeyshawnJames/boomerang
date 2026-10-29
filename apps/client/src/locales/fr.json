@@ -1,7 +1,9 @@
 {
   "home": {
     "title": "Boomerang",
-    "tagline": "Vos retours, cueillis à domicile."
+    "tagline": "Vos retours, cueillis à domicile.",
+    "apiOk": "Serveur connecté",
+    "apiDown": "Serveur injoignable"
   },
   "language": {
     "switch": "English",

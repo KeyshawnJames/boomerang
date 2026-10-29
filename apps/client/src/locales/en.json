@@ -1,7 +1,9 @@
 {
   "home": {
     "title": "Boomerang",
-    "tagline": "Returns, picked up."
+    "tagline": "Returns, picked up.",
+    "apiOk": "Server connected",
+    "apiDown": "Server unreachable"
   },
   "language": {
     "switch": "Français",
