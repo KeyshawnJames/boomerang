@@ -14,6 +14,11 @@
 
 ## 2026-10-29
 
+### The client app exists
+- **[Claude]** The client app now exists as a bare starting point: it opens on a phone through
+  the free Expo Go app, with no app-store build needed yet. Every change to it is now checked
+  automatically for type errors, code style and broken tests. (#14)
+
 ### Milestones 1 and 2 are done
 - **[Claude]** The backend now has its foundation (database, migrations, real-database tests)
   and its data and accounts layer (every table the MVP needs, Montreal starter data, sign-up,

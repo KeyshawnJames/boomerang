@@ -38,7 +38,8 @@ pnpm --filter client start    # Expo dev server for the client app
 pnpm --filter api generate    # regenerate the typed API client from the backend's OpenAPI
 ```
 
-The apps use **development builds**, not Expo Go.
+The apps run in **Expo Go** for now ([ADR 0010](decisions/0010-expo-go-for-now.md)): install Expo
+Go on your phone, run `pnpm --filter client start`, and scan the QR code.
 
 ## Why things are set up this way
 

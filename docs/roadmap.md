@@ -19,7 +19,7 @@
 | M0 | **Reset**: scope, stack, tooling, GitHub setup | Repo public with a ruleset on `main`, CI green, docs reflect carrier-first, M1–M3 issues exist |
 | M1 | **Backend foundation**: uv, FastAPI `/health`, config, DB session, PostGIS in Docker, Alembic, pytest + testcontainers | `uv run pytest` passes locally and in CI against real PostGIS |
 | M2 | **Schema + auth**: all MVP models, first migration, seed (Montreal retailers + drop-off locations + EN/FR eligibility questions), JWT register/login, role guards | Register → login → call a role-protected route, covered by tests |
-| M3 | **Client app bootstrap**: SDK 58 dev build, Expo Router, NativeWind, i18n (FR fallback, missing-key CI check), generated API client, login/register | A client registers and logs in from the app on a device |
+| M3 | **Client app bootstrap**: SDK 58 in Expo Go, Expo Router, NativeWind, i18n (FR fallback, missing-key CI check), generated API client, login/register | A client registers and logs in from the app on a device |
 | M4 | **Create a return**: retailer pick, label/QR upload (presigned), package photo, eligibility gate, pickup address + window, all-in price, status machine | A client creates a return. A blocked answer is refused by the API even when the app is bypassed |
 | M5 | **Payments**: Stripe PaymentSheet (fee + tip), webhook, `Payment` rows | A test-card payment books the return, and the webhook updates its status |
 | M6 | **Driver app**: job feed (PostGIS), accept, pickup scan + photo, drop-off proof | Full chain: create → pay → accept → pickup → drop-off → completed |

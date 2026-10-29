@@ -20,6 +20,7 @@ jobs:
       pull-requests: read
     outputs:
       backend: ${{ steps.filter.outputs.backend }}
+      apps: ${{ steps.filter.outputs.apps }}
     steps:
       - uses: actions/checkout@v7
       - uses: dorny/paths-filter@v4
@@ -30,7 +31,13 @@ jobs:
               - 'backend/**'
               - 'docker-compose.yml'
               - '.github/workflows/ci.yml'
-      # App job (pnpm, tsc, eslint, jest, FR-key check) is added in M3 with the first app.
+            apps:
+              - 'apps/**'
+              - 'packages/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - '.github/workflows/ci.yml'
 
   gitleaks:
     runs-on: ubuntu-latest
@@ -62,10 +69,27 @@ jobs:
           # Test-only value; CI has no .env.
           JWT_SECRET: ci-test-secret-not-used-anywhere-real
 
+  apps:
+    needs: changes
+    if: needs.changes.outputs.apps == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6.1.0
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec prettier --check apps
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm test
+
   # The only required check on main: passes when every job above passed or was skipped.
   ci-ok:
     if: always()
-    needs: [changes, gitleaks, backend]
+    needs: [changes, gitleaks, backend, apps]
     runs-on: ubuntu-latest
     steps:
       - run: '[ "${{ contains(needs.*.result, ''failure'') || contains(needs.*.result, ''cancelled'') }}" = "false" ]'

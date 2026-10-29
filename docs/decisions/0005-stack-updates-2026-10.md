@@ -1,6 +1,6 @@
 # 0005. Stack updates after the October 2026 review
 
-- **Status:** accepted. Photos (S3) superseded by [0009](0009-supabase-for-the-database.md)
+- **Status:** accepted. Photos (S3) superseded by [0009](0009-supabase-for-the-database.md), development builds by [0010](0010-expo-go-for-now.md)
 - **Date:** 2026-10-23
 
 ## Context

@@ -34,7 +34,7 @@ phase 2.
 | Layer | Choice |
 |-------|--------|
 | Backend | FastAPI (Python 3.13, uv) + PostgreSQL/PostGIS (SQLModel), Alembic |
-| Mobile | Two Expo apps (client, driver), SDK 58, Expo Router, NativeWind |
+| Mobile | Two Expo apps (client, driver), SDK 58 in Expo Go for now, Expo Router, NativeWind |
 | API contract | Typed client generated from OpenAPI (hey-api + TanStack Query) |
 | Auth | FastAPI JWT (PyJWT, argon2), role-based |
 | Payments | Stripe Connect (Accounts v2) |
