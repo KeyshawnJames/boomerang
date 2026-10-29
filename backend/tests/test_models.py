@@ -1,16 +1,19 @@
 from datetime import UTC, datetime, timedelta
 
 import pytest
-from sqlalchemy import func, text
+from sqlalchemy import Enum, func, text
 from sqlalchemy.exc import IntegrityError
-from sqlmodel import Session, select
+from sqlmodel import Session, SQLModel, select
 
 from app.models import (
+    AnswerOutcome,
     Carrier,
     EligibilityOutcome,
+    EligibilityQuestion,
     LabelType,
     Locale,
     Retailer,
+    ReturnEligibilityAnswer,
     ReturnRequest,
     ReturnStatus,
     User,
@@ -89,8 +92,47 @@ def test_return_requires_field(session: Session, field: str):
         make_return(session, **{field: None})
 
 
-def test_database_status_enum_matches_model(session: Session):
+def test_database_enums_match_models(session: Session):
     # Autogenerate never notices a value added to an enum, so check the database directly.
-    labels = session.scalars(text("SELECT unnest(enum_range(NULL::returnstatus))")).all()
+    model_enums = {
+        column.type.name: column.type.enums
+        for table in SQLModel.metadata.tables.values()
+        for column in table.columns
+        if isinstance(column.type, Enum)
+    }
 
-    assert labels == [status.value for status in ReturnStatus]
+    db_enums = {
+        name: session.scalars(text(f"SELECT unnest(enum_range(NULL::{name}))")).all()
+        for name in model_enums
+    }
+
+    assert "returnstatus" in model_enums
+    assert db_enums == model_enums
+
+
+def test_answer_snapshot_survives_question_edit(session: Session):
+    question = EligibilityQuestion(
+        code="label_ready",
+        prompt_en="Do you have the return label or QR code?",
+        prompt_fr="Avez-vous l'étiquette de retour ou le code QR?",
+        options=[{"value": "yes", "label_en": "Yes", "label_fr": "Oui", "outcome": "pass"}],
+    )
+    session.add(question)
+    answer = ReturnEligibilityAnswer(
+        return_id=make_return(session).id,
+        question_code=question.code,
+        prompt_snapshot=question.prompt_en,
+        answer_value="yes",
+        answer_label_snapshot="Yes",
+        outcome=AnswerOutcome.pass_,
+    )
+    session.add(answer)
+    session.flush()
+
+    question.prompt_en = "Is your return label ready?"
+    question.options = []
+    session.flush()
+    session.expire_all()
+
+    assert answer.prompt_snapshot == "Do you have the return label or QR code?"
+    assert answer.answer_label_snapshot == "Yes"
