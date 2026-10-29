@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 from enum import StrEnum
 
-from sqlalchemy import Enum, String
+from sqlalchemy import Enum, String, UniqueConstraint
 from sqlalchemy.dialects.postgresql import ARRAY, JSONB
 from sqlmodel import Field, SQLModel
 
@@ -33,6 +33,7 @@ class EligibilityQuestion(SQLModel, table=True):
 
 class ReturnEligibilityAnswer(SQLModel, table=True):
     __tablename__ = "return_eligibility_answers"
+    __table_args__ = (UniqueConstraint("return_id", "question_code"),)
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     return_id: uuid.UUID = Field(foreign_key="return_requests.id", index=True)

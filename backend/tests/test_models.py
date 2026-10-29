@@ -1,10 +1,9 @@
 from datetime import UTC, datetime, timedelta
-from enum import StrEnum
 
 import pytest
-from sqlalchemy import func, text
+from sqlalchemy import Enum, func, text
 from sqlalchemy.exc import IntegrityError
-from sqlmodel import Session, select
+from sqlmodel import Session, SQLModel, select
 
 from app.models import (
     AnswerOutcome,
@@ -93,14 +92,22 @@ def test_return_requires_field(session: Session, field: str):
         make_return(session, **{field: None})
 
 
-@pytest.mark.parametrize(
-    ("db_type", "enum"), [("returnstatus", ReturnStatus), ("answeroutcome", AnswerOutcome)]
-)
-def test_database_enum_matches_model(session: Session, db_type: str, enum: type[StrEnum]):
+def test_database_enums_match_models(session: Session):
     # Autogenerate never notices a value added to an enum, so check the database directly.
-    labels = session.scalars(text(f"SELECT unnest(enum_range(NULL::{db_type}))")).all()
+    model_enums = {
+        column.type.name: column.type.enums
+        for table in SQLModel.metadata.tables.values()
+        for column in table.columns
+        if isinstance(column.type, Enum)
+    }
 
-    assert labels == [member.value for member in enum]
+    db_enums = {
+        name: session.scalars(text(f"SELECT unnest(enum_range(NULL::{name}))")).all()
+        for name in model_enums
+    }
+
+    assert "returnstatus" in model_enums
+    assert db_enums == model_enums
 
 
 def test_answer_snapshot_survives_question_edit(session: Session):

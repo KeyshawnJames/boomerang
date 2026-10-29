@@ -125,6 +125,7 @@ def upgrade() -> None:
             ["return_requests.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("return_id", "question_code"),
     )
     op.create_index(
         op.f("ix_return_eligibility_answers_return_id"),
