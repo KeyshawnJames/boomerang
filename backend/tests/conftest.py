@@ -42,16 +42,17 @@ def engine(database_url: str, alembic_config: Config) -> Iterator[Engine]:
 
 @pytest.fixture
 def session(engine: Engine) -> Iterator[Session]:
-    with Session(engine) as session:
-        yield session
+    # Each test runs inside one outer transaction that is rolled back, so no test sees
+    # another's rows. Commits in the code under test only release a savepoint.
+    with engine.connect() as conn:
+        outer = conn.begin()
+        with Session(bind=conn, join_transaction_mode="create_savepoint") as session:
+            yield session
+        outer.rollback()
 
 
 @pytest.fixture
-def client(engine: Engine) -> Iterator[TestClient]:
-    def override_get_session() -> Iterator[Session]:
-        with Session(engine) as session:
-            yield session
-
-    app.dependency_overrides[get_session] = override_get_session
+def client(session: Session) -> Iterator[TestClient]:
+    app.dependency_overrides[get_session] = lambda: session
     yield TestClient(app)
     app.dependency_overrides.clear()
