@@ -35,6 +35,7 @@ updates:
       - dependency-name: "react-native-*"
       - dependency-name: "typescript"
       - dependency-name: "jest"
+      - dependency-name: "@types/jest"
       # eslint-plugin-react (via eslint-config-expo) doesn't support ESLint 10 yet.
       - dependency-name: "eslint"
         update-types: ["version-update:semver-major"]
