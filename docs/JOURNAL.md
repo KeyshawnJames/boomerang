@@ -20,6 +20,11 @@
   same migration scripts we'll use in production. The local database moved to port 5433 so it
   doesn't clash with a Postgres already installed on the laptop. (#8, #9)
 
+### Where the data lives
+- **[Claude]** Picked Supabase's Montreal region to host the database and photos, free until
+  launch. We use it only as plain storage: login and all the logic stay in our own backend,
+  so we can move to AWS later without rewriting anything. (#27)
+
 ## 2026-10-23
 
 ### The backend boots

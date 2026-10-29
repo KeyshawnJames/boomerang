@@ -1,6 +1,6 @@
 # 0007. Quebec data residency and compliance rules in code
 
-- **Status:** accepted (needs a lawyer's review before launch)
+- **Status:** accepted (needs a lawyer's review before launch). Database host candidates settled by [0009](0009-supabase-for-the-database.md)
 - **Date:** 2026-10-23
 
 ## Context
