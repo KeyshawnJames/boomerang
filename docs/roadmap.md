@@ -25,7 +25,7 @@
 | M7 | **Timeline + push**: timeline UI, Expo push on every transition | Each status change reaches the client's phone as a push |
 | M8 | **Live tracking**: WebSocket hub, driver location during an active job only | The client watches the driver move on the map |
 | M9 | **Closing the loop**: ratings, history, earnings, driver payouts (Accounts v2) | The driver is paid out for a completed job in Stripe test mode |
-| M10 | **Hardening + launch prep**: Law 25 / Bill 96 pass, ca-central-1 deploy, EAS internal builds, Maestro end-to-end tests, Sentry | Internal builds of both apps run against the hosted backend |
+| M10 | **Hardening + launch prep**: Law 25 / Bill 96 pass, Montreal deploy (Supabase project, API host ADR, paid plan before real data), EAS internal builds, Maestro end-to-end tests, Sentry | Internal builds of both apps run against the hosted backend |
 
 **Phase 2**: partner stores. Counter returns, the store web portal, per-retailer
 eligibility rules, the refund-outcome preview.

@@ -41,7 +41,7 @@ phase 2.
 | Real-time | FastAPI WebSockets: live driver location + status |
 | Maps / push | react-native-maps + expo-location · Expo Notifications |
 | i18n | English / French (French first-class, for Quebec) |
-| Hosting | AWS ca-central-1 (Montreal), for Quebec's Law 25 |
+| Hosting | Montreal only, for Quebec's Law 25: Supabase (database + photos) in ca-central-1 |
 | Tooling | GitHub Actions CI · Claude Code · CodeRabbit · EAS · PostHog (opt-in) |
 
 ## Repository structure
