@@ -16,6 +16,8 @@
   },
   "dependencies": {
     "@expo-google-fonts/manrope": "^0.4.3",
+    "@tanstack/react-query": "^5.105.0",
+    "api": "workspace:*",
     "expo": "~58.0.21",
     "expo-constants": "~58.0.14",
     "expo-font": "~58.0.11",

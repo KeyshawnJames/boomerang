@@ -21,4 +21,4 @@ by hand.
 - Every user-facing error message the API returns has an EN and a FR version (based on the
   user's `locale`).
 - After changing any route or schema, regenerate the app client: `pnpm --filter api generate`
-  from the repo root, once `packages/api` exists.
+  from the repo root, and commit `packages/api` (including `openapi.json`).

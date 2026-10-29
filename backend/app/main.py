@@ -11,7 +11,8 @@ from app.api import auth
 from app.core.config import settings
 from app.core.db import get_session
 
-app = FastAPI(title="Boomerang API")
+# Operation IDs are the route function names, so the generated app client gets short names.
+app = FastAPI(title="Boomerang API", generate_unique_id_function=lambda route: route.name)
 
 app.add_middleware(
     CORSMiddleware,

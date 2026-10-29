@@ -38,6 +38,9 @@ pnpm --filter client start    # Expo dev server for the client app
 pnpm --filter api generate    # regenerate the typed API client from the backend's OpenAPI
 ```
 
+On a phone, the app calls the API on port 8000 of the Mac that runs Metro, so start the API
+with `uv run fastapi dev app/main.py --host 0.0.0.0` to make it reachable on the local network.
+
 The apps run in **Expo Go** for now ([ADR 0010](decisions/0010-expo-go-for-now.md)): install Expo
 Go on your phone, run `pnpm --filter client start`, and scan the QR code. On iOS, Expo Go only
 opens the app if the same Expo account is signed in on both the phone (in Expo Go) and the Mac

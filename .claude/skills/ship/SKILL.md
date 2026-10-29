@@ -22,7 +22,7 @@ Never merge, push to `main`, or force-push. A hook blocks these, and Keyshawn me
      exists in `docs/decisions/`.
    - Did the stack, structure or status change meaningfully? Then `README.md` is updated.
    - Did an API route or schema change? Then the generated client in `packages/api` is
-     regenerated (once it exists).
+     regenerated.
 4. **Journal.** Add one line to `docs/JOURNAL.md` under today's `## YYYY-MM-DD` heading at the
    top. Create the heading if it's missing.
    - Format: `- **[Claude]** <what changed and why, in plain English> (#<issue>)`
