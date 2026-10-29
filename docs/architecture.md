@@ -8,7 +8,7 @@
 | Layer | Choice |
 |---|---|
 | Backend | FastAPI, Python 3.13, managed with **uv** |
-| Database | PostgreSQL + **PostGIS**, via SQLModel (sync sessions), Alembic migrations |
+| Database | PostgreSQL + **PostGIS**, via SQLModel (sync sessions), Alembic migrations. Hosted on **Supabase** (ca-central-1), used as plain Postgres ([ADR 0009](decisions/0009-supabase-for-the-database.md)) |
 | Auth | FastAPI-issued JWT (**PyJWT**), **pwdlib[argon2]** password hashing, role-based (client / driver / admin) |
 | Mobile | Two Expo apps (`client`, `driver`), **SDK 58** / React Native 0.88, development builds |
 | Monorepo | pnpm workspaces. Shared generated API client in `packages/api` |
@@ -18,10 +18,10 @@
 | Real-time | FastAPI WebSockets on a single instance. Redis pub/sub only once there's a second instance |
 | Background work | FastAPI `BackgroundTasks`. Stripe retries webhooks itself |
 | Payments | Stripe Connect **Accounts v2** (recipient configuration), separate charges and transfers. RN PaymentSheet |
-| Photos | S3 in ca-central-1 via presigned PUT uploads. A local folder in dev |
+| Photos | **Supabase Storage** in ca-central-1 via signed upload URLs. A local folder in dev |
 | Push | Expo Notifications |
 | Analytics | PostHog, **opt-in only**. Sentry later |
-| Hosting | **AWS ca-central-1 (Montreal)** for the DB, API and storage ([ADR 0007](decisions/0007-quebec-residency-and-compliance.md)) |
+| Hosting | **Montreal only** ([ADR 0007](decisions/0007-quebec-residency-and-compliance.md)). Database and photos on Supabase ca-central-1 (AWS Montreal). API host chosen at M10 |
 | Build / ship | EAS Build + EAS Workflows |
 | Testing | pytest + testcontainers (real PostGIS). Jest + RNTL for logic. Maestro end-to-end later |
 
@@ -46,7 +46,7 @@
         ┌─────────┘         │       └──────────┐
         ▼                   ▼                  ▼
  ┌──────────────┐  ┌────────────────┐  ┌──────────────────┐
- │ Postgres +   │  │ Stripe Connect │  │ S3 (photos) ·    │
+ │ Postgres +   │  │ Stripe Connect │  │ Photo storage ·  │
  │ PostGIS      │  │ (fees/payouts) │  │ Expo Push · Maps │
  └──────────────┘  └────────────────┘  └──────────────────┘
          all personal data hosted in ca-central-1 (Montreal)
@@ -199,4 +199,5 @@ pre-tax tip suggestions. Full list in
 - Google Play: $25 one-time.
 - Stripe: 2.9% + 30¢ per charge, plus Connect payout fees.
 - EAS: the free tier has a monthly build limit.
-- Hosting: about $25–50/mo at launch (AWS ca-central-1 or Supabase Pro).
+- Hosting: **free until launch** (Supabase free plan, local Docker for dev and tests). About
+  $25–50/mo at launch (Supabase Pro plus the API host).

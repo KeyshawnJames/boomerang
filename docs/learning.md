@@ -71,15 +71,17 @@ remembering.
   Boomerang because the whole point here is to *learn* how a backend works by building
   the FastAPI one ourselves — a BaaS would hide exactly the parts we want to
   understand. Lesson worth keeping: a BaaS is a *time-saver*, not a *learning* tool.
+  Update (2026-10-29): we now *host* on Supabase, but only as a plain database and photo
+  store. Login and all the logic still live in our FastAPI backend (ADR 0009).
 
 - **Where a database "lives" (and "hosting"):** Your app code (the FastAPI backend)
   and your database (PostgreSQL) are two *separate* programs that talk to each other —
   the code asks, the database stores and answers. While building on your own computer,
   you run the database locally (via Docker). But when the app goes live for real users
   it needs to run on a computer that's always on, backed up, and reachable from the
-  internet — that's what a **managed host** provides (services like Neon or Railway run
-  Postgres for you so uptime and backups aren't your manual chore). We don't have to
-  pick that host yet; it's a decision we can safely defer until we're ready to deploy.
+  internet — that's what a **managed host** provides (services like Supabase or AWS RDS run
+  Postgres for you so uptime and backups aren't your manual chore). We picked Supabase,
+  in its Montreal region, on the free plan until launch (ADR 0009).
 
 - **JWT auth (and what "auth" means):** "Auth" covers two things — *authentication*
   (proving who you are, i.e. logging in) and *authorization* (what you're allowed to
