@@ -39,3 +39,8 @@ updates:
       # eslint-plugin-react (via eslint-config-expo) doesn't support ESLint 10 yet.
       - dependency-name: "eslint"
         update-types: ["version-update:semver-major"]
+      # NativeWind v4 (ADR 0005) needs Tailwind 3. Its css-interop is covered by react-native-*.
+      - dependency-name: "nativewind"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "tailwindcss"
+        update-types: ["version-update:semver-major"]

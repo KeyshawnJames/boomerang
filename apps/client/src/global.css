@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Colors that change between light and dark mode, as "R G B" so Tailwind can add opacity.
+   Light values come from the prototype (prototype/index.html). */
+@layer base {
+  :root {
+    --color-bg: 244 246 245; /* #F4F6F5 */
+    --color-surface: 255 255 255;
+    --color-ink: 11 31 24; /* #0B1F18 */
+    --color-muted: 92 107 100; /* #5C6B64 */
+    --color-line: 11 31 24;
+    --color-primary: 11 61 46; /* forest #0B3D2E */
+    --color-on-primary: 255 255 255;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-bg: 11 31 24; /* ink */
+      --color-surface: 15 74 56; /* forest-2 #0F4A38 */
+      --color-ink: 241 251 246; /* mint-tint #F1FBF6 */
+      --color-muted: 157 176 167;
+      --color-line: 241 251 246;
+      --color-primary: 52 211 153; /* mint #34D399 */
+      --color-on-primary: 11 31 24;
+    }
+  }
+}

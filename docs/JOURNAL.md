@@ -14,6 +14,11 @@
 
 ## 2026-10-29
 
+### The client app has its look
+- **[Claude]** The client app now uses Boomerang's colors and font (forest green, emerald and
+  mint, with the Manrope typeface) from the prototype. It follows the phone's light or dark
+  setting automatically. (#15)
+
 ### The client app exists
 - **[Claude]** The client app now exists as a bare starting point: it opens on a phone through
   the free Expo Go app, with no app-store build needed yet. Every change to it is now checked
