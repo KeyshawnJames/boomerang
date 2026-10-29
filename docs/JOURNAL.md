@@ -14,6 +14,12 @@
 
 ## 2026-10-29
 
+### The app can talk to the server
+- **[Claude]** The client app now talks to the server through code that is generated
+  automatically from the server's own description of itself, so the two can't quietly drift
+  apart: a test fails if someone changes the server and forgets to regenerate. The home screen
+  shows whether the server is reachable. (#17)
+
 ### The client app speaks French and English
 - **[Claude]** The client app now shows every word in English or Quebec French. It follows the
   phone's language, uses French for any language other than English (as Quebec law expects),
