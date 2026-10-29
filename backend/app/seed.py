@@ -1,6 +1,7 @@
 """Montreal seed data: retailers, carrier drop-off locations and the v1 eligibility questions.
 
-Run with `uv run python -m app.seed`. Safe to re-run: rows already there are left alone.
+Run with `uv run python -m app.seed`. Safe to re-run: rows already there are left alone, so
+an edit here does not reach a database that was already seeded.
 Drop-off locations come from OpenStreetMap (© OpenStreetMap contributors, ODbL).
 """
 
@@ -12,7 +13,7 @@ from sqlmodel import Session
 from app.core.db import engine
 from app.models import AnswerOutcome, Carrier, DropOffLocation, EligibilityQuestion, Retailer
 
-# IDs derive from each row's name, so a re-run hits ON CONFLICT DO NOTHING.
+# IDs derive from a stable key (never the display name), so a re-run hits ON CONFLICT DO NOTHING.
 NAMESPACE = uuid.UUID("4981d1ed-b1f8-491e-a148-d31ec9dc99c9")
 
 
@@ -21,20 +22,26 @@ def seed_id(key: str) -> uuid.UUID:
 
 
 RETAILERS = [
-    {"id": seed_id(f"retailer:{name}"), "name": name}
-    for name in ["Simons", "SSENSE", "Aldo", "Frank And Oak"]
+    {"id": seed_id(f"retailer:{key}"), "name": name}
+    for key, name in [
+        ("simons", "Simons"),
+        ("ssense", "SSENSE"),
+        ("aldo", "Aldo"),
+        ("frank-and-oak", "Frank And Oak"),
+    ]
 ]
 
 DROPOFF_LOCATIONS = [
     {
-        "id": seed_id(f"dropoff:{name}"),
+        "id": seed_id(f"dropoff:osm-node-{osm_node}"),
         "carrier": carrier,
         "name": name,
         "address": address,
         "location": f"SRID=4326;POINT({lon} {lat})",
     }
-    for carrier, name, address, lon, lat in [
+    for osm_node, carrier, name, address, lon, lat in [
         (
+            2518068089,
             Carrier.canada_post,
             "Postes Canada – Sainte-Catherine Ouest",
             "1974 Rue Sainte-Catherine Ouest, Montréal, QC H3H 1N4",
@@ -42,6 +49,7 @@ DROPOFF_LOCATIONS = [
             45.49186,
         ),
         (
+            5362633016,
             Carrier.canada_post,
             "Postes Canada – Belmont",
             "895 Rue Belmont, Montréal, QC H3B 4G1",
@@ -49,6 +57,7 @@ DROPOFF_LOCATIONS = [
             45.50064,
         ),
         (
+            5570232487,
             Carrier.canada_post,
             "Postes Canada – Griffintown",
             "1000 Rue Wellington, Montréal, QC",
@@ -56,6 +65,7 @@ DROPOFF_LOCATIONS = [
             45.49404,
         ),
         (
+            11999925850,
             Carrier.ups,
             "The UPS Store – Saint-Denis",
             "3450 Rue Saint-Denis, Montréal, QC",
@@ -63,6 +73,7 @@ DROPOFF_LOCATIONS = [
             45.51720,
         ),
         (
+            11948896433,
             Carrier.ups,
             "The UPS Store – Westmount",
             "4150 Rue Sainte-Catherine Ouest, Westmount, QC H3Z 1P4",
@@ -70,6 +81,7 @@ DROPOFF_LOCATIONS = [
             45.48670,
         ),
         (
+            12194842855,
             Carrier.purolator,
             "Purolator – Robert-Bourassa",
             "Boulevard Robert-Bourassa, Montréal, QC H3B 3B4",
@@ -77,6 +89,7 @@ DROPOFF_LOCATIONS = [
             45.50293,
         ),
         (
+            10098553358,
             Carrier.purolator,
             "Purolator – René-Lévesque",
             "Boulevard René-Lévesque Ouest, Montréal, QC H3B 4N4",
@@ -156,7 +169,9 @@ def seed(session: Session) -> None:
         (DropOffLocation, DROPOFF_LOCATIONS),
         (EligibilityQuestion, QUESTIONS),
     ]:
-        session.exec(insert(model).values(rows).on_conflict_do_nothing())
+        statement = insert(model).values(rows).on_conflict_do_nothing(index_elements=["id"])
+        inserted = session.exec(statement.returning(model.id)).all()
+        print(f"{model.__tablename__}: {len(inserted)} new")
 
 
 if __name__ == "__main__":

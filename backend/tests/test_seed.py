@@ -26,10 +26,16 @@ def test_nearby_query_finds_seeded_dropoffs(session: Session):
     seed(session)
     downtown = func.ST_GeogFromText("SRID=4326;POINT(-73.5673 45.5017)")
 
-    carriers = session.exec(
-        select(DropOffLocation.carrier).where(
+    nearby = session.exec(
+        select(DropOffLocation).where(
             func.ST_DWithin(DropOffLocation.location, downtown, 2000)  # metres
         )
     ).all()
 
-    assert set(carriers) == {Carrier.canada_post, Carrier.ups, Carrier.purolator}
+    assert {location.carrier for location in nearby} == {
+        Carrier.canada_post,
+        Carrier.ups,
+        Carrier.purolator,
+    }
+    # About 2.3 km away, so it must be left out.
+    assert "The UPS Store – Westmount" not in {location.name for location in nearby}
