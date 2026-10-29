@@ -7,6 +7,7 @@ from sqlalchemy import text
 from sqlalchemy.exc import OperationalError
 from sqlmodel import Session
 
+from app.api import auth
 from app.core.config import settings
 from app.core.db import get_session
 
@@ -19,6 +20,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(auth.router)
 
 
 @app.get("/health")
