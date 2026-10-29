@@ -20,7 +20,8 @@ export default function RootLayout() {
     Manrope_700Bold,
     Manrope_800ExtraBold,
   });
-  // On a font error, carry on with the system font rather than a stuck splash screen.
+  // On a font error, show the app anyway (iOS/Android substitute the system font) rather
+  // than leave the splash screen up forever.
   const ready = loaded || !!error;
 
   useEffect(() => {
