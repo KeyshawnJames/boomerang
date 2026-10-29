@@ -1,4 +1,5 @@
 from datetime import UTC, datetime, timedelta
+from enum import StrEnum
 
 import pytest
 from sqlalchemy import func, text
@@ -6,11 +7,14 @@ from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, select
 
 from app.models import (
+    AnswerOutcome,
     Carrier,
     EligibilityOutcome,
+    EligibilityQuestion,
     LabelType,
     Locale,
     Retailer,
+    ReturnEligibilityAnswer,
     ReturnRequest,
     ReturnStatus,
     User,
@@ -89,8 +93,39 @@ def test_return_requires_field(session: Session, field: str):
         make_return(session, **{field: None})
 
 
-def test_database_status_enum_matches_model(session: Session):
+@pytest.mark.parametrize(
+    ("db_type", "enum"), [("returnstatus", ReturnStatus), ("answeroutcome", AnswerOutcome)]
+)
+def test_database_enum_matches_model(session: Session, db_type: str, enum: type[StrEnum]):
     # Autogenerate never notices a value added to an enum, so check the database directly.
-    labels = session.scalars(text("SELECT unnest(enum_range(NULL::returnstatus))")).all()
+    labels = session.scalars(text(f"SELECT unnest(enum_range(NULL::{db_type}))")).all()
 
-    assert labels == [status.value for status in ReturnStatus]
+    assert labels == [member.value for member in enum]
+
+
+def test_answer_snapshot_survives_question_edit(session: Session):
+    question = EligibilityQuestion(
+        code="label_ready",
+        prompt_en="Do you have the return label or QR code?",
+        prompt_fr="Avez-vous l'étiquette de retour ou le code QR?",
+        options=[{"value": "yes", "label_en": "Yes", "label_fr": "Oui", "outcome": "pass"}],
+    )
+    session.add(question)
+    answer = ReturnEligibilityAnswer(
+        return_id=make_return(session).id,
+        question_code=question.code,
+        prompt_snapshot=question.prompt_en,
+        answer_value="yes",
+        answer_label_snapshot="Yes",
+        outcome=AnswerOutcome.pass_,
+    )
+    session.add(answer)
+    session.flush()
+
+    question.prompt_en = "Is your return label ready?"
+    question.options = []
+    session.flush()
+    session.expire_all()
+
+    assert answer.prompt_snapshot == "Do you have the return label or QR code?"
+    assert answer.answer_label_snapshot == "Yes"
