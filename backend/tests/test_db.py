@@ -1,3 +1,4 @@
+from alembic import command
 from alembic.autogenerate import compare_metadata
 from alembic.config import Config
 from alembic.runtime.migration import MigrationContext
@@ -20,6 +21,12 @@ def test_migrations_reach_head(engine: Engine, alembic_config: Config):
 
     with engine.connect() as conn:
         assert MigrationContext.configure(conn).get_current_revision() == head
+
+
+def test_migrations_downgrade_and_reapply(engine: Engine, alembic_config: Config):
+    # Ends back at head, so later tests still get the full schema.
+    command.downgrade(alembic_config, "base")
+    command.upgrade(alembic_config, "head")
 
 
 def test_models_match_migrations(engine: Engine):

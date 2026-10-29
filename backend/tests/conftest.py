@@ -5,7 +5,7 @@ import pytest
 from alembic import command
 from alembic.config import Config
 from fastapi.testclient import TestClient
-from sqlalchemy import Engine
+from sqlalchemy import Connection, Engine
 from sqlmodel import Session, create_engine
 from testcontainers.community.postgres import PostgresContainer
 
@@ -41,15 +41,27 @@ def engine(database_url: str, alembic_config: Config) -> Iterator[Engine]:
 
 
 @pytest.fixture
-def session(engine: Engine) -> Iterator[Session]:
-    with Session(engine) as session:
+def connection(engine: Engine) -> Iterator[Connection]:
+    # Each test runs inside one outer transaction that is rolled back, so no test sees
+    # another's rows. Commits in the code under test only release a savepoint.
+    with engine.connect() as conn:
+        outer = conn.begin()
+        yield conn
+        outer.rollback()
+
+
+@pytest.fixture
+def session(connection: Connection) -> Iterator[Session]:
+    with Session(bind=connection, join_transaction_mode="create_savepoint") as session:
         yield session
 
 
 @pytest.fixture
-def client(engine: Engine) -> Iterator[TestClient]:
+def client(connection: Connection) -> Iterator[TestClient]:
+    # A fresh session per request, like production, so an endpoint that forgets to commit
+    # loses its writes here too.
     def override_get_session() -> Iterator[Session]:
-        with Session(engine) as session:
+        with Session(bind=connection, join_transaction_mode="create_savepoint") as session:
             yield session
 
     app.dependency_overrides[get_session] = override_get_session

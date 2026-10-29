@@ -14,6 +14,11 @@
 
 ## 2026-10-29
 
+### The core data model
+- **[Claude]** The database now has tables for users, drivers, retailers, carrier drop-off
+  spots, returns and each return's status history, with map coordinates so we can find what's
+  nearby. Each test now starts from an empty database. (#10)
+
 ### The backend talks to the database
 - **[Claude]** The API now connects to the database, and `/health` says whether the database is
   reachable. Every test runs against a real throwaway copy of our database, built from the
