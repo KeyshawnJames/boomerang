@@ -1,4 +1,5 @@
 import "../global.css";
+import "../i18n";
 
 import {
   Manrope_400Regular,

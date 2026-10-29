@@ -16,5 +16,6 @@ Run JS commands from the repo root with pnpm (`pnpm --filter client …`). Never
 - Styling: NativeWind v4 `className` with the theme tokens in `tailwind.config.js`. Use
   `bg-bg`, `text-ink`, `text-muted`, `bg-primary`… so light and dark mode follow the system
   (values in `src/global.css`). Font weight is the family: `font-sans-bold`, not `font-bold`.
-- Every user-facing string goes in both the `en` and `fr` locale files.
+- Every user-facing string goes in both `src/locales/en.json` and `fr.json` (Quebec French), read
+  with `useTranslation()`. A Jest test fails if their keys differ.
 - `packages/api` is generated. Never hand-edit it; regenerate with `pnpm --filter api generate`.

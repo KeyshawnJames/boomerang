@@ -32,7 +32,8 @@
             "image": "./assets/images/splash-icon.png"
           }
         }
-      ]
+      ],
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true,

@@ -1,0 +1,10 @@
+{
+  "home": {
+    "title": "Boomerang",
+    "tagline": "Returns, picked up."
+  },
+  "language": {
+    "switch": "Français",
+    "switchLabel": "Français, switch to French"
+  }
+}
