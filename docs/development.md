@@ -39,7 +39,9 @@ pnpm --filter api generate    # regenerate the typed API client from the backend
 ```
 
 The apps run in **Expo Go** for now ([ADR 0010](decisions/0010-expo-go-for-now.md)): install Expo
-Go on your phone, run `pnpm --filter client start`, and scan the QR code.
+Go on your phone, run `pnpm --filter client start`, and scan the QR code. On iOS, Expo Go only
+opens the app if the same Expo account is signed in on both the phone (in Expo Go) and the Mac
+(`npx expo login` once).
 
 ## Why things are set up this way
 

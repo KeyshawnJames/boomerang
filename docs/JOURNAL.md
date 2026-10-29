@@ -14,6 +14,12 @@
 
 ## 2026-10-29
 
+### The client app speaks French and English
+- **[Claude]** The client app now shows every word in English or Quebec French. It follows the
+  phone's language, uses French for any language other than English (as Quebec law expects),
+  and has a button to switch. The automatic checks fail if a French translation is missing.
+  (#16)
+
 ### The client app has its look
 - **[Claude]** The client app now uses Boomerang's colors and font (forest green, emerald and
   mint, with the Manrope typeface) from the prototype. It follows the phone's light or dark
