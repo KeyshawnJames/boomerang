@@ -1,5 +1,32 @@
+import "../global.css";
+
+import {
+  Manrope_400Regular,
+  Manrope_600SemiBold,
+  Manrope_700Bold,
+  Manrope_800ExtraBold,
+  useFonts,
+} from "@expo-google-fonts/manrope";
 import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+import { useEffect } from "react";
+
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  return <Stack />;
+  const [loaded, error] = useFonts({
+    Manrope_400Regular,
+    Manrope_600SemiBold,
+    Manrope_700Bold,
+    Manrope_800ExtraBold,
+  });
+  // On a font error, carry on with the system font rather than a stuck splash screen.
+  const ready = loaded || !!error;
+
+  useEffect(() => {
+    if (ready) SplashScreen.hideAsync();
+  }, [ready]);
+
+  if (!ready) return null;
+  return <Stack screenOptions={{ headerShown: false }} />;
 }
