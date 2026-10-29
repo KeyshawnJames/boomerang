@@ -14,6 +14,12 @@
 
 ## 2026-10-29
 
+### The backend talks to the database
+- **[Claude]** The API now connects to the database, and `/health` says whether the database is
+  reachable. Every test runs against a real throwaway copy of our database, built from the
+  same migration scripts we'll use in production. The local database moved to port 5433 so it
+  doesn't clash with a Postgres already installed on the laptop. (#8, #9)
+
 ### Where the data lives
 - **[Claude]** Picked Supabase's Montreal region to host the database and photos, free until
   launch. We use it only as plain storage: login and all the logic stay in our own backend,

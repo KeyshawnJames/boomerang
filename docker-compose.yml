@@ -5,6 +5,8 @@
 services:
   db:
     image: postgis/postgis:18-3.6
+    # The official image is Intel-only; Apple Silicon runs it under emulation.
+    platform: linux/amd64
     container_name: boomerang-db
     restart: unless-stopped
     environment:
@@ -12,7 +14,7 @@ services:
       POSTGRES_PASSWORD: boomerang
       POSTGRES_DB: boomerang
     ports:
-      - "5432:5432"
+      - "5433:5432"  # 5433 on the host so it never clashes with a locally installed Postgres
     volumes:
       # new volume name: Postgres 18 can't read the old postgres:16 data directory
       - boomerang_pg18:/var/lib/postgresql

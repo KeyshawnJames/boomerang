@@ -5,8 +5,8 @@ block() { echo "Blocked by .claude/hooks/guard-git.sh: $1. Keyshawn merges; main
 
 # Check each command segment on its own, so text elsewhere (e.g. a PR body) can't trigger it.
 while IFS= read -r seg; do
-  grep -qE '^[[:space:]]*gh[[:space:]]+pr[[:space:]]+merge' <<<"$seg" && block "gh pr merge"
-  grep -qE '^[[:space:]]*gh[[:space:]]+api.*/merge' <<<"$seg" && block "merge via gh api"
+  # Any gh merge: `gh pr [flags] merge`, REST `/merge`, GraphQL mergePullRequest or auto-merge.
+  grep -qiE '^[[:space:]]*gh[[:space:]]+pr([[:space:]]+-[^[:space:]]+([[:space:]]+[^-[:space:]][^[:space:]]*)?)*[[:space:]]+merge([[:space:]]|$)|^[[:space:]]*gh[[:space:]].*(mergepullrequest|automerge|/merge)' <<<"$seg" && block "merge"
   grep -qE '^[[:space:]]*git([[:space:]]+-C[[:space:]]+[^[:space:]]+)?[[:space:]]+push' <<<"$seg" || continue
   grep -qE '[[:space:]](--force|--force-with-lease|-f)([[:space:]=]|$)|[[:space:]]\+[^[:space:]]' <<<"$seg" && block "force push"
   grep -qE '[[:space:]:]main([[:space:]]|$)' <<<"$seg" && block "push to main"

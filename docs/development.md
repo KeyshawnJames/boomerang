@@ -14,7 +14,7 @@ then, some of these commands have nothing to run yet.
 ## Database
 
 ```bash
-docker compose up -d          # start Postgres + PostGIS on localhost:5432
+docker compose up -d          # start Postgres + PostGIS on localhost:5433
 docker compose down           # stop it (data persists in a Docker volume)
 ```
 

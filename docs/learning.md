@@ -181,10 +181,11 @@ remembering.
   settings once in `docker-compose.yml` and then start everything with one short
   command. Our file defines a single service, `db` (Postgres 16), and the two
   non-obvious lines are:
-    - `ports: "5432:5432"` — a container is sealed by default; this pokes one hole so
+    - `ports: "5433:5432"` — a container is sealed by default; this pokes one hole so
       the backend can reach the database. Format is `your-machine-port:container-port`,
-      which is why `.env` connects at `localhost:5432` (the left number = the door on
-      your side).
+      which is why `.env` connects at `localhost:5433` (the left number = the door on
+      your side). We use 5433, not Postgres's usual 5432, so it doesn't clash with a
+      Postgres already installed on the laptop.
     - `volumes:` — a container's data normally vanishes when the container is deleted.
       A *volume* is storage kept *outside* the container, so the data (users, returns…)
       survives `docker compose down` and restarts.
