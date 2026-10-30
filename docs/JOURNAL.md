@@ -14,6 +14,12 @@
 
 ## 2026-10-29
 
+### Pickup addresses are looked up and checked by the server
+- **[Claude]** When a client types their pickup address, the server now asks Google for
+  suggestions and, once they pick one, checks it's a real street address within 15 km of
+  downtown Montreal. It then hands the app a signed note of that address, so nobody can
+  fake a location when booking. The Google key stays on the server. (#44)
+
 ### The app can show pickup times, price and questions before booking
 - **[Claude]** Before booking, the app can now ask the server for the list of stores, the
   eligibility questions in the client's language, and the pickup times and price on offer:
