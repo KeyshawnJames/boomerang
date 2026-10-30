@@ -1,4 +1,5 @@
 import { getLocales } from "expo-localization";
+import * as SecureStore from "expo-secure-store";
 import { createInstance } from "i18next";
 import { initReactI18next } from "react-i18next";
 
@@ -10,10 +11,15 @@ export function pickLanguage(deviceLanguage: string | null): "en" | "fr" {
   return deviceLanguage === "en" ? "en" : "fr";
 }
 
+// The language the user picked with the toggle, kept on the device.
+export const LANGUAGE_KEY = "language";
+
 const i18n = createInstance();
 i18n.use(initReactI18next).init({
   resources: { en: { translation: en }, fr: { translation: fr } },
-  lng: pickLanguage(getLocales()[0].languageCode),
+  lng:
+    SecureStore.getItem(LANGUAGE_KEY) ??
+    pickLanguage(getLocales()[0].languageCode),
   fallbackLng: "fr",
   interpolation: { escapeValue: false }, // React already escapes text
 });

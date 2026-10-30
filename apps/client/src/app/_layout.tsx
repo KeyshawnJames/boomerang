@@ -14,10 +14,12 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 
 import { queryClient } from "../api";
+import { useSession } from "../session";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const signedIn = useSession((s) => s.token !== null);
   const [loaded, error] = useFonts({
     Manrope_400Regular,
     Manrope_600SemiBold,
@@ -35,7 +37,15 @@ export default function RootLayout() {
   if (!ready) return null;
   return (
     <QueryClientProvider client={queryClient}>
-      <Stack screenOptions={{ headerShown: false }} />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Protected guard={signedIn}>
+          <Stack.Screen name="index" />
+        </Stack.Protected>
+        <Stack.Protected guard={!signedIn}>
+          <Stack.Screen name="login" />
+          <Stack.Screen name="register" />
+        </Stack.Protected>
+      </Stack>
     </QueryClientProvider>
   );
 }
