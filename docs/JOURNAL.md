@@ -14,6 +14,12 @@
 
 ## 2026-10-29
 
+### Returns wait for payment, and status changes follow the rules
+- **[Claude]** A return's progress (waiting for payment, requested, picked up, dropped off…)
+  can now only change through one gatekeeper. It refuses impossible jumps, such as going from
+  "completed" back to "requested", and it records every change in the return's history. New
+  returns start as "waiting for payment", so drivers never see a pickup nobody has paid for. (#41)
+
 ### Milestone 3 is done
 - **[Claude]** The client app is now a real app: it looks like Boomerang, speaks French and
   English, talks to the server through generated code, and lets a client sign up and stay

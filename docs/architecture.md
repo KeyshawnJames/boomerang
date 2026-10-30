@@ -58,15 +58,19 @@ relays it over WebSocket to the client watching that return.
 ## Status machine
 
 ```
-requested → driver_assigned → picked_up → dropped_off → completed
-    │              │               │
-    └──────────────┴→ cancelled    └→ failed_dropoff
+awaiting_payment → requested → driver_assigned → picked_up → dropped_off → completed
+        │              │              │               │
+        └──────────────┴──────────────┴→ cancelled    └→ failed_dropoff
 ```
 
+- **`awaiting_payment`**: the return exists but isn't paid. Drivers don't see it until the
+  Stripe webhook moves it to `requested` ([ADR 0011](decisions/0011-awaiting-payment-status.md)).
 - **`failed_dropoff`**: the carrier won't take the package (e.g. a damaged label). It's
   terminal for the MVP, and the client is contacted outside the app.
 - **Every transition writes a `ReturnStatusEvent`.** That table is both the timeline and the
-  audit trail. All transitions go through one service function that validates them.
+  audit trail. All transitions go through one service function that validates them
+  (`app/services/status.py`), with the return's row locked so concurrent requests can't both
+  win.
 
 ## Data models
 
