@@ -30,7 +30,7 @@ def register(body: RegisterRequest, session: SessionDep) -> User:
         name=body.name,
         # The unique constraint on users.email is case-sensitive, so store one form.
         email=body.email.lower(),
-        phone=body.phone and e164(body.phone, body.locale),
+        phone=None if body.phone is None else e164(body.phone, body.locale),
         password_hash=hash_password(body.password),
         locale=body.locale,
     )

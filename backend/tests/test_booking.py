@@ -2,17 +2,14 @@ from datetime import datetime, timedelta
 
 import pytest
 from fastapi.testclient import TestClient
+from pydantic import ValidationError
 from sqlmodel import Session
 
+from app.core.config import Settings
 from app.models import EligibilityQuestion, Retailer
 from app.seed import seed
 from app.services.booking import MONTREAL, pickup_slots
-from tests.test_auth import bearer, login, register
-
-
-def token(client: TestClient, email: str, role: str = "client", locale: str = "fr") -> str:
-    assert register(client, email, role, locale=locale).status_code == 201
-    return login(client, email).json()["access_token"]
+from tests.test_auth import bearer, token_for
 
 
 def mtl(day: int, hour: int, minute: int = 0, month: int = 11) -> datetime:
@@ -55,7 +52,7 @@ def test_horizon_is_24_real_hours_across_a_clock_change():
 
 
 def test_booking_options_has_fee_and_slots(client: TestClient):
-    response = client.get("/booking/options", headers=bearer(token(client, "bo@example.com")))
+    response = client.get("/booking/options", headers=bearer(token_for(client, "bo@example.com")))
 
     assert response.status_code == 200
     assert response.json()["pickup_fee"] == 499
@@ -71,7 +68,7 @@ def test_retailers_sorted_by_name(client: TestClient, session: Session):
     session.add_all([Retailer(name="Simons"), Retailer(name="Aldo")])
     session.flush()
 
-    response = client.get("/retailers", headers=bearer(token(client, "re@example.com")))
+    response = client.get("/retailers", headers=bearer(token_for(client, "re@example.com")))
 
     assert response.status_code == 200
     assert [r["name"] for r in response.json()] == ["Aldo", "Simons"]
@@ -96,7 +93,7 @@ def test_eligibility_questions_in_user_language(
     session.flush()
 
     response = client.get(
-        "/eligibility/questions", headers=bearer(token(client, "eq@example.com", locale=locale))
+        "/eligibility/questions", headers=bearer(token_for(client, "eq@example.com", locale=locale))
     )
 
     assert response.status_code == 200
@@ -114,5 +111,11 @@ def test_eligibility_questions_in_user_language(
 def test_booking_reference_needs_a_signed_in_client(client: TestClient, path: str):
     assert client.get(path).status_code == 401
 
-    driver = token(client, "dr@example.com", role="driver")
+    driver = token_for(client, "dr@example.com", role="driver")
     assert client.get(path, headers=bearer(driver)).status_code == 403
+
+
+@pytest.mark.parametrize("open_hour, close_hour", [(9, 24), (21, 9), (-1, 21)])
+def test_service_hours_must_be_a_daytime_range(open_hour: int, close_hour: int):
+    with pytest.raises(ValidationError):
+        Settings(service_open_hour=open_hour, service_close_hour=close_hour)

@@ -1,6 +1,7 @@
 from pathlib import Path
+from typing import Self
 
-from pydantic import Field, SecretStr
+from pydantic import Field, SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # The single .env lives at the repo root (shared with docker-compose).
@@ -20,8 +21,14 @@ class Settings(BaseSettings):
     # The business still has to set the real fee.
     pickup_fee: int = 499
     # Hours in America/Montreal; every pickup window falls inside them.
-    service_open_hour: int = 9
-    service_close_hour: int = 21
+    service_open_hour: int = Field(default=9, ge=0, le=23)
+    service_close_hour: int = Field(default=21, ge=0, le=23)
+
+    @model_validator(mode="after")
+    def open_before_close(self) -> Self:
+        if self.service_open_hour >= self.service_close_hour:
+            raise ValueError("service_open_hour must be before service_close_hour")
+        return self
 
 
 settings = Settings()

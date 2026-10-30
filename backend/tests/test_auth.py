@@ -31,8 +31,8 @@ def bearer(token: str) -> dict[str, str]:
     return {"Authorization": f"Bearer {token}"}
 
 
-def token_for(client: TestClient, email: str, role: str = "client") -> str:
-    assert register(client, email, role).status_code == 201
+def token_for(client: TestClient, email: str, role: str = "client", **extra) -> str:
+    assert register(client, email, role, **extra).status_code == 201
     return login(client, email).json()["access_token"]
 
 
@@ -214,3 +214,7 @@ def test_update_me_rejects_missing_token(client: TestClient):
 def test_register_stores_phone_as_e164(client: TestClient):
     response = register(client, "lu@example.com", phone="514 555 0123")
     assert response.json()["phone"] == "+15145550123"
+
+
+def test_register_rejects_empty_phone(client: TestClient):
+    assert register(client, "mo@example.com", phone="").status_code == 422
