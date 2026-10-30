@@ -26,7 +26,9 @@ class FakeGoogle:
     def __init__(self) -> None:
         self.requests: list[httpx.Request] = []
         self.location = PLACE_VILLE_MARIE
+        self.types = ["premise", "street_address"]
         self.status = 200
+        self.details: dict | None = None  # replaces the whole Place Details reply
 
     def __call__(self, request: httpx.Request) -> httpx.Response:
         self.requests.append(request)
@@ -43,7 +45,9 @@ class FakeGoogle:
             }
         else:
             body = {"formattedAddress": "1 Place Ville-Marie, Montréal, QC H3B 2B6, Canada"}
-            body["location"] = self.location
+            body |= {"location": self.location, "types": self.types}
+            if self.details is not None:
+                body = self.details
         return httpx.Response(self.status, json=body)
 
 
@@ -76,6 +80,7 @@ def test_autocomplete_returns_suggestions(client: TestClient, google: FakeGoogle
     assert body["input"] == "1 place ville"
     assert body["sessionToken"] == SESSION
     assert body["includedRegionCodes"] == ["ca"]
+    assert body["includedPrimaryTypes"] == ["street_address", "premise", "subpremise"]
     assert body["languageCode"] == "en"
     assert "circle" in body["locationBias"]
 
@@ -92,7 +97,7 @@ def test_resolve_returns_address_and_token(client: TestClient, google: FakeGoogl
     assert sent.url.path == "/v1/places/pvm"
     # Same session token as the suggestions, and Essentials fields only, so it's billed as one.
     assert sent.url.params["sessionToken"] == SESSION
-    assert sent.headers["x-goog-fieldmask"] == "formattedAddress,location"
+    assert sent.headers["x-goog-fieldmask"] == "formattedAddress,location,types"
 
     user_id = uuid.UUID(client.get("/me", headers=bearer(token)).json()["id"])
     pickup = decode_address_token(response.json()["token"], user_id)
@@ -126,6 +131,34 @@ def test_resolve_refuses_address_outside_montreal(
 
     assert response.status_code == 422
     assert response.json()["detail"] == message
+
+
+def test_resolve_refuses_a_place_that_is_not_a_street_address(
+    client: TestClient, google: FakeGoogle
+):
+    # The app only offers street addresses, but anyone can send a city's place ID.
+    google.types = ["locality", "political"]
+
+    response = client.get(
+        "/addresses/resolve",
+        params={"place_id": "montreal", "session": SESSION},
+        headers=bearer(client_token(client, locale="en")),
+    )
+
+    assert response.status_code == 422
+    assert response.json()["detail"] == "Choose a full street address, with the house number."
+
+
+def test_unexpected_google_reply_is_a_502(client: TestClient, google: FakeGoogle):
+    google.details = {"formattedAddress": "somewhere"}
+
+    response = client.get(
+        "/addresses/resolve",
+        params={"place_id": "pvm", "session": SESSION},
+        headers=bearer(client_token(client, locale="en")),
+    )
+
+    assert response.status_code == 502
 
 
 def test_google_failure_is_a_bilingual_502(client: TestClient, google: FakeGoogle):

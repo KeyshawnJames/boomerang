@@ -10,10 +10,16 @@ from app.schemas.address import AddressSuggestion
 
 # Downtown Montreal, the centre of the service area (ADR 0013).
 MONTREAL_LATITUDE, MONTREAL_LONGITUDE = 45.5017, -73.5673
+# Places with a door a driver can knock on; no cities, streets or neighbourhoods.
+ADDRESS_TYPES = ["street_address", "premise", "subpremise"]
 
 
 class PlacesUnavailable(Exception):
-    """Google didn't answer, or answered with an error."""
+    """Google didn't answer, or answered with an error or an unexpected reply."""
+
+
+class NotAStreetAddress(Exception):
+    """The place is an area (a city, a street…), not an address."""
 
 
 class GooglePlaces:
@@ -31,9 +37,9 @@ class GooglePlaces:
         try:
             response = self.http.send(request)
             response.raise_for_status()
-        except httpx.HTTPError as error:
+            return response.json()
+        except (httpx.HTTPError, ValueError) as error:
             raise PlacesUnavailable from error
-        return response.json()
 
     def autocomplete(
         self, text: str, session: uuid.UUID, locale: Locale
@@ -43,17 +49,21 @@ class GooglePlaces:
             "input": text,
             "sessionToken": str(session),
             "includedRegionCodes": ["ca"],
+            "includedPrimaryTypes": ADDRESS_TYPES,
             "locationBias": {
                 "circle": {"center": center, "radius": settings.service_area_radius_m}
             },
             "languageCode": locale.value,
         }
         data = self._send(self.http.build_request("POST", "/places:autocomplete", json=body))
-        return [
-            AddressSuggestion(place_id=p["placeId"], text=p["text"]["text"])
-            for s in data.get("suggestions", [])
-            if (p := s.get("placePrediction"))
-        ]
+        try:
+            return [
+                AddressSuggestion(place_id=p["placeId"], text=p["text"]["text"])
+                for s in data.get("suggestions", [])
+                if (p := s.get("placePrediction"))
+            ]
+        except (KeyError, TypeError) as error:
+            raise PlacesUnavailable from error
 
     def details(
         self, place_id: str, session: uuid.UUID, locale: Locale
@@ -64,11 +74,17 @@ class GooglePlaces:
             "GET",
             f"/places/{place_id}",
             params={"sessionToken": str(session), "languageCode": locale.value},
-            headers={"X-Goog-FieldMask": "formattedAddress,location"},
+            headers={"X-Goog-FieldMask": "formattedAddress,location,types"},
         )
         data = self._send(request)
-        location = data["location"]
-        return data["formattedAddress"], location["latitude"], location["longitude"]
+        try:
+            address, location, types = data["formattedAddress"], data["location"], data["types"]
+            latitude, longitude = location["latitude"], location["longitude"]
+        except (KeyError, TypeError) as error:
+            raise PlacesUnavailable from error
+        if not set(types) & set(ADDRESS_TYPES):
+            raise NotAStreetAddress
+        return address, latitude, longitude
 
 
 def point(latitude: float, longitude: float) -> str:

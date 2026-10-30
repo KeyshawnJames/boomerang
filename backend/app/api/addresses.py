@@ -8,15 +8,24 @@ from app.core.i18n import api_error
 from app.core.security import create_address_token
 from app.models import User, UserRole
 from app.schemas.address import AddressSuggestion, ResolvedAddress
-from app.services.addresses import GooglePlaces, PlacesUnavailable, in_service_area
+from app.services.addresses import (
+    GooglePlaces,
+    NotAStreetAddress,
+    PlacesUnavailable,
+    in_service_area,
+)
 
 router = APIRouter()
 
 ClientUser = Annotated[User, Depends(require_role(UserRole.client))]
 
 
+# One client for the whole app, so calls reuse open connections to Google.
+google_places = GooglePlaces()
+
+
 def get_places() -> GooglePlaces:
-    return GooglePlaces()
+    return google_places
 
 
 Places = Annotated[GooglePlaces, Depends(get_places)]
@@ -50,6 +59,8 @@ def resolve_address(
         address, latitude, longitude = places.details(place_id, session_token, user.locale)
     except PlacesUnavailable:
         raise api_error(502, "address_lookup_failed", user.locale) from None
+    except NotAStreetAddress:
+        raise api_error(422, "not_a_street_address", user.locale) from None
     if not in_service_area(session, latitude, longitude):
         raise api_error(422, "outside_service_area", user.locale)
     return ResolvedAddress(

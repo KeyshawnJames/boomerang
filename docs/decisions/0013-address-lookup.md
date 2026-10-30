@@ -33,6 +33,9 @@ A client types their pickup address while booking. We need three things from tha
   parts of Laval and Longueuil, and misses the far west of the island. A real map outline can
   replace it later.
 - Outside the area, the client gets a clear message in French or English.
+- It must be a real street address (with a house number), not a city, a street or a
+  neighbourhood, so the driver has a door to go to. Suggestions only offer street addresses,
+  and the server checks again when the client picks one.
 - Inside it, the server hands back a signed **address token**. It holds the address and
   coordinates, works only for the client it was made for, and expires after one hour. Creating
   a return (#46) accepts the token instead of an address, so the app can't change the

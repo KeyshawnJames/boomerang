@@ -29,6 +29,10 @@ MESSAGES: dict[str, dict[Locale, str]] = {
             "Nous ne desservons pas encore cette adresse. Pour l'instant, seulement Montréal."
         ),
     },
+    "not_a_street_address": {
+        Locale.en: "Choose a full street address, with the house number.",
+        Locale.fr: "Choisissez une adresse complète, avec le numéro civique.",
+    },
     "address_lookup_failed": {
         Locale.en: "Address search isn't working right now. Try again.",
         Locale.fr: "La recherche d'adresse ne fonctionne pas pour le moment. Réessayez.",
