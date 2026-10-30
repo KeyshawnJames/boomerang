@@ -14,6 +14,12 @@
 
 ## 2026-10-29
 
+### Milestone 3 is done
+- **[Claude]** The client app is now a real app: it looks like Boomerang, speaks French and
+  English, talks to the server through generated code, and lets a client sign up and stay
+  logged in. The milestone is tagged and the changelog lists what it contains. Next up:
+  creating a return. (M3)
+
 ### Clients can sign up and log in
 - **[Claude]** The client app now has sign-up and log-in screens. The login is kept in the
   phone's secure keychain, so closing and reopening the app keeps you signed in; after 24
