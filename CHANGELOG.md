@@ -2,6 +2,16 @@
 
 Generated from commit history by [git-cliff](https://git-cliff.org). Do not edit by hand; the human story is in `docs/JOURNAL.md`.
 
+## m3 — 2026-10-30
+
+### Features
+- **client:** login and register screens (#39) (5c0bc41)
+- **api:** generated typed API client (#38) (107f5cc)
+- **client:** EN/FR localization with French fallback (#37) (ab27ae8)
+- **client:** NativeWind v4 and base theme (#36) (79bf122)
+
+### Chores
+- **client:** pnpm workspace and Expo SDK 58 client app (#35) (f9de624)
 ## m2 — 2026-10-29
 
 ### Features
@@ -9,6 +19,9 @@ Generated from commit history by [git-cliff](https://git-cliff.org). Do not edit
 - **backend:** Montreal seed data (#32) (6b8b2ea)
 - **backend:** eligibility, payment and rating models (#31) (ff36c77)
 - **backend:** core models and migration (#30) (c785b15)
+
+### Chores
+- **release:** m2 (#34) (650194a)
 ## m1 — 2026-10-29
 
 ### Features
