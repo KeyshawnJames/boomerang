@@ -1,11 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
-import { healthOptions } from "api/react-query";
+import { healthOptions, meOptions } from "api/react-query";
 import { useTranslation } from "react-i18next";
-import { Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
+
+import { Button } from "../components/form";
+import { LanguageToggle } from "../components/language-toggle";
+import { useSession } from "../session";
 
 export default function Home() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const health = useQuery(healthOptions());
+  const me = useQuery(meOptions());
+  const signOut = useSession((s) => s.signOut);
   return (
     <View className="flex-1 items-center justify-center gap-3 bg-bg px-6">
       <Text className="font-sans-extrabold text-4xl text-primary">
@@ -14,23 +20,22 @@ export default function Home() {
       <Text className="font-sans text-base text-muted">
         {t("home.tagline")}
       </Text>
+      {me.data && (
+        <Text className="font-sans-semibold text-lg text-ink">
+          {t("home.greeting", { name: me.data.name })}
+        </Text>
+      )}
       {!health.isPending && (
         <Text className="font-sans text-sm text-muted">
           {health.isSuccess ? t("home.apiOk") : t("home.apiDown")}
         </Text>
       )}
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={t("language.switchLabel")}
-        onPress={() =>
-          i18n.changeLanguage(i18n.resolvedLanguage === "en" ? "fr" : "en")
-        }
-        className="mt-6 rounded-sm px-4 py-3"
-      >
-        <Text className="font-sans-semibold text-base text-primary">
-          {t("language.switch")}
-        </Text>
-      </Pressable>
+      <View className="mt-6 items-center">
+        <LanguageToggle />
+      </View>
+      <View className="w-full">
+        <Button label={t("home.signOut")} onPress={signOut} />
+      </View>
     </View>
   );
 }

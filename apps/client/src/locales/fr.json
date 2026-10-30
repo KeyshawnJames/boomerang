@@ -3,10 +3,32 @@
     "title": "Boomerang",
     "tagline": "Vos retours, cueillis à domicile.",
     "apiOk": "Serveur connecté",
-    "apiDown": "Serveur injoignable"
+    "apiDown": "Serveur injoignable",
+    "greeting": "Bonjour, {{name}}",
+    "signOut": "Se déconnecter"
   },
   "language": {
     "switch": "English",
     "switchLabel": "English, passer à l'anglais"
+  },
+  "auth": {
+    "loginTitle": "Bon retour",
+    "login": "Se connecter",
+    "toRegister": "Pas de compte? Inscrivez-vous",
+    "registerTitle": "Créez votre compte",
+    "register": "S'inscrire",
+    "toLogin": "Déjà un compte? Connectez-vous",
+    "name": "Nom",
+    "email": "Courriel",
+    "password": "Mot de passe"
+  },
+  "validation": {
+    "name": "Entrez votre nom.",
+    "email": "Entrez une adresse courriel valide.",
+    "password": "Votre mot de passe doit contenir de 8 à 128 caractères.",
+    "other": "Vérifiez vos réponses et réessayez."
+  },
+  "errors": {
+    "generic": "Un problème est survenu. Vérifiez votre connexion et réessayez."
   }
 }

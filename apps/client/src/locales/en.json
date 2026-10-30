@@ -3,10 +3,32 @@
     "title": "Boomerang",
     "tagline": "Returns, picked up.",
     "apiOk": "Server connected",
-    "apiDown": "Server unreachable"
+    "apiDown": "Server unreachable",
+    "greeting": "Hi, {{name}}",
+    "signOut": "Log out"
   },
   "language": {
     "switch": "Français",
     "switchLabel": "Français, switch to French"
+  },
+  "auth": {
+    "loginTitle": "Welcome back",
+    "login": "Log in",
+    "toRegister": "No account? Sign up",
+    "registerTitle": "Create your account",
+    "register": "Sign up",
+    "toLogin": "Already have an account? Log in",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password"
+  },
+  "validation": {
+    "name": "Enter your name.",
+    "email": "Enter a valid email address.",
+    "password": "Your password must be 8 to 128 characters.",
+    "other": "Check your answers and try again."
+  },
+  "errors": {
+    "generic": "Something went wrong. Check your connection and try again."
   }
 }
