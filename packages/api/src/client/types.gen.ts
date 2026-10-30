@@ -5,6 +5,20 @@ export type ClientOptions = {
 };
 
 /**
+ * AddressSuggestion
+ */
+export type AddressSuggestion = {
+    /**
+     * Place Id
+     */
+    place_id: string;
+    /**
+     * Text
+     */
+    text: string;
+};
+
+/**
  * AnswerOutcome
  */
 export type AnswerOutcome = 'pass' | 'warn' | 'block';
@@ -146,6 +160,20 @@ export type RegisterRequest = {
      */
     password: string;
     locale?: Locale;
+};
+
+/**
+ * ResolvedAddress
+ */
+export type ResolvedAddress = {
+    /**
+     * Address
+     */
+    address: string;
+    /**
+     * Token
+     */
+    token: string;
 };
 
 /**
@@ -395,6 +423,76 @@ export type BookingOptionsResponses = {
 };
 
 export type BookingOptionsResponse = BookingOptionsResponses[keyof BookingOptionsResponses];
+
+export type AutocompleteAddressData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Session
+         */
+        session: string;
+        /**
+         * Q
+         */
+        q: string;
+    };
+    url: '/addresses/autocomplete';
+};
+
+export type AutocompleteAddressErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type AutocompleteAddressError = AutocompleteAddressErrors[keyof AutocompleteAddressErrors];
+
+export type AutocompleteAddressResponses = {
+    /**
+     * Response Autocomplete Address
+     *
+     * Successful Response
+     */
+    200: Array<AddressSuggestion>;
+};
+
+export type AutocompleteAddressResponse = AutocompleteAddressResponses[keyof AutocompleteAddressResponses];
+
+export type ResolveAddressData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Session
+         */
+        session: string;
+        /**
+         * Place Id
+         */
+        place_id: string;
+    };
+    url: '/addresses/resolve';
+};
+
+export type ResolveAddressErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ResolveAddressError = ResolveAddressErrors[keyof ResolveAddressErrors];
+
+export type ResolveAddressResponses = {
+    /**
+     * Successful Response
+     */
+    200: ResolvedAddress;
+};
+
+export type ResolveAddressResponse = ResolveAddressResponses[keyof ResolveAddressResponses];
 
 export type HealthData = {
     body?: never;

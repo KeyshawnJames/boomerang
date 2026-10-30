@@ -21,7 +21,8 @@ consequences we're designing for, not legal advice.
 - Neon, Railway and Cloudflare R2 have no Canadian region, so they're ruled out.
 - Candidates at deploy time: Supabase (database only) or AWS RDS for Postgres. The API runs
   on AWS in the same region.
-- Any vendor that processes personal data outside Quebec (PostHog, Expo push, Sentry) needs a
+- Any vendor that processes personal data outside Quebec (PostHog, Expo push, Sentry, Google
+  Places for address lookup, see [0013](0013-address-lookup.md)) needs a
   privacy impact assessment before launch.
 
 **Built into the code from day one:**

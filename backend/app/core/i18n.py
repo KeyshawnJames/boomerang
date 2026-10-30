@@ -23,6 +23,16 @@ MESSAGES: dict[str, dict[Locale, str]] = {
         Locale.en: "Enter a valid phone number.",
         Locale.fr: "Entrez un numéro de téléphone valide.",
     },
+    "outside_service_area": {
+        Locale.en: "We don't pick up at this address yet. For now, we only serve Montreal.",
+        Locale.fr: (
+            "Nous ne desservons pas encore cette adresse. Pour l'instant, seulement Montréal."
+        ),
+    },
+    "address_lookup_failed": {
+        Locale.en: "Address search isn't working right now. Try again.",
+        Locale.fr: "La recherche d'adresse ne fonctionne pas pour le moment. Réessayez.",
+    },
 }
 
 

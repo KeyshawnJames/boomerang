@@ -3,8 +3,8 @@
 import { type DefaultError, queryOptions, type UseMutationOptions } from '@tanstack/react-query';
 
 import { client } from '../client.gen';
-import { bookingOptions, eligibilityQuestions, health, listRetailers, login, me, type Options, register, updateMe } from '../sdk.gen';
-import type { BookingOptionsData, BookingOptionsResponse, EligibilityQuestionsData, EligibilityQuestionsResponse, HealthData, HealthResponse, ListRetailersData, ListRetailersResponse, LoginData, LoginError, LoginResponse, MeData, MeResponse, RegisterData, RegisterError, RegisterResponse, UpdateMeData, UpdateMeError, UpdateMeResponse } from '../types.gen';
+import { autocompleteAddress, bookingOptions, eligibilityQuestions, health, listRetailers, login, me, type Options, register, resolveAddress, updateMe } from '../sdk.gen';
+import type { AutocompleteAddressData, AutocompleteAddressError, AutocompleteAddressResponse, BookingOptionsData, BookingOptionsResponse, EligibilityQuestionsData, EligibilityQuestionsResponse, HealthData, HealthResponse, ListRetailersData, ListRetailersResponse, LoginData, LoginError, LoginResponse, MeData, MeResponse, RegisterData, RegisterError, RegisterResponse, ResolveAddressData, ResolveAddressError, ResolveAddressResponse, UpdateMeData, UpdateMeError, UpdateMeResponse } from '../types.gen';
 
 /**
  * Register
@@ -160,6 +160,42 @@ export const bookingOptionsOptions = (options?: Options<BookingOptionsData>) => 
         return data;
     },
     queryKey: bookingOptionsQueryKey(options)
+});
+
+export const autocompleteAddressQueryKey = (options: Options<AutocompleteAddressData>) => createQueryKey('autocompleteAddress', options);
+
+/**
+ * Autocomplete Address
+ */
+export const autocompleteAddressOptions = (options: Options<AutocompleteAddressData>) => queryOptions<AutocompleteAddressResponse, AutocompleteAddressError, AutocompleteAddressResponse, ReturnType<typeof autocompleteAddressQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await autocompleteAddress({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: autocompleteAddressQueryKey(options)
+});
+
+export const resolveAddressQueryKey = (options: Options<ResolveAddressData>) => createQueryKey('resolveAddress', options);
+
+/**
+ * Resolve Address
+ */
+export const resolveAddressOptions = (options: Options<ResolveAddressData>) => queryOptions<ResolveAddressResponse, ResolveAddressError, ResolveAddressResponse, ReturnType<typeof resolveAddressQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await resolveAddress({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: resolveAddressQueryKey(options)
 });
 
 export const healthQueryKey = (options?: Options<HealthData>) => createQueryKey('health', options);

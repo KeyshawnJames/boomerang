@@ -30,6 +30,27 @@ uv run ruff check . && uv run ruff format .
 uv run alembic upgrade head   # apply migrations
 ```
 
+### Google Places key (address lookup)
+
+Address search needs a Google key ([ADR 0013](decisions/0013-address-lookup.md)). Tests don't.
+
+1. In the [Google Cloud console](https://console.cloud.google.com/), create a project
+   (e.g. `boomerang`) and link a billing account to it.
+2. **APIs & Services → Library**: search for **Places API (New)** and enable it. Not the
+   older "Places API".
+3. **APIs & Services → Credentials → Create credentials → API key.** Edit the key: under
+   **API restrictions**, choose *Restrict key* and tick only **Places API (New)**. Leave
+   application restrictions off for now. Once the API is hosted, restrict the key to the
+   server's IP address.
+4. Spending guard: on the Places API (New) page, open **Quotas & system limits** and lower the
+   per-day limits for Autocomplete and Place Details requests (500 a day is plenty for
+   testing). In **Billing → Budgets & alerts**, add a small monthly budget with email alerts.
+5. Put the key in the root `.env` as `GOOGLE_MAPS_API_KEY=…`. Never commit it.
+6. Check it works: restart the API, open <http://localhost:8000/docs>, register and log in a
+   client, click **Authorize** and paste the token, then try `GET /addresses/autocomplete`
+   with `q=1 Place Ville Marie` and any UUID as `session`. A list of suggestions means the
+   key is good.
+
 ## Apps
 
 ```bash

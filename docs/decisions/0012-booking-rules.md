@@ -1,6 +1,6 @@
 # 0012. Booking rules: pickup windows, price, phone and service area
 
-- **Status:** accepted (the fee, the hours and the service area are placeholders until the business sets them)
+- **Status:** accepted (the fee, the hours and the service area are placeholders until the business sets them). Service-area check settled by [0013](0013-address-lookup.md)
 - **Date:** 2026-10-29
 
 ## Context

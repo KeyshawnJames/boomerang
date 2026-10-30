@@ -141,6 +141,9 @@ are accurate. The carrier question set:
 - `GET /eligibility/questions`: the localized question set.
 - `GET /booking/options`: pickup windows and the all-in fee
   ([ADR 0012](decisions/0012-booking-rules.md)).
+- `GET /addresses/autocomplete`, `GET /addresses/resolve`: address suggestions, then a
+  signed address token once the server has checked the service area
+  ([ADR 0013](decisions/0013-address-lookup.md)).
 - `POST /uploads/presign`: a presigned URL for the label or package photo.
 - `POST /returns`: create a return. Re-runs eligibility; `422` plus codes on a block.
 - `GET /returns`, `GET /returns/{id}`: history; status plus timeline.

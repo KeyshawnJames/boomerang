@@ -23,6 +23,10 @@ class Settings(BaseSettings):
     # Hours in America/Montreal; every pickup window falls inside them.
     service_open_hour: int = Field(default=9, ge=0, le=23)
     service_close_hour: int = Field(default=21, ge=0, le=23)
+    # Pickups must be this close to downtown Montreal (ADR 0013).
+    service_area_radius_m: int = 15_000
+    # Places API (New) key, server only. Empty until #43; Google then refuses the calls.
+    google_maps_api_key: SecretStr = SecretStr("")
 
     @model_validator(mode="after")
     def open_before_close(self) -> Self:
