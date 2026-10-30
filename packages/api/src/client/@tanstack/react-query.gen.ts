@@ -3,8 +3,8 @@
 import { type DefaultError, queryOptions, type UseMutationOptions } from '@tanstack/react-query';
 
 import { client } from '../client.gen';
-import { health, login, me, type Options, register } from '../sdk.gen';
-import type { HealthData, HealthResponse, LoginData, LoginError, LoginResponse, MeData, MeResponse, RegisterData, RegisterError, RegisterResponse } from '../types.gen';
+import { bookingOptions, eligibilityQuestions, health, listRetailers, login, me, type Options, register, updateMe } from '../sdk.gen';
+import type { BookingOptionsData, BookingOptionsResponse, EligibilityQuestionsData, EligibilityQuestionsResponse, HealthData, HealthResponse, ListRetailersData, ListRetailersResponse, LoginData, LoginError, LoginResponse, MeData, MeResponse, RegisterData, RegisterError, RegisterResponse, UpdateMeData, UpdateMeError, UpdateMeResponse } from '../types.gen';
 
 /**
  * Register
@@ -89,6 +89,77 @@ export const meOptions = (options?: Options<MeData>) => queryOptions<MeResponse,
         return data;
     },
     queryKey: meQueryKey(options)
+});
+
+/**
+ * Update Me
+ */
+export const updateMeMutation = (options?: Partial<Options<UpdateMeData>>): UseMutationOptions<UpdateMeResponse, UpdateMeError, Options<UpdateMeData>> => {
+    const mutationOptions: UseMutationOptions<UpdateMeResponse, UpdateMeError, Options<UpdateMeData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await updateMe({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const listRetailersQueryKey = (options?: Options<ListRetailersData>) => createQueryKey('listRetailers', options);
+
+/**
+ * List Retailers
+ */
+export const listRetailersOptions = (options?: Options<ListRetailersData>) => queryOptions<ListRetailersResponse, DefaultError, ListRetailersResponse, ReturnType<typeof listRetailersQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await listRetailers({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: listRetailersQueryKey(options)
+});
+
+export const eligibilityQuestionsQueryKey = (options?: Options<EligibilityQuestionsData>) => createQueryKey('eligibilityQuestions', options);
+
+/**
+ * Eligibility Questions
+ */
+export const eligibilityQuestionsOptions = (options?: Options<EligibilityQuestionsData>) => queryOptions<EligibilityQuestionsResponse, DefaultError, EligibilityQuestionsResponse, ReturnType<typeof eligibilityQuestionsQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await eligibilityQuestions({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: eligibilityQuestionsQueryKey(options)
+});
+
+export const bookingOptionsQueryKey = (options?: Options<BookingOptionsData>) => createQueryKey('bookingOptions', options);
+
+/**
+ * Booking Options
+ */
+export const bookingOptionsOptions = (options?: Options<BookingOptionsData>) => queryOptions<BookingOptionsResponse, DefaultError, BookingOptionsResponse, ReturnType<typeof bookingOptionsQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await bookingOptions({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: bookingOptionsQueryKey(options)
 });
 
 export const healthQueryKey = (options?: Options<HealthData>) => createQueryKey('health', options);

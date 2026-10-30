@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { HealthData, HealthResponses, LoginData, LoginErrors, LoginResponses, MeData, MeResponses, RegisterData, RegisterErrors, RegisterResponses } from './types.gen';
+import type { BookingOptionsData, BookingOptionsResponses, EligibilityQuestionsData, EligibilityQuestionsResponses, HealthData, HealthResponses, ListRetailersData, ListRetailersResponses, LoginData, LoginErrors, LoginResponses, MeData, MeResponses, RegisterData, RegisterErrors, RegisterResponses, UpdateMeData, UpdateMeErrors, UpdateMeResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -48,6 +48,46 @@ export const login = <ThrowOnError extends boolean = false>(options: Options<Log
 export const me = <ThrowOnError extends boolean = false>(options?: Options<MeData, ThrowOnError>): RequestResult<MeResponses, unknown, ThrowOnError> => (options?.client ?? client).get<MeResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/me',
+    ...options
+});
+
+/**
+ * Update Me
+ */
+export const updateMe = <ThrowOnError extends boolean = false>(options: Options<UpdateMeData, ThrowOnError>): RequestResult<UpdateMeResponses, UpdateMeErrors, ThrowOnError> => (options.client ?? client).patch<UpdateMeResponses, UpdateMeErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/me',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * List Retailers
+ */
+export const listRetailers = <ThrowOnError extends boolean = false>(options?: Options<ListRetailersData, ThrowOnError>): RequestResult<ListRetailersResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListRetailersResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/retailers',
+    ...options
+});
+
+/**
+ * Eligibility Questions
+ */
+export const eligibilityQuestions = <ThrowOnError extends boolean = false>(options?: Options<EligibilityQuestionsData, ThrowOnError>): RequestResult<EligibilityQuestionsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<EligibilityQuestionsResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/eligibility/questions',
+    ...options
+});
+
+/**
+ * Booking Options
+ */
+export const bookingOptions = <ThrowOnError extends boolean = false>(options?: Options<BookingOptionsData, ThrowOnError>): RequestResult<BookingOptionsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<BookingOptionsResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/booking/options',
     ...options
 });
 

@@ -102,6 +102,120 @@
             "HTTPBearer": []
           }
         ]
+      },
+      "patch": {
+        "summary": "Update Me",
+        "operationId": "update_me",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/retailers": {
+      "get": {
+        "summary": "List Retailers",
+        "operationId": "list_retailers",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/RetailerRead"
+                  },
+                  "type": "array",
+                  "title": "Response List Retailers"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/eligibility/questions": {
+      "get": {
+        "summary": "Eligibility Questions",
+        "operationId": "eligibility_questions",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EligibilityQuestions"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/booking/options": {
+      "get": {
+        "summary": "Booking Options",
+        "operationId": "booking_options",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingOptions"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
       }
     },
     "/health": {
@@ -129,6 +243,95 @@
   },
   "components": {
     "schemas": {
+      "AnswerOutcome": {
+        "type": "string",
+        "enum": [
+          "pass",
+          "warn",
+          "block"
+        ],
+        "title": "AnswerOutcome"
+      },
+      "BookingOptions": {
+        "properties": {
+          "pickup_fee": {
+            "type": "integer",
+            "title": "Pickup Fee"
+          },
+          "slots": {
+            "items": {
+              "$ref": "#/components/schemas/PickupSlot"
+            },
+            "type": "array",
+            "title": "Slots"
+          }
+        },
+        "type": "object",
+        "required": [
+          "pickup_fee",
+          "slots"
+        ],
+        "title": "BookingOptions"
+      },
+      "EligibilityQuestionRead": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "prompt": {
+            "type": "string",
+            "title": "Prompt"
+          },
+          "help": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Help"
+          },
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/QuestionOption"
+            },
+            "type": "array",
+            "title": "Options"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "prompt",
+          "help",
+          "options"
+        ],
+        "title": "EligibilityQuestionRead"
+      },
+      "EligibilityQuestions": {
+        "properties": {
+          "policy_version": {
+            "type": "integer",
+            "title": "Policy Version"
+          },
+          "questions": {
+            "items": {
+              "$ref": "#/components/schemas/EligibilityQuestionRead"
+            },
+            "type": "array",
+            "title": "Questions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "policy_version",
+          "questions"
+        ],
+        "title": "EligibilityQuestions"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -169,6 +372,53 @@
           "password"
         ],
         "title": "LoginRequest"
+      },
+      "PickupSlot": {
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time",
+            "title": "End"
+          },
+          "asap": {
+            "type": "boolean",
+            "title": "Asap"
+          }
+        },
+        "type": "object",
+        "required": [
+          "start",
+          "end",
+          "asap"
+        ],
+        "title": "PickupSlot"
+      },
+      "QuestionOption": {
+        "properties": {
+          "value": {
+            "type": "string",
+            "title": "Value"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "outcome": {
+            "$ref": "#/components/schemas/AnswerOutcome"
+          }
+        },
+        "type": "object",
+        "required": [
+          "value",
+          "label",
+          "outcome"
+        ],
+        "title": "QuestionOption"
       },
       "RegisterRequest": {
         "properties": {
@@ -223,6 +473,49 @@
         ],
         "title": "RegisterRequest"
       },
+      "RetailerRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "logo_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Logo Url"
+          },
+          "return_policy_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Return Policy Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "logo_url",
+          "return_policy_url"
+        ],
+        "title": "RetailerRead"
+      },
       "Token": {
         "properties": {
           "access_token": {
@@ -240,6 +533,20 @@
           "access_token"
         ],
         "title": "Token"
+      },
+      "UpdateMeRequest": {
+        "properties": {
+          "phone": {
+            "type": "string",
+            "maxLength": 30,
+            "title": "Phone"
+          }
+        },
+        "type": "object",
+        "required": [
+          "phone"
+        ],
+        "title": "UpdateMeRequest"
       },
       "UserRead": {
         "properties": {

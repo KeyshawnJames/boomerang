@@ -16,6 +16,12 @@ class Settings(BaseSettings):
     # Required, no default: the repo is public. HS256 wants at least 256 bits (RFC 7518 §3.2).
     jwt_secret: SecretStr = Field(min_length=32)
     access_token_expire_minutes: int = 1440
+    # Booking rules (ADR 0012). The fee is in cents, all fees in, before GST/QST.
+    # The business still has to set the real fee.
+    pickup_fee: int = 499
+    # Hours in America/Montreal; every pickup window falls inside them.
+    service_open_hour: int = 9
+    service_close_hour: int = 21
 
 
 settings = Settings()
