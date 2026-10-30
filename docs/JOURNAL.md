@@ -14,6 +14,12 @@
 
 ## 2026-10-29
 
+### Clients can sign up and log in
+- **[Claude]** The client app now has sign-up and log-in screens. The login is kept in the
+  phone's secure keychain, so closing and reopening the app keeps you signed in; after 24
+  hours the server asks you to log in again. Error messages show in French or English, and
+  the app now remembers the language you picked. (#18)
+
 ### The app can talk to the server
 - **[Claude]** The client app now talks to the server through code that is generated
   automatically from the server's own description of itself, so the two can't quietly drift
