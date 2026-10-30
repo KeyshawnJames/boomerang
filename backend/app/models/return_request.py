@@ -10,6 +10,7 @@ from app.models.dropoff import Carrier
 
 
 class ReturnStatus(StrEnum):
+    awaiting_payment = "awaiting_payment"  # created, not paid: drivers never see it
     requested = "requested"
     driver_assigned = "driver_assigned"
     picked_up = "picked_up"
@@ -40,8 +41,9 @@ class ReturnRequest(SQLModel, table=True):
     )
     dropoff_location_id: uuid.UUID | None = Field(default=None, foreign_key="dropoff_locations.id")
 
-    # Only the status-machine service changes this, and it writes a ReturnStatusEvent each time.
-    status: ReturnStatus = Field(default=ReturnStatus.requested, index=True)
+    # Only the status-machine service sets this, and it writes a ReturnStatusEvent each time.
+    # No default, so a return created without status.create() fails instead of lacking an event.
+    status: ReturnStatus = Field(index=True)
     pickup_fee: int  # cents, all fees included (ADR 0007)
 
     pickup_address: str

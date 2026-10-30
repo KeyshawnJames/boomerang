@@ -36,6 +36,8 @@ def make_return(session: Session, **overrides) -> ReturnRequest:
     session.flush()
     now = datetime.now(UTC)
     fields = {
+        # Test-only shortcut: app code sets status only through app.services.status.
+        "status": ReturnStatus.awaiting_payment,
         "client_id": client.id,
         "retailer_id": retailer.id,
         "pickup_fee": 1299,
@@ -56,7 +58,7 @@ def make_return(session: Session, **overrides) -> ReturnRequest:
     return return_request
 
 
-def test_new_return_is_requested_and_keeps_its_pickup_point(session: Session):
+def test_new_return_keeps_its_pickup_point(session: Session):
     return_request = make_return(session)
 
     point = session.scalar(
@@ -65,13 +67,13 @@ def test_new_return_is_requested_and_keeps_its_pickup_point(session: Session):
         )
     )
 
-    assert return_request.status == ReturnStatus.requested
     assert point == "POINT(-73.5673 45.5017)"
 
 
 @pytest.mark.parametrize(
     "field",
     [
+        "status",  # no default, so a return made without status.create() fails here
         "client_id",
         "retailer_id",
         "pickup_fee",
