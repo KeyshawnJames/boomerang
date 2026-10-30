@@ -19,6 +19,10 @@ MESSAGES: dict[str, dict[Locale, str]] = {
         Locale.en: "An account with this email already exists.",
         Locale.fr: "Un compte existe déjà avec ce courriel.",
     },
+    "invalid_phone": {
+        Locale.en: "Enter a valid phone number.",
+        Locale.fr: "Entrez un numéro de téléphone valide.",
+    },
 }
 
 

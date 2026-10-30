@@ -5,6 +5,61 @@ export type ClientOptions = {
 };
 
 /**
+ * AnswerOutcome
+ */
+export type AnswerOutcome = 'pass' | 'warn' | 'block';
+
+/**
+ * BookingOptions
+ */
+export type BookingOptions = {
+    /**
+     * Pickup Fee
+     */
+    pickup_fee: number;
+    /**
+     * Slots
+     */
+    slots: Array<PickupSlot>;
+};
+
+/**
+ * EligibilityQuestionRead
+ */
+export type EligibilityQuestionRead = {
+    /**
+     * Code
+     */
+    code: string;
+    /**
+     * Prompt
+     */
+    prompt: string;
+    /**
+     * Help
+     */
+    help: string | null;
+    /**
+     * Options
+     */
+    options: Array<QuestionOption>;
+};
+
+/**
+ * EligibilityQuestions
+ */
+export type EligibilityQuestions = {
+    /**
+     * Policy Version
+     */
+    policy_version: number;
+    /**
+     * Questions
+     */
+    questions: Array<EligibilityQuestionRead>;
+};
+
+/**
  * HTTPValidationError
  */
 export type HttpValidationError = {
@@ -31,6 +86,39 @@ export type LoginRequest = {
      * Password
      */
     password: string;
+};
+
+/**
+ * PickupSlot
+ */
+export type PickupSlot = {
+    /**
+     * Start
+     */
+    start: string;
+    /**
+     * End
+     */
+    end: string;
+    /**
+     * Asap
+     */
+    asap: boolean;
+};
+
+/**
+ * QuestionOption
+ */
+export type QuestionOption = {
+    /**
+     * Value
+     */
+    value: string;
+    /**
+     * Label
+     */
+    label: string;
+    outcome: AnswerOutcome;
 };
 
 /**
@@ -61,6 +149,28 @@ export type RegisterRequest = {
 };
 
 /**
+ * RetailerRead
+ */
+export type RetailerRead = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Logo Url
+     */
+    logo_url: string | null;
+    /**
+     * Return Policy Url
+     */
+    return_policy_url: string | null;
+};
+
+/**
  * Token
  */
 export type Token = {
@@ -72,6 +182,16 @@ export type Token = {
      * Token Type
      */
     token_type?: string;
+};
+
+/**
+ * UpdateMeRequest
+ */
+export type UpdateMeRequest = {
+    /**
+     * Phone
+     */
+    phone: string;
 };
 
 /**
@@ -200,6 +320,81 @@ export type MeResponses = {
 };
 
 export type MeResponse = MeResponses[keyof MeResponses];
+
+export type UpdateMeData = {
+    body: UpdateMeRequest;
+    path?: never;
+    query?: never;
+    url: '/me';
+};
+
+export type UpdateMeErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UpdateMeError = UpdateMeErrors[keyof UpdateMeErrors];
+
+export type UpdateMeResponses = {
+    /**
+     * Successful Response
+     */
+    200: UserRead;
+};
+
+export type UpdateMeResponse = UpdateMeResponses[keyof UpdateMeResponses];
+
+export type ListRetailersData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/retailers';
+};
+
+export type ListRetailersResponses = {
+    /**
+     * Response List Retailers
+     *
+     * Successful Response
+     */
+    200: Array<RetailerRead>;
+};
+
+export type ListRetailersResponse = ListRetailersResponses[keyof ListRetailersResponses];
+
+export type EligibilityQuestionsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/eligibility/questions';
+};
+
+export type EligibilityQuestionsResponses = {
+    /**
+     * Successful Response
+     */
+    200: EligibilityQuestions;
+};
+
+export type EligibilityQuestionsResponse = EligibilityQuestionsResponses[keyof EligibilityQuestionsResponses];
+
+export type BookingOptionsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/booking/options';
+};
+
+export type BookingOptionsResponses = {
+    /**
+     * Successful Response
+     */
+    200: BookingOptions;
+};
+
+export type BookingOptionsResponse = BookingOptionsResponses[keyof BookingOptionsResponses];
 
 export type HealthData = {
     body?: never;

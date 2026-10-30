@@ -134,11 +134,13 @@ are accurate. The carrier question set:
 
 ## API (high level)
 
-**Auth**: `POST /auth/register`, `POST /auth/login`, `GET /me`
+**Auth**: `POST /auth/register`, `POST /auth/login`, `GET /me`, `PATCH /me` (phone)
 
 **Client**
 - `GET /retailers`
 - `GET /eligibility/questions`: the localized question set.
+- `GET /booking/options`: pickup windows and the all-in fee
+  ([ADR 0012](decisions/0012-booking-rules.md)).
 - `POST /uploads/presign`: a presigned URL for the label or package photo.
 - `POST /returns`: create a return. Re-runs eligibility; `422` plus codes on a block.
 - `GET /returns`, `GET /returns/{id}`: history; status plus timeline.

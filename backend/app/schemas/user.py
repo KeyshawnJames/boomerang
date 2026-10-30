@@ -29,6 +29,10 @@ class Token(SQLModel):
     token_type: str = "bearer"
 
 
+class UpdateMeRequest(SQLModel):
+    phone: str = Field(max_length=30)
+
+
 class UserRead(SQLModel):
     id: uuid.UUID
     role: UserRole

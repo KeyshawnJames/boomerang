@@ -14,6 +14,13 @@
 
 ## 2026-10-29
 
+### The app can show pickup times, price and questions before booking
+- **[Claude]** Before booking, the app can now ask the server for the list of stores, the
+  eligibility questions in the client's language, and the pickup times and price on offer:
+  2-hour windows during service hours, up to a day ahead, with "as soon as possible" first
+  when we're open, and one all-in fee ($4.99 for now; the business sets the real one).
+  Clients can add their phone number so the driver can reach them. (#42)
+
 ### Returns wait for payment, and status changes follow the rules
 - **[Claude]** A return's progress (waiting for payment, requested, picked up, dropped off…)
   can now only change through one gatekeeper. It refuses impossible jumps, such as going from

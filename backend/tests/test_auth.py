@@ -31,8 +31,8 @@ def bearer(token: str) -> dict[str, str]:
     return {"Authorization": f"Bearer {token}"}
 
 
-def token_for(client: TestClient, email: str, role: str = "client") -> str:
-    assert register(client, email, role).status_code == 201
+def token_for(client: TestClient, email: str, role: str = "client", **extra) -> str:
+    assert register(client, email, role, **extra).status_code == 201
     return login(client, email).json()["access_token"]
 
 
@@ -177,3 +177,44 @@ def test_require_role_rejects_wrong_role_in_user_locale(
 
 def test_require_role_rejects_missing_token(role_client: TestClient):
     assert role_client.get("/driver-only").status_code == 401
+
+
+def test_update_me_stores_phone_as_e164(client: TestClient):
+    token = token_for(client, "jo@example.com")
+
+    response = client.patch("/me", json={"phone": "(514) 555-0123"}, headers=bearer(token))
+    assert response.status_code == 200
+    assert response.json()["phone"] == "+15145550123"
+    assert client.get("/me", headers=bearer(token)).json()["phone"] == "+15145550123"
+
+
+@pytest.mark.parametrize(
+    "locale, message",
+    [
+        ("en", "Enter a valid phone number."),
+        ("fr", "Entrez un numéro de téléphone valide."),
+    ],
+)
+@pytest.mark.parametrize("phone", ["123", "514-123-4567", "not a phone"])
+def test_update_me_rejects_invalid_phone_in_user_locale(
+    client: TestClient, phone: str, locale: str, message: str
+):
+    assert register(client, "kim@example.com", locale=locale).status_code == 201
+    token = login(client, "kim@example.com").json()["access_token"]
+
+    response = client.patch("/me", json={"phone": phone}, headers=bearer(token))
+    assert response.status_code == 422
+    assert response.json()["detail"] == message
+
+
+def test_update_me_rejects_missing_token(client: TestClient):
+    assert client.patch("/me", json={"phone": "514 555 0123"}).status_code == 401
+
+
+def test_register_stores_phone_as_e164(client: TestClient):
+    response = register(client, "lu@example.com", phone="514 555 0123")
+    assert response.json()["phone"] == "+15145550123"
+
+
+def test_register_rejects_empty_phone(client: TestClient):
+    assert register(client, "mo@example.com", phone="").status_code == 422

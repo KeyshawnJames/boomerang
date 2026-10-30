@@ -1,3 +1,4 @@
+import phonenumbers
 from fastapi import APIRouter, Request
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import select
@@ -5,10 +6,21 @@ from sqlmodel import select
 from app.api.deps import CurrentUser, SessionDep
 from app.core.i18n import api_error, request_locale
 from app.core.security import DUMMY_HASH, create_access_token, hash_password, verify_password
-from app.models import DriverProfile, User, UserRole
-from app.schemas.user import LoginRequest, RegisterRequest, Token, UserRead
+from app.models import DriverProfile, Locale, User, UserRole
+from app.schemas.user import LoginRequest, RegisterRequest, Token, UpdateMeRequest, UserRead
 
 router = APIRouter()
+
+
+def e164(phone: str, locale: Locale) -> str:
+    # Numbers without a country code are read as Canadian.
+    try:
+        number = phonenumbers.parse(phone, "CA")
+    except phonenumbers.NumberParseException:
+        number = None
+    if number is None or not phonenumbers.is_valid_number(number):
+        raise api_error(422, "invalid_phone", locale)
+    return phonenumbers.format_number(number, phonenumbers.PhoneNumberFormat.E164)
 
 
 @router.post("/auth/register", status_code=201, response_model=UserRead)
@@ -18,7 +30,7 @@ def register(body: RegisterRequest, session: SessionDep) -> User:
         name=body.name,
         # The unique constraint on users.email is case-sensitive, so store one form.
         email=body.email.lower(),
-        phone=body.phone,
+        phone=None if body.phone is None else e164(body.phone, body.locale),
         password_hash=hash_password(body.password),
         locale=body.locale,
     )
@@ -47,4 +59,13 @@ def login(body: LoginRequest, session: SessionDep, request: Request) -> Token:
 
 @router.get("/me", response_model=UserRead)
 def me(user: CurrentUser) -> User:
+    return user
+
+
+@router.patch("/me", response_model=UserRead)
+def update_me(body: UpdateMeRequest, user: CurrentUser, session: SessionDep) -> User:
+    user.phone = e164(body.phone, user.locale)
+    session.add(user)
+    session.commit()
+    session.refresh(user)
     return user
