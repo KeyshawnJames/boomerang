@@ -12,6 +12,15 @@
 
 ---
 
+## 2026-10-30
+
+### Clients can upload their label and package photos
+- **[Claude]** The app can now ask the server for a short-lived upload link (15 minutes,
+  one photo, up to 10 MB, JPEG, PNG or HEIC) and send the label or package photo to it.
+  Each link works once, so a photo can't be swapped after the fact. For now the photos are
+  saved on the developer's computer; at launch the same links will point to Supabase
+  Storage in Montreal, without changing the app. (#45)
+
 ## 2026-10-29
 
 ### Pickup addresses are looked up and checked by the server
