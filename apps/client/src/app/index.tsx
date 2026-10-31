@@ -1,10 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { healthOptions, meOptions } from "api/react-query";
+import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Text, View } from "react-native";
 
 import { Button } from "../components/form";
 import { LanguageToggle } from "../components/language-toggle";
+import { useDraft } from "../draft";
 import { useSession } from "../session";
 
 export default function Home() {
@@ -12,6 +14,7 @@ export default function Home() {
   const health = useQuery(healthOptions());
   const me = useQuery(meOptions());
   const signOut = useSession((s) => s.signOut);
+  const resetDraft = useDraft((s) => s.reset);
   return (
     <View className="flex-1 items-center justify-center gap-3 bg-bg px-6">
       <Text className="font-sans-extrabold text-4xl text-primary">
@@ -30,6 +33,15 @@ export default function Home() {
           {health.isSuccess ? t("home.apiOk") : t("home.apiDown")}
         </Text>
       )}
+      <View className="mt-6 w-full">
+        <Button
+          label={t("home.newReturn")}
+          onPress={() => {
+            resetDraft();
+            router.push("/new-return");
+          }}
+        />
+      </View>
       <View className="mt-6 items-center">
         <LanguageToggle />
       </View>

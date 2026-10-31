@@ -5,7 +5,8 @@
     "apiOk": "Server connected",
     "apiDown": "Server unreachable",
     "greeting": "Hi, {{name}}",
-    "signOut": "Log out"
+    "signOut": "Log out",
+    "newReturn": "New return"
   },
   "language": {
     "switch": "Français",
@@ -27,6 +28,39 @@
     "email": "Enter a valid email address.",
     "password": "Your password must be 8 to 128 characters.",
     "other": "Check your answers and try again."
+  },
+  "newReturn": {
+    "back": "Back",
+    "next": "Next",
+    "retailerTitle": "Where is it going back to?",
+    "labelTitle": "Your label",
+    "labelType": "What kind of label do you have?",
+    "carrier": "Which carrier is it for?",
+    "orderNumber": "Order number (optional)"
+  },
+  "labelTypes": {
+    "qr_code": "QR code",
+    "printed_label": "Printed label"
+  },
+  "carriers": {
+    "canada_post": "Canada Post",
+    "ups": "UPS",
+    "purolator": "Purolator"
+  },
+  "photos": {
+    "title": "Photos",
+    "label": "Label",
+    "labelHintQr": "A screenshot of the QR code from the retailer's email or app.",
+    "labelHint": "A clear photo of the printed label.",
+    "package": "Package",
+    "packageHint": "A photo of the sealed package, ready to go.",
+    "camera": "Take a photo",
+    "library": "Choose from library",
+    "cameraFor": "{{photo}}: take a photo",
+    "libraryFor": "{{photo}}: choose from library",
+    "uploaded": "{{photo}} uploaded",
+    "cameraDenied": "Allow camera access in your phone's settings, or choose a photo from your library.",
+    "wrongType": "Choose a JPEG, PNG or HEIC photo."
   },
   "errors": {
     "generic": "Something went wrong. Check your connection and try again."

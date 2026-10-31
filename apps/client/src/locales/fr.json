@@ -5,7 +5,8 @@
     "apiOk": "Serveur connecté",
     "apiDown": "Serveur injoignable",
     "greeting": "Bonjour, {{name}}",
-    "signOut": "Se déconnecter"
+    "signOut": "Se déconnecter",
+    "newReturn": "Nouveau retour"
   },
   "language": {
     "switch": "English",
@@ -27,6 +28,39 @@
     "email": "Entrez une adresse courriel valide.",
     "password": "Votre mot de passe doit contenir de 8 à 128 caractères.",
     "other": "Vérifiez vos réponses et réessayez."
+  },
+  "newReturn": {
+    "back": "Retour",
+    "next": "Suivant",
+    "retailerTitle": "À quel détaillant le retournez-vous?",
+    "labelTitle": "Votre étiquette",
+    "labelType": "Quel type d'étiquette avez-vous?",
+    "carrier": "Pour quel transporteur?",
+    "orderNumber": "Numéro de commande (facultatif)"
+  },
+  "labelTypes": {
+    "qr_code": "Code QR",
+    "printed_label": "Étiquette imprimée"
+  },
+  "carriers": {
+    "canada_post": "Postes Canada",
+    "ups": "UPS",
+    "purolator": "Purolator"
+  },
+  "photos": {
+    "title": "Photos",
+    "label": "Étiquette",
+    "labelHintQr": "Une capture d'écran du code QR reçu par courriel ou dans l'application du détaillant.",
+    "labelHint": "Une photo nette de l'étiquette imprimée.",
+    "package": "Colis",
+    "packageHint": "Une photo du colis scellé, prêt à partir.",
+    "camera": "Prendre une photo",
+    "library": "Choisir dans la galerie",
+    "cameraFor": "{{photo}} : prendre une photo",
+    "libraryFor": "{{photo}} : choisir dans la galerie",
+    "uploaded": "{{photo}} : photo envoyée",
+    "cameraDenied": "Autorisez l'accès à l'appareil photo dans les réglages de votre téléphone, ou choisissez une photo dans votre galerie.",
+    "wrongType": "Choisissez une photo JPEG, PNG ou HEIC."
   },
   "errors": {
     "generic": "Un problème est survenu. Vérifiez votre connexion et réessayez."
