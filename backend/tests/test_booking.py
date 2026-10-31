@@ -119,3 +119,9 @@ def test_booking_reference_needs_a_signed_in_client(client: TestClient, path: st
 def test_service_hours_must_be_a_daytime_range(open_hour: int, close_hour: int):
     with pytest.raises(ValidationError):
         Settings(service_open_hour=open_hour, service_close_hour=close_hour)
+
+
+@pytest.mark.parametrize("radius", [0, 50_001])  # Google's location bias allows up to 50 km
+def test_service_area_radius_is_bounded(radius: int):
+    with pytest.raises(ValidationError):
+        Settings(service_area_radius_m=radius)

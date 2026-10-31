@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { BookingOptionsData, BookingOptionsResponses, EligibilityQuestionsData, EligibilityQuestionsResponses, HealthData, HealthResponses, ListRetailersData, ListRetailersResponses, LoginData, LoginErrors, LoginResponses, MeData, MeResponses, RegisterData, RegisterErrors, RegisterResponses, UpdateMeData, UpdateMeErrors, UpdateMeResponses } from './types.gen';
+import type { AutocompleteAddressData, AutocompleteAddressErrors, AutocompleteAddressResponses, BookingOptionsData, BookingOptionsResponses, EligibilityQuestionsData, EligibilityQuestionsResponses, HealthData, HealthResponses, ListRetailersData, ListRetailersResponses, LoginData, LoginErrors, LoginResponses, MeData, MeResponses, RegisterData, RegisterErrors, RegisterResponses, ResolveAddressData, ResolveAddressErrors, ResolveAddressResponses, UpdateMeData, UpdateMeErrors, UpdateMeResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -88,6 +88,24 @@ export const eligibilityQuestions = <ThrowOnError extends boolean = false>(optio
 export const bookingOptions = <ThrowOnError extends boolean = false>(options?: Options<BookingOptionsData, ThrowOnError>): RequestResult<BookingOptionsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<BookingOptionsResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/booking/options',
+    ...options
+});
+
+/**
+ * Autocomplete Address
+ */
+export const autocompleteAddress = <ThrowOnError extends boolean = false>(options: Options<AutocompleteAddressData, ThrowOnError>): RequestResult<AutocompleteAddressResponses, AutocompleteAddressErrors, ThrowOnError> => (options.client ?? client).get<AutocompleteAddressResponses, AutocompleteAddressErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/addresses/autocomplete',
+    ...options
+});
+
+/**
+ * Resolve Address
+ */
+export const resolveAddress = <ThrowOnError extends boolean = false>(options: Options<ResolveAddressData, ThrowOnError>): RequestResult<ResolveAddressResponses, ResolveAddressErrors, ThrowOnError> => (options.client ?? client).get<ResolveAddressResponses, ResolveAddressErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/addresses/resolve',
     ...options
 });
 
