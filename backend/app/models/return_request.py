@@ -48,10 +48,12 @@ class ReturnRequest(SQLModel, table=True):
 
     pickup_address: str
     pickup_location: Any = Field(sa_column=point_column(nullable=False))
+    pickup_notes: str | None = None  # unit, buzzer: the address token covers only the street
     pickup_window_start: datetime = Field(sa_type=TIMESTAMPTZ)
     pickup_window_end: datetime = Field(sa_type=TIMESTAMPTZ)
 
     label_type: LabelType
+    # Storage keys from POST /uploads/presign; a viewing URL gets signed from them (M6/M7).
     label_image_url: str
     carrier: Carrier
     order_number: str | None = None

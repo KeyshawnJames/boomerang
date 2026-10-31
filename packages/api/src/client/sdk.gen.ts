@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AutocompleteAddressData, AutocompleteAddressErrors, AutocompleteAddressResponses, BookingOptionsData, BookingOptionsResponses, EligibilityQuestionsData, EligibilityQuestionsResponses, HealthData, HealthResponses, ListRetailersData, ListRetailersResponses, LoginData, LoginErrors, LoginResponses, MeData, MeResponses, PresignUploadData, PresignUploadErrors, PresignUploadResponses, RegisterData, RegisterErrors, RegisterResponses, ResolveAddressData, ResolveAddressErrors, ResolveAddressResponses, UpdateMeData, UpdateMeErrors, UpdateMeResponses } from './types.gen';
+import type { AutocompleteAddressData, AutocompleteAddressErrors, AutocompleteAddressResponses, BookingOptionsData, BookingOptionsResponses, CreateReturnData, CreateReturnErrors, CreateReturnResponses, EligibilityQuestionsData, EligibilityQuestionsResponses, GetReturnData, GetReturnErrors, GetReturnResponses, HealthData, HealthResponses, ListRetailersData, ListRetailersResponses, LoginData, LoginErrors, LoginResponses, MeData, MeResponses, PresignUploadData, PresignUploadErrors, PresignUploadResponses, RegisterData, RegisterErrors, RegisterResponses, ResolveAddressData, ResolveAddressErrors, ResolveAddressResponses, UpdateMeData, UpdateMeErrors, UpdateMeResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -120,6 +120,28 @@ export const presignUpload = <ThrowOnError extends boolean = false>(options: Opt
         'Content-Type': 'application/json',
         ...options.headers
     }
+});
+
+/**
+ * Create Return
+ */
+export const createReturn = <ThrowOnError extends boolean = false>(options: Options<CreateReturnData, ThrowOnError>): RequestResult<CreateReturnResponses, CreateReturnErrors, ThrowOnError> => (options.client ?? client).post<CreateReturnResponses, CreateReturnErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/returns',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Get Return
+ */
+export const getReturn = <ThrowOnError extends boolean = false>(options: Options<GetReturnData, ThrowOnError>): RequestResult<GetReturnResponses, GetReturnErrors, ThrowOnError> => (options.client ?? client).get<GetReturnResponses, GetReturnErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/returns/{return_id}',
+    ...options
 });
 
 /**

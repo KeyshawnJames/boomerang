@@ -377,6 +377,94 @@
         ]
       }
     },
+    "/returns": {
+      "post": {
+        "summary": "Create Return",
+        "operationId": "create_return",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateReturnRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReturnRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/returns/{return_id}": {
+      "get": {
+        "summary": "Get Return",
+        "operationId": "get_return",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "return_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Return Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReturnRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "summary": "Health",
@@ -450,6 +538,135 @@
         ],
         "title": "BookingOptions"
       },
+      "Carrier": {
+        "type": "string",
+        "enum": [
+          "canada_post",
+          "ups",
+          "purolator",
+          "fedex",
+          "other"
+        ],
+        "title": "Carrier"
+      },
+      "CreateReturnRequest": {
+        "properties": {
+          "retailer_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Retailer Id"
+          },
+          "carrier": {
+            "type": "string",
+            "enum": [
+              "canada_post",
+              "ups",
+              "purolator"
+            ],
+            "title": "Carrier"
+          },
+          "label_type": {
+            "$ref": "#/components/schemas/LabelType"
+          },
+          "order_number": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Order Number"
+          },
+          "label_photo_key": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Label Photo Key"
+          },
+          "package_photo_key": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Package Photo Key"
+          },
+          "address_token": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Address Token"
+          },
+          "pickup_notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pickup Notes"
+          },
+          "asap": {
+            "type": "boolean",
+            "title": "Asap",
+            "default": false
+          },
+          "pickup_window_start": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pickup Window Start"
+          },
+          "answers": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Answers"
+          },
+          "policy_version": {
+            "type": "integer",
+            "title": "Policy Version"
+          },
+          "acknowledged_warnings": {
+            "type": "boolean",
+            "title": "Acknowledged Warnings",
+            "default": false
+          },
+          "attested": {
+            "type": "boolean",
+            "title": "Attested",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "retailer_id",
+          "carrier",
+          "label_type",
+          "label_photo_key",
+          "package_photo_key",
+          "address_token",
+          "answers",
+          "policy_version"
+        ],
+        "title": "CreateReturnRequest"
+      },
+      "EligibilityOutcome": {
+        "type": "string",
+        "enum": [
+          "eligible",
+          "eligible_with_warnings"
+        ],
+        "title": "EligibilityOutcome"
+      },
       "EligibilityQuestionRead": {
         "properties": {
           "code": {
@@ -521,6 +738,14 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "LabelType": {
+        "type": "string",
+        "enum": [
+          "qr_code",
+          "printed_label"
+        ],
+        "title": "LabelType"
       },
       "Locale": {
         "type": "string",
@@ -755,6 +980,108 @@
           "return_policy_url"
         ],
         "title": "RetailerRead"
+      },
+      "ReturnRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ReturnStatus"
+          },
+          "retailer_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Retailer Id"
+          },
+          "carrier": {
+            "$ref": "#/components/schemas/Carrier"
+          },
+          "label_type": {
+            "$ref": "#/components/schemas/LabelType"
+          },
+          "order_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Order Number"
+          },
+          "pickup_address": {
+            "type": "string",
+            "title": "Pickup Address"
+          },
+          "pickup_notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pickup Notes"
+          },
+          "pickup_window_start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Pickup Window Start"
+          },
+          "pickup_window_end": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Pickup Window End"
+          },
+          "pickup_fee": {
+            "type": "integer",
+            "title": "Pickup Fee"
+          },
+          "eligibility_outcome": {
+            "$ref": "#/components/schemas/EligibilityOutcome"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "retailer_id",
+          "carrier",
+          "label_type",
+          "order_number",
+          "pickup_address",
+          "pickup_notes",
+          "pickup_window_start",
+          "pickup_window_end",
+          "pickup_fee",
+          "eligibility_outcome",
+          "created_at"
+        ],
+        "title": "ReturnRead"
+      },
+      "ReturnStatus": {
+        "type": "string",
+        "enum": [
+          "awaiting_payment",
+          "requested",
+          "driver_assigned",
+          "picked_up",
+          "dropped_off",
+          "completed",
+          "cancelled",
+          "failed_dropoff"
+        ],
+        "title": "ReturnStatus"
       },
       "Token": {
         "properties": {

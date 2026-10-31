@@ -38,6 +38,77 @@ export type BookingOptions = {
 };
 
 /**
+ * Carrier
+ */
+export type Carrier = 'canada_post' | 'ups' | 'purolator' | 'fedex' | 'other';
+
+/**
+ * CreateReturnRequest
+ */
+export type CreateReturnRequest = {
+    /**
+     * Retailer Id
+     */
+    retailer_id: string;
+    /**
+     * Carrier
+     */
+    carrier: 'canada_post' | 'ups' | 'purolator';
+    label_type: LabelType;
+    /**
+     * Order Number
+     */
+    order_number?: string | null;
+    /**
+     * Label Photo Key
+     */
+    label_photo_key: string;
+    /**
+     * Package Photo Key
+     */
+    package_photo_key: string;
+    /**
+     * Address Token
+     */
+    address_token: string;
+    /**
+     * Pickup Notes
+     */
+    pickup_notes?: string | null;
+    /**
+     * Asap
+     */
+    asap?: boolean;
+    /**
+     * Pickup Window Start
+     */
+    pickup_window_start?: string | null;
+    /**
+     * Answers
+     */
+    answers: {
+        [key: string]: string;
+    };
+    /**
+     * Policy Version
+     */
+    policy_version: number;
+    /**
+     * Acknowledged Warnings
+     */
+    acknowledged_warnings?: boolean;
+    /**
+     * Attested
+     */
+    attested?: boolean;
+};
+
+/**
+ * EligibilityOutcome
+ */
+export type EligibilityOutcome = 'eligible' | 'eligible_with_warnings';
+
+/**
  * EligibilityQuestionRead
  */
 export type EligibilityQuestionRead = {
@@ -82,6 +153,11 @@ export type HttpValidationError = {
      */
     detail?: Array<ValidationError>;
 };
+
+/**
+ * LabelType
+ */
+export type LabelType = 'qr_code' | 'printed_label';
 
 /**
  * Locale
@@ -225,6 +301,57 @@ export type RetailerRead = {
      */
     return_policy_url: string | null;
 };
+
+/**
+ * ReturnRead
+ */
+export type ReturnRead = {
+    /**
+     * Id
+     */
+    id: string;
+    status: ReturnStatus;
+    /**
+     * Retailer Id
+     */
+    retailer_id: string;
+    carrier: Carrier;
+    label_type: LabelType;
+    /**
+     * Order Number
+     */
+    order_number: string | null;
+    /**
+     * Pickup Address
+     */
+    pickup_address: string;
+    /**
+     * Pickup Notes
+     */
+    pickup_notes: string | null;
+    /**
+     * Pickup Window Start
+     */
+    pickup_window_start: string;
+    /**
+     * Pickup Window End
+     */
+    pickup_window_end: string;
+    /**
+     * Pickup Fee
+     */
+    pickup_fee: number;
+    eligibility_outcome: EligibilityOutcome;
+    /**
+     * Created At
+     */
+    created_at: string;
+};
+
+/**
+ * ReturnStatus
+ */
+export type ReturnStatus = 'awaiting_payment' | 'requested' | 'driver_assigned' | 'picked_up' | 'dropped_off' | 'completed' | 'cancelled' | 'failed_dropoff';
 
 /**
  * Token
@@ -546,6 +673,61 @@ export type PresignUploadResponses = {
 };
 
 export type PresignUploadResponse = PresignUploadResponses[keyof PresignUploadResponses];
+
+export type CreateReturnData = {
+    body: CreateReturnRequest;
+    path?: never;
+    query?: never;
+    url: '/returns';
+};
+
+export type CreateReturnErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type CreateReturnError = CreateReturnErrors[keyof CreateReturnErrors];
+
+export type CreateReturnResponses = {
+    /**
+     * Successful Response
+     */
+    201: ReturnRead;
+};
+
+export type CreateReturnResponse = CreateReturnResponses[keyof CreateReturnResponses];
+
+export type GetReturnData = {
+    body?: never;
+    path: {
+        /**
+         * Return Id
+         */
+        return_id: string;
+    };
+    query?: never;
+    url: '/returns/{return_id}';
+};
+
+export type GetReturnErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetReturnError = GetReturnErrors[keyof GetReturnErrors];
+
+export type GetReturnResponses = {
+    /**
+     * Successful Response
+     */
+    200: ReturnRead;
+};
+
+export type GetReturnResponse = GetReturnResponses[keyof GetReturnResponses];
 
 export type HealthData = {
     body?: never;

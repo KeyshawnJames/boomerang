@@ -1,3 +1,4 @@
+import re
 import uuid
 from pathlib import Path
 from typing import Annotated
@@ -52,6 +53,13 @@ async def upload_file(key: str, request: Request, token: str = "") -> Response:
     except FileExistsError:
         raise api_error(403, "upload_link_invalid", locale) from None
     return Response(status_code=204)
+
+
+def is_uploaded(user: User, kind: str, key: str) -> bool:
+    """The key names this user's photo of this kind, and the photo was uploaded."""
+    # The full pattern, not just the prefix, so "{id}/label/../.." can't reach other files.
+    pattern = rf"{user.id}/{kind}/[0-9a-f-]{{36}}\.({'|'.join(EXTENSIONS.values())})"
+    return re.fullmatch(pattern, key) is not None and (settings.upload_dir / key).is_file()
 
 
 def save_once(path: Path, data: bytes) -> None:
