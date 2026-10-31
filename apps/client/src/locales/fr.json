@@ -80,7 +80,8 @@
     "search": "Adresse",
     "searchHint": "Commencez à écrire, puis choisissez votre adresse.",
     "chosen": "Ramassage au",
-    "notes": "Appartement, interphone ou note pour le chauffeur (facultatif)"
+    "notes": "Appartement, interphone ou note pour le chauffeur (facultatif)",
+    "change": "Changer l'adresse"
   },
   "time": {
     "title": "Heure de ramassage",

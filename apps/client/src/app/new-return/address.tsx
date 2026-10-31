@@ -4,7 +4,7 @@ import { autocompleteAddressOptions } from "api/react-query";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, Text } from "react-native";
+import { ActivityIndicator, Pressable, Text } from "react-native";
 
 import { Button, Field } from "../../components/form";
 import { Choice, Row, Step } from "../../components/step";
@@ -61,42 +61,62 @@ export default function Address() {
         />
       }
     >
-      {address && <Row label={t("address.chosen")} value={address.address} />}
-      <Field
-        label={t("address.search")}
-        value={text}
-        onChangeText={(value) => {
-          setText(value);
-          resolve.reset();
-        }}
-        placeholder={t("address.searchHint")}
-        autoComplete="street-address"
-        textContentType="fullStreetAddress"
-        autoCorrect={false}
-        maxLength={200}
-      />
-      {(suggestions.isFetching || resolve.isPending) && <ActivityIndicator />}
-      {[searching && suggestions.error, resolve.error].map(
-        (error, i) =>
-          error && (
-            <Text
-              key={i}
-              accessibilityRole="alert"
-              className="font-sans text-base text-danger"
-            >
-              {errorMessage(error)}
+      {address ? (
+        // Chosen: shown on its own, so it doesn't look like it still needs typing.
+        <>
+          <Row label={t("address.chosen")} value={address.address} />
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => update({ address: null })}
+            className="self-start py-2"
+          >
+            <Text className="font-sans-semibold text-base text-primary">
+              {t("address.change")}
             </Text>
-          ),
-      )}
-      {searching &&
-        suggestions.data?.map((s) => (
-          <Choice
-            key={s.place_id}
-            label={s.text}
-            disabled={resolve.isPending}
-            onPress={() => resolve.mutate(s.place_id)}
+          </Pressable>
+        </>
+      ) : (
+        <>
+          <Field
+            label={t("address.search")}
+            value={text}
+            onChangeText={(value) => {
+              setText(value);
+              resolve.reset();
+            }}
+            placeholder={t("address.searchHint")}
+            autoComplete="street-address"
+            textContentType="fullStreetAddress"
+            autoCorrect={false}
+            autoFocus
+            maxLength={200}
           />
-        ))}
+          {(suggestions.isFetching || resolve.isPending) && (
+            <ActivityIndicator />
+          )}
+          {[searching && suggestions.error, resolve.error].map(
+            (error, i) =>
+              error && (
+                <Text
+                  key={i}
+                  accessibilityRole="alert"
+                  className="font-sans text-base text-danger"
+                >
+                  {errorMessage(error)}
+                </Text>
+              ),
+          )}
+          {searching &&
+            suggestions.data?.map((s) => (
+              <Choice
+                key={s.place_id}
+                label={s.text}
+                disabled={resolve.isPending}
+                onPress={() => resolve.mutate(s.place_id)}
+              />
+            ))}
+        </>
+      )}
       <Field
         label={t("address.notes")}
         value={pickupNotes}

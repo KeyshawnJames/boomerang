@@ -80,7 +80,8 @@
     "search": "Street address",
     "searchHint": "Start typing, then choose your address.",
     "chosen": "Picking up at",
-    "notes": "Apartment, buzzer or notes for the driver (optional)"
+    "notes": "Apartment, buzzer or notes for the driver (optional)",
+    "change": "Change address"
   },
   "time": {
     "title": "Pickup time",

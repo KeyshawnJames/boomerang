@@ -626,6 +626,8 @@ test("an address is searched, chosen and kept", async () => {
     }),
   );
   await screen.findByText(ADDRESS);
+  // Chosen: the address shows on its own, with no empty search asking for it again.
+  expect(screen.queryByLabelText("Street address")).toBeNull();
   expect(useDraft.getState().address).toEqual({
     address: ADDRESS,
     token: "addr-tok",
@@ -855,4 +857,16 @@ test("if the profile can't load, the phone is asked for anyway", async () => {
   replies["/me"] = [500, { detail: "Down." }];
   await openStep("/new-return/review", READY);
   expect(await screen.findByLabelText("Phone number")).toBeTruthy();
+});
+
+test("Change address starts a new search", async () => {
+  await openStep("/new-return/address", {
+    address: { address: ADDRESS, token: "addr-tok" },
+  });
+  expect(screen.getByText(ADDRESS)).toBeTruthy();
+  expect(screen.getByRole("button", { name: "Next" })).toBeEnabled();
+  await fireEvent.press(screen.getByRole("button", { name: "Change address" }));
+  expect(search()).toBeTruthy();
+  expect(useDraft.getState().address).toBeNull();
+  expect(screen.getByRole("button", { name: "Next" })).toBeDisabled();
 });
