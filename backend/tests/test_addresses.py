@@ -110,6 +110,27 @@ def test_resolve_returns_address_and_token(client: TestClient, google: FakeGoogl
 
 
 @pytest.mark.parametrize(
+    "location",
+    [
+        {"latitude": 45.4039, "longitude": -73.9525},  # Sainte-Anne-de-Bellevue, west tip
+        {"latitude": 45.6836, "longitude": -73.4795},  # Pointe-aux-Trembles, east tip
+    ],
+)
+def test_resolve_accepts_the_whole_island(
+    client: TestClient, google: FakeGoogle, location: dict[str, float]
+):
+    google.location = location
+
+    response = client.get(
+        "/addresses/resolve",
+        params={"place_id": "pvm", "session": SESSION},
+        headers=bearer(client_token(client)),
+    )
+
+    assert response.status_code == 200
+
+
+@pytest.mark.parametrize(
     "locale, message",
     [
         ("en", "We don't pick up at this address yet. For now, we only serve Montreal."),
