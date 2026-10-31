@@ -28,6 +28,7 @@ export async function uploadPhoto(
     headers: { "Content-Type": contentType, "Accept-Language": i18n.language },
     body: photo,
   });
-  if (!response.ok) throw await response.json();
+  // A non-JSON error body (a proxy page) falls back to the generic message.
+  if (!response.ok) throw await response.json().catch(() => null);
   return data.key;
 }

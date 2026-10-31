@@ -5,6 +5,8 @@ import { create } from "zustand";
 export type Photo = { key: string; uri: string };
 
 type Draft = {
+  // Goes up on reset, so an upload from an abandoned draft can tell.
+  id: number;
   retailerId: string | null;
   labelType: LabelType | null;
   carrier: CreateReturnRequest["carrier"] | null;
@@ -13,7 +15,7 @@ type Draft = {
   packagePhoto: Photo | null;
 };
 
-const empty: Draft = {
+const empty: Omit<Draft, "id"> = {
   retailerId: null,
   labelType: null,
   carrier: null,
@@ -27,6 +29,7 @@ export const useDraft = create<
   Draft & { update: (changes: Partial<Draft>) => void; reset: () => void }
 >()((set) => ({
   ...empty,
+  id: 0,
   update: (changes) => set(changes),
-  reset: () => set(empty),
+  reset: () => set((s) => ({ ...empty, id: s.id + 1 })),
 }));

@@ -43,11 +43,13 @@ export function Step({
 export function Choice({
   label,
   selected = false,
+  disabled = false,
   onPress,
   accessibilityLabel,
 }: {
   label: string;
   selected?: boolean;
+  disabled?: boolean;
   onPress: () => void;
   accessibilityLabel?: string;
 }) {
@@ -55,9 +57,10 @@ export function Choice({
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
-      accessibilityState={{ selected }}
+      accessibilityState={{ selected, disabled }}
+      disabled={disabled}
       onPress={onPress}
-      className={`rounded-sm border px-4 py-4 ${selected ? "border-primary bg-primary/10" : "border-line/20 bg-surface"}`}
+      className={`rounded-sm border px-4 py-4 ${selected ? "border-primary bg-primary/10" : "border-line/20 bg-surface"} ${disabled ? "opacity-60" : ""}`}
     >
       <Text className="font-sans-semibold text-base text-ink">{label}</Text>
     </Pressable>

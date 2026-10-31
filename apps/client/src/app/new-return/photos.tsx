@@ -50,7 +50,8 @@ function PhotoSlot({
 }) {
   const { t } = useTranslation();
   const pick = useMutation({
-    mutationFn: async (source: "camera" | "library"): Promise<Photo | null> => {
+    mutationFn: async (source: "camera" | "library") => {
+      const draft = useDraft.getState().id;
       if (source === "camera") {
         const { granted } = await ImagePicker.requestCameraPermissionsAsync();
         if (!granted) throw { detail: i18n.t("photos.cameraDenied") };
@@ -61,12 +62,13 @@ function PhotoSlot({
           : ImagePicker.launchImageLibraryAsync;
       // quality < 1 re-compresses, which keeps phone photos under the API's 10 MB limit.
       const result = await launch({ mediaTypes: ["images"], quality: 0.7 });
-      if (result.canceled) return null;
+      if (result.canceled) return;
       const asset = result.assets[0];
-      return { key: await uploadPhoto(kind, asset), uri: asset.uri };
+      const key = await uploadPhoto(kind, asset);
+      // Saved here, not in a callback, so it lands even if the screen has closed, unless
+      // a new return was started meanwhile.
+      if (useDraft.getState().id === draft) onUploaded({ key, uri: asset.uri });
     },
-    // On the hook, not on mutate(), so the upload still lands in the draft after Back.
-    onSuccess: (uploaded) => uploaded && onUploaded(uploaded),
   });
   return (
     <View className="gap-3">
@@ -96,11 +98,13 @@ function PhotoSlot({
       <Choice
         label={t("photos.camera")}
         accessibilityLabel={t("photos.cameraFor", { photo: title })}
+        disabled={pick.isPending}
         onPress={() => pick.mutate("camera")}
       />
       <Choice
         label={t("photos.library")}
         accessibilityLabel={t("photos.libraryFor", { photo: title })}
+        disabled={pick.isPending}
         onPress={() => pick.mutate("library")}
       />
     </View>

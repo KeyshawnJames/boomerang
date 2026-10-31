@@ -1,4 +1,10 @@
-import { fireEvent, renderRouter, screen } from "expo-router/testing-library";
+import {
+  act,
+  fireEvent,
+  renderRouter,
+  screen,
+  waitFor,
+} from "expo-router/testing-library";
 import * as ImagePicker from "expo-image-picker";
 
 import { queryClient } from "../api";
@@ -266,4 +272,70 @@ test("every step reads in French", async () => {
   );
   await fireEvent.press(await screen.findByRole("button", { name: "Simons" }));
   expect(screen.getByRole("button", { name: "Postes Canada" })).toBeTruthy();
+});
+
+test("while a photo uploads, its buttons wait", async () => {
+  let finish = () => {};
+  picker.launchImageLibraryAsync.mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        finish = () =>
+          resolve({
+            canceled: true,
+            assets: null,
+          } as ImagePicker.ImagePickerResult);
+      }),
+  );
+  await renderRouter(routes);
+  await toPhotos();
+  await fireEvent.press(
+    screen.getByRole("button", { name: "Label: choose from library" }),
+  );
+  const camera = () =>
+    screen.getByRole("button", { name: "Label: take a photo" });
+  await waitFor(() => expect(camera()).toBeDisabled());
+  await act(async () => finish());
+  await waitFor(() => expect(camera()).toBeEnabled());
+});
+
+test("an upload that ends after a new return has started stays out of it", async () => {
+  let finish = () => {};
+  picker.launchImageLibraryAsync.mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        finish = () =>
+          resolve({
+            canceled: false,
+            assets: [{ uri: "file:///qr.png", mimeType: "image/png" }],
+          } as ImagePicker.ImagePickerResult);
+      }),
+  );
+  await renderRouter(routes);
+  await toPhotos();
+  await fireEvent.press(
+    screen.getByRole("button", { name: "Label: choose from library" }),
+  );
+  await fireEvent.press(screen.getByRole("button", { name: "Back" }));
+  await fireEvent.press(screen.getByRole("button", { name: "Back" }));
+  await fireEvent.press(screen.getByRole("button", { name: "Back" }));
+  await fireEvent.press(
+    await screen.findByRole("button", { name: "New return" }),
+  );
+  await act(async () => finish());
+  await waitFor(() => expect(callTo(UPLOAD_URL, "PUT")).toBeDefined());
+  expect(useDraft.getState().labelPhoto).toBeNull();
+});
+
+test("switching the label type drops the label photo", async () => {
+  await renderRouter(routes);
+  await toPhotos();
+  await fireEvent.press(
+    screen.getByRole("button", { name: "Label: choose from library" }),
+  );
+  await screen.findByText("Label uploaded");
+  await fireEvent.press(screen.getByRole("button", { name: "Back" }));
+  await fireEvent.press(screen.getByRole("button", { name: "QR code" }));
+  expect(useDraft.getState().labelPhoto).not.toBeNull();
+  await fireEvent.press(screen.getByRole("button", { name: "Printed label" }));
+  expect(useDraft.getState().labelPhoto).toBeNull();
 });

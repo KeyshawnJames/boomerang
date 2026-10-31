@@ -29,7 +29,7 @@ export function Button({
   label,
   onPress,
   busy = false,
-  disabled = busy,
+  disabled = false,
 }: {
   label: string;
   onPress: () => void;
@@ -39,10 +39,10 @@ export function Button({
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityState={{ disabled, busy }}
-      disabled={disabled}
+      accessibilityState={{ disabled: busy || disabled, busy }}
+      disabled={busy || disabled}
       onPress={onPress}
-      className={`items-center rounded-sm bg-primary px-4 py-4 ${disabled ? "opacity-60" : ""}`}
+      className={`items-center rounded-sm bg-primary px-4 py-4 ${busy || disabled ? "opacity-60" : ""}`}
     >
       <Text className="font-sans-bold text-base text-on-primary">{label}</Text>
     </Pressable>

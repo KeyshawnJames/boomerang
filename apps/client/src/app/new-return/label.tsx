@@ -10,7 +10,7 @@ const CARRIERS = ["canada_post", "ups", "purolator"] as const;
 
 export default function Label() {
   const { t } = useTranslation();
-  const { labelType, carrier, orderNumber, update } = useDraft();
+  const { labelType, carrier, orderNumber, labelPhoto, update } = useDraft();
   return (
     <Step
       title={t("newReturn.labelTitle")}
@@ -28,7 +28,13 @@ export default function Label() {
           key={type}
           label={t(`labelTypes.${type}`)}
           selected={type === labelType}
-          onPress={() => update({ labelType: type })}
+          // A QR screenshot and a printed-label photo aren't interchangeable.
+          onPress={() =>
+            update({
+              labelType: type,
+              labelPhoto: type === labelType ? labelPhoto : null,
+            })
+          }
         />
       ))}
       <SectionTitle>{t("newReturn.carrier")}</SectionTitle>
@@ -46,6 +52,7 @@ export default function Label() {
         onChangeText={(text) => update({ orderNumber: text })}
         autoCapitalize="characters"
         autoCorrect={false}
+        maxLength={100}
       />
     </Step>
   );
