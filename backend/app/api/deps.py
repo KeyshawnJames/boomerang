@@ -32,9 +32,9 @@ CurrentUser = Annotated[User, Depends(get_current_user)]
 
 
 def require_role(*roles: UserRole) -> Callable[[User], User]:
-    def check_role(user: CurrentUser) -> User:
+    def check_role(user: CurrentUser, request: Request) -> User:
         if user.role not in roles:
-            raise api_error(403, "forbidden", user.locale)
+            raise api_error(403, "forbidden", request_locale(request))
         return user
 
     return check_role

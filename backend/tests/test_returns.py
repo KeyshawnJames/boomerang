@@ -72,8 +72,9 @@ def booking(client: TestClient, token: str, user_id: uuid.UUID, **overrides) -> 
     } | overrides
 
 
-def post(client: TestClient, token: str, body: dict):
-    return client.post("/returns", json=body, headers=bearer(token))
+def post(client: TestClient, token: str, body: dict, language: str = "en"):
+    headers = {**bearer(token), "Accept-Language": language}
+    return client.post("/returns", json=body, headers=headers)
 
 
 def test_create_return_happy_path(client: TestClient, session: Session):
@@ -119,10 +120,11 @@ def test_create_return_happy_path(client: TestClient, session: Session):
     assert fetched.json() == created
 
 
-def test_snapshots_are_in_the_users_language(client: TestClient, session: Session):
-    token, user_id = sign_in(client, locale="fr", phone=PHONE)
+def test_snapshots_are_in_the_apps_language(client: TestClient, session: Session):
+    # The profile says English, but the app is in French: the client read French.
+    token, user_id = sign_in(client, locale="en", phone=PHONE)
 
-    response = post(client, token, booking(client, token, user_id))
+    response = post(client, token, booking(client, token, user_id), language="fr")
 
     assert response.status_code == 201, response.text
     answer = session.exec(
@@ -201,8 +203,8 @@ def test_invalid_booking_is_refused(client: TestClient, session: Session, overri
 
 
 def test_errors_are_bilingual(client: TestClient):
-    token, user_id = sign_in(client, locale="fr", phone=PHONE)
-    response = post(client, token, booking(client, token, user_id, attested=False))
+    token, user_id = sign_in(client, phone=PHONE)
+    response = post(client, token, booking(client, token, user_id, attested=False), language="fr")
     assert response.json()["detail"] == "Confirmez que vos réponses sont exactes."
 
 

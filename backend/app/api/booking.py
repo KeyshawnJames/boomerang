@@ -1,11 +1,12 @@
 from datetime import datetime
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from sqlmodel import select
 
 from app.api.deps import SessionDep, require_role
 from app.core.config import settings
+from app.core.i18n import request_locale
 from app.models import Locale, Retailer, User, UserRole
 from app.schemas.booking import (
     BookingOptions,
@@ -28,9 +29,11 @@ def list_retailers(_: ClientUser, session: SessionDep) -> list[Retailer]:
 
 
 @router.get("/eligibility/questions")
-def eligibility_questions(user: ClientUser, session: SessionDep) -> EligibilityQuestions:
+def eligibility_questions(
+    _: ClientUser, request: Request, session: SessionDep
+) -> EligibilityQuestions:
     rows = active_questions(session)
-    en = user.locale == Locale.en
+    en = request_locale(request) == Locale.en
     return EligibilityQuestions(
         policy_version=policy_version(rows),
         questions=[

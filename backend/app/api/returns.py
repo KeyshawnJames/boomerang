@@ -2,7 +2,7 @@ import uuid
 from datetime import UTC, datetime
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy import or_
 from sqlmodel import select
@@ -10,7 +10,7 @@ from sqlmodel import select
 from app.api.deps import SessionDep, require_role
 from app.api.uploads import is_uploaded
 from app.core.config import settings
-from app.core.i18n import MESSAGES, api_error
+from app.core.i18n import MESSAGES, api_error, request_locale
 from app.core.security import decode_address_token
 from app.models import (
     AnswerOutcome,
@@ -34,9 +34,10 @@ ClientUser = Annotated[User, Depends(require_role(UserRole.client))]
 
 @router.post("/returns", status_code=201, response_model=ReturnRead)
 def create_return(
-    body: CreateReturnRequest, user: ClientUser, session: SessionDep
+    body: CreateReturnRequest, user: ClientUser, request: Request, session: SessionDep
 ) -> ReturnRequest | JSONResponse:
-    locale = user.locale
+    # Snapshots copy the wording in the app's language: what the client read.
+    locale = request_locale(request)
     if session.get(Retailer, body.retailer_id) is None:
         raise api_error(422, "retailer_not_found", locale)
 
@@ -130,9 +131,11 @@ def create_return(
 
 
 @router.get("/returns/{return_id}", response_model=ReturnRead)
-def get_return(return_id: uuid.UUID, user: ClientUser, session: SessionDep) -> ReturnRequest:
+def get_return(
+    return_id: uuid.UUID, user: ClientUser, request: Request, session: SessionDep
+) -> ReturnRequest:
     return_request = session.get(ReturnRequest, return_id)
     # 404, not 403, so a client can't learn which ids exist.
     if return_request is None or return_request.client_id != user.id:
-        raise api_error(404, "return_not_found", user.locale)
+        raise api_error(404, "return_not_found", request_locale(request))
     return return_request

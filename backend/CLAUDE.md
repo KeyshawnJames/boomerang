@@ -18,7 +18,8 @@ by hand.
   the generated file** (autogenerate misses things), then run `uv run alembic upgrade head`.
 - Tests: pytest against a real PostGIS container (testcontainers), never SQLite. Write the
   test first. Every endpoint gets a happy-path test plus an auth/permission test.
-- Every user-facing error message the API returns has an EN and a FR version (based on the
-  user's `locale`).
+- Every user-facing error message the API returns has an EN and a FR version, picked by the
+  app's language (`request_locale`, ADR 0015). The profile `locale` is for messages sent
+  outside the app.
 - After changing any route or schema, regenerate the app client: `pnpm --filter api generate`
   from the repo root, and commit `packages/api` (including `openapi.json`).

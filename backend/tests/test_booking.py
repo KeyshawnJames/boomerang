@@ -81,7 +81,7 @@ def test_retailers_sorted_by_name(client: TestClient, session: Session):
         ("fr", "Le détaillant a-t-il approuvé ce retour?", "Je ne sais pas"),
     ],
 )
-def test_eligibility_questions_in_user_language(
+def test_eligibility_questions_in_app_language(
     client: TestClient, session: Session, locale: str, prompt: str, label: str
 ):
     seed(session)
@@ -92,8 +92,11 @@ def test_eligibility_questions_in_user_language(
     )
     session.flush()
 
+    # The profile language is the other one: the app's language wins.
+    other = "fr" if locale == "en" else "en"
+    token = token_for(client, "eq@example.com", locale=other)
     response = client.get(
-        "/eligibility/questions", headers=bearer(token_for(client, "eq@example.com", locale=locale))
+        "/eligibility/questions", headers={**bearer(token), "Accept-Language": locale}
     )
 
     assert response.status_code == 200

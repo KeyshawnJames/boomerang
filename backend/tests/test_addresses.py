@@ -59,15 +59,16 @@ def google(client: TestClient) -> Iterator[FakeGoogle]:
     del app.dependency_overrides[get_places]
 
 
-def client_token(client: TestClient, locale: str = "fr") -> str:
-    return token_for(client, f"{uuid.uuid4()}@example.com", locale=locale)
+# A French profile, so a test sending English shows the app's language wins.
+def client_token(client: TestClient) -> str:
+    return token_for(client, f"{uuid.uuid4()}@example.com", locale="fr")
 
 
 def test_autocomplete_returns_suggestions(client: TestClient, google: FakeGoogle):
     response = client.get(
         "/addresses/autocomplete",
         params={"q": "1 place ville", "session": SESSION},
-        headers=bearer(client_token(client, locale="en")),
+        headers={**bearer(client_token(client)), "Accept-Language": "en"},
     )
 
     assert response.status_code == 200
@@ -126,7 +127,7 @@ def test_resolve_refuses_address_outside_montreal(
     response = client.get(
         "/addresses/resolve",
         params={"place_id": "qc", "session": SESSION},
-        headers=bearer(client_token(client, locale=locale)),
+        headers={**bearer(client_token(client)), "Accept-Language": locale},
     )
 
     assert response.status_code == 422
@@ -142,7 +143,7 @@ def test_resolve_refuses_a_place_that_is_not_a_street_address(
     response = client.get(
         "/addresses/resolve",
         params={"place_id": "montreal", "session": SESSION},
-        headers=bearer(client_token(client, locale="en")),
+        headers={**bearer(client_token(client)), "Accept-Language": "en"},
     )
 
     assert response.status_code == 422
@@ -155,7 +156,7 @@ def test_unexpected_google_reply_is_a_502(client: TestClient, google: FakeGoogle
     response = client.get(
         "/addresses/resolve",
         params={"place_id": "pvm", "session": SESSION},
-        headers=bearer(client_token(client, locale="en")),
+        headers={**bearer(client_token(client)), "Accept-Language": "en"},
     )
 
     assert response.status_code == 502
@@ -167,7 +168,7 @@ def test_google_failure_is_a_bilingual_502(client: TestClient, google: FakeGoogl
     response = client.get(
         "/addresses/autocomplete",
         params={"q": "1 place", "session": SESSION},
-        headers=bearer(client_token(client, locale="en")),
+        headers={**bearer(client_token(client)), "Accept-Language": "en"},
     )
 
     assert response.status_code == 502
