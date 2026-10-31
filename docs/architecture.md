@@ -143,8 +143,9 @@ are accurate. The carrier question set:
 - `GET /booking/options`: pickup windows and the all-in fee
   ([ADR 0012](decisions/0012-booking-rules.md)).
 - `GET /addresses/autocomplete`, `GET /addresses/resolve`: address suggestions, then a
-  signed address token once the server has checked the service area
-  ([ADR 0013](decisions/0013-address-lookup.md)).
+  signed address token once the server has checked the address is on the island of
+  Montreal ([ADR 0013](decisions/0013-address-lookup.md),
+  [ADR 0016](decisions/0016-service-area-is-the-island.md)).
 - `POST /uploads/presign`: a signed upload link for the label or package photo
   ([ADR 0014](decisions/0014-photo-uploads.md)).
 - `POST /returns`: create a return. Re-runs eligibility; `422` plus codes on a block.
