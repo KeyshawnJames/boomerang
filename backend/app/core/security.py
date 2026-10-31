@@ -12,6 +12,8 @@ ALGORITHM = "HS256"
 # Only address tokens carry this audience, so neither kind of token passes for the other.
 ADDRESS_AUDIENCE = "address"
 ADDRESS_TOKEN_TTL = timedelta(hours=1)
+UPLOAD_AUDIENCE = "upload"
+UPLOAD_TOKEN_TTL = timedelta(minutes=15)
 
 password_hasher = PasswordHash.recommended()
 # Checked when the email is unknown, so login takes as long whether or not the account exists.
@@ -79,3 +81,34 @@ def decode_address_token(token: str, user_id: uuid.UUID) -> dict[str, Any] | Non
     if payload["sub"] != str(user_id):
         return None
     return {key: payload[key] for key in ("address", "latitude", "longitude")}
+
+
+def create_upload_token(key: str, content_type: str, max_bytes: int) -> str:
+    """Signs a one-photo upload URL: this key, this content type, at most this many bytes."""
+    now = datetime.now(UTC)
+    payload = {
+        "aud": UPLOAD_AUDIENCE,
+        "key": key,
+        "content_type": content_type,
+        "max_bytes": max_bytes,
+        "iat": now,
+        "exp": now + UPLOAD_TOKEN_TTL,
+    }
+    return jwt.encode(payload, settings.jwt_secret.get_secret_value(), algorithm=ALGORITHM)
+
+
+def decode_upload_token(token: str, key: str) -> dict[str, Any] | None:
+    """The content type and size limit in a valid, unexpired token signed for this key, or None."""
+    try:
+        payload = jwt.decode(
+            token,
+            settings.jwt_secret.get_secret_value(),
+            algorithms=[ALGORITHM],
+            audience=UPLOAD_AUDIENCE,
+            options={"require": ["exp", "aud", "key", "content_type", "max_bytes"]},
+        )
+    except jwt.InvalidTokenError:
+        return None
+    if payload["key"] != key:
+        return None
+    return {"content_type": payload["content_type"], "max_bytes": payload["max_bytes"]}

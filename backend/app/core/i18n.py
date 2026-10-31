@@ -37,6 +37,20 @@ MESSAGES: dict[str, dict[Locale, str]] = {
         Locale.en: "Address search isn't working right now. Try again.",
         Locale.fr: "La recherche d'adresse ne fonctionne pas pour le moment. Réessayez.",
     },
+    "upload_link_invalid": {
+        Locale.en: "This upload link has expired or was already used. Add the photo again.",
+        Locale.fr: (
+            "Ce lien de téléversement a expiré ou a déjà servi. Ajoutez la photo de nouveau."
+        ),
+    },
+    "wrong_photo_type": {
+        Locale.en: "This photo's file type doesn't match. Use a JPEG, PNG or HEIC photo.",
+        Locale.fr: "Le type de fichier ne correspond pas. Utilisez une photo JPEG, PNG ou HEIC.",
+    },
+    "photo_too_large": {
+        Locale.en: "This photo is too large. Try a smaller one.",
+        Locale.fr: "Cette photo est trop volumineuse. Essayez-en une plus petite.",
+    },
 }
 
 

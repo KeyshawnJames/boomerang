@@ -3,8 +3,8 @@
 import { type DefaultError, queryOptions, type UseMutationOptions } from '@tanstack/react-query';
 
 import { client } from '../client.gen';
-import { autocompleteAddress, bookingOptions, eligibilityQuestions, health, listRetailers, login, me, type Options, register, resolveAddress, updateMe } from '../sdk.gen';
-import type { AutocompleteAddressData, AutocompleteAddressError, AutocompleteAddressResponse, BookingOptionsData, BookingOptionsResponse, EligibilityQuestionsData, EligibilityQuestionsResponse, HealthData, HealthResponse, ListRetailersData, ListRetailersResponse, LoginData, LoginError, LoginResponse, MeData, MeResponse, RegisterData, RegisterError, RegisterResponse, ResolveAddressData, ResolveAddressError, ResolveAddressResponse, UpdateMeData, UpdateMeError, UpdateMeResponse } from '../types.gen';
+import { autocompleteAddress, bookingOptions, eligibilityQuestions, health, listRetailers, login, me, type Options, presignUpload, register, resolveAddress, updateMe } from '../sdk.gen';
+import type { AutocompleteAddressData, AutocompleteAddressError, AutocompleteAddressResponse, BookingOptionsData, BookingOptionsResponse, EligibilityQuestionsData, EligibilityQuestionsResponse, HealthData, HealthResponse, ListRetailersData, ListRetailersResponse, LoginData, LoginError, LoginResponse, MeData, MeResponse, PresignUploadData, PresignUploadError, PresignUploadResponse, RegisterData, RegisterError, RegisterResponse, ResolveAddressData, ResolveAddressError, ResolveAddressResponse, UpdateMeData, UpdateMeError, UpdateMeResponse } from '../types.gen';
 
 /**
  * Register
@@ -197,6 +197,23 @@ export const resolveAddressOptions = (options: Options<ResolveAddressData>) => q
     },
     queryKey: resolveAddressQueryKey(options)
 });
+
+/**
+ * Presign Upload
+ */
+export const presignUploadMutation = (options?: Partial<Options<PresignUploadData>>): UseMutationOptions<PresignUploadResponse, PresignUploadError, Options<PresignUploadData>> => {
+    const mutationOptions: UseMutationOptions<PresignUploadResponse, PresignUploadError, Options<PresignUploadData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await presignUpload({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
 
 export const healthQueryKey = (options?: Options<HealthData>) => createQueryKey('health', options);
 

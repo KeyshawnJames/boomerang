@@ -4,6 +4,8 @@
 !.env.example
 
 # ---- Python / backend ----
+# Photos uploaded in dev (#45)
+backend/uploads/
 __pycache__/
 *.py[cod]
 *.egg-info/
