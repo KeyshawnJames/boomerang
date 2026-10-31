@@ -13,6 +13,11 @@ type Draft = {
   orderNumber: string;
   labelPhoto: Photo | null;
   packagePhoto: Photo | null;
+  // Eligibility answers by question code, and the question set they answer.
+  answers: Record<string, string>;
+  policyVersion: number | null;
+  acknowledgedWarnings: boolean;
+  attested: boolean;
 };
 
 const empty: Omit<Draft, "id"> = {
@@ -22,6 +27,10 @@ const empty: Omit<Draft, "id"> = {
   orderNumber: "",
   labelPhoto: null,
   packagePhoto: null,
+  answers: {},
+  policyVersion: null,
+  acknowledgedWarnings: false,
+  attested: false,
 };
 
 // The return being booked, kept across the steps so Back loses nothing.

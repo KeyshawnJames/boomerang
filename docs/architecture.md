@@ -77,7 +77,8 @@ awaiting_payment → requested → driver_assigned → picked_up → dropped_off
 > One package per return. A multi-package `Item` table later is a clean migration.
 
 - **User**: `id`, `role` (client | driver | admin), `name`, `email`, `phone`,
-  `password_hash`, `locale` (fr | en), `created_at`.
+  `password_hash`, `locale` (fr | en: for texts and emails; in-app responses follow the app's
+  language, [ADR 0015](decisions/0015-app-language-for-responses.md)), `created_at`.
 - **DriverProfile**: `user_id`, vehicle info, `is_available`, `location` (geography point),
   `location_updated_at`, `rating_avg`, `rating_count`, `stripe_account_id`.
 - **Retailer**: `id`, `name`, `logo_url`, `return_policy_url`. This is who the return is for.

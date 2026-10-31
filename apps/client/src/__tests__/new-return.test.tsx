@@ -6,6 +6,9 @@ import {
   waitFor,
 } from "expo-router/testing-library";
 import * as ImagePicker from "expo-image-picker";
+import { router } from "expo-router";
+
+import { eligibilityQuestionsQueryKey } from "api/react-query";
 
 import { queryClient } from "../api";
 import RootLayout from "../app/_layout";
@@ -13,6 +16,8 @@ import Home from "../app/index";
 import NewReturnLayout from "../app/new-return/_layout";
 import Retailer from "../app/new-return/index";
 import Label from "../app/new-return/label";
+import Blocked from "../app/new-return/blocked";
+import Eligibility from "../app/new-return/eligibility";
 import Photos from "../app/new-return/photos";
 import { useDraft } from "../draft";
 import i18n from "../i18n";
@@ -32,6 +37,8 @@ const routes = {
   "new-return/index": Retailer,
   "new-return/label": Label,
   "new-return/photos": Photos,
+  "new-return/eligibility": Eligibility,
+  "new-return/blocked": Blocked,
 };
 const UPLOAD_URL = "http://localhost:8000/uploads/u1/label/abc.png?token=t";
 
@@ -58,6 +65,33 @@ beforeEach(() => {
     ],
     "/uploads/presign": [200, { key: "u1/label/abc.png", url: UPLOAD_URL }],
     "/uploads/u1/label/abc.png": [204, null],
+    "/eligibility/questions": [
+      200,
+      {
+        policy_version: 3,
+        questions: [
+          {
+            code: "sealed",
+            prompt: "Is it sealed?",
+            help: "Taped shut, ready to ship.",
+            options: [
+              { value: "yes", label: "Yes", outcome: "pass" },
+              { value: "no", label: "No", outcome: "block" },
+              { value: "not_sure", label: "Not sure", outcome: "warn" },
+            ],
+          },
+          {
+            code: "label_ready",
+            prompt: "Do you have the label?",
+            help: null,
+            options: [
+              { value: "yes", label: "Yes", outcome: "pass" },
+              { value: "no", label: "No", outcome: "block" },
+            ],
+          },
+        ],
+      },
+    ],
   };
   jest.clearAllMocks();
   // A fresh Response per call: a body can only be read once.
@@ -338,4 +372,158 @@ test("switching the label type drops the label photo", async () => {
   expect(useDraft.getState().labelPhoto).not.toBeNull();
   await fireEvent.press(screen.getByRole("button", { name: "Printed label" }));
   expect(useDraft.getState().labelPhoto).toBeNull();
+});
+
+async function toEligibility() {
+  await toPhotos();
+  const next = screen.getByRole("button", { name: "Next" });
+  expect(next).toBeDisabled();
+  useDraft.setState({
+    labelPhoto: { key: "u1/label/abc.png", uri: "file:///qr.png" },
+    packagePhoto: { key: "u1/package/def.jpg", uri: "file:///box.jpg" },
+  });
+  await waitFor(() => expect(next).toBeEnabled());
+  await fireEvent.press(next);
+  await screen.findByText("Is it sealed?");
+}
+
+const attest =
+  "My answers are true, and I understand the driver can refuse a package that doesn't match them.";
+
+test("passing answers lead straight to the attestation", async () => {
+  await renderRouter(routes);
+  await toEligibility();
+  expect(screen.getByText("Taped shut, ready to ship.")).toBeTruthy();
+  await fireEvent.press(
+    screen.getByRole("button", { name: "Is it sealed? Yes" }),
+  );
+  expect(screen.queryByRole("checkbox", { name: attest })).toBeNull();
+  await fireEvent.press(
+    screen.getByRole("button", { name: "Do you have the label? Yes" }),
+  );
+  await fireEvent.press(screen.getByRole("checkbox", { name: attest }));
+  expect(screen.getByRole("checkbox", { name: attest })).toBeChecked();
+  expect(useDraft.getState()).toMatchObject({
+    answers: { sealed: "yes", label_ready: "yes" },
+    policyVersion: 3,
+    acknowledgedWarnings: false,
+    attested: true,
+  });
+});
+
+test("a warning needs acknowledging before the attestation shows", async () => {
+  await renderRouter(routes);
+  await toEligibility();
+  await fireEvent.press(
+    screen.getByRole("button", { name: "Is it sealed? Not sure" }),
+  );
+  await fireEvent.press(
+    screen.getByRole("button", { name: "Do you have the label? Yes" }),
+  );
+  expect(screen.queryByRole("checkbox", { name: attest })).toBeNull();
+  await fireEvent.press(screen.getByRole("checkbox", { name: "I understand" }));
+  await fireEvent.press(screen.getByRole("checkbox", { name: attest }));
+  expect(useDraft.getState()).toMatchObject({
+    acknowledgedWarnings: true,
+    attested: true,
+  });
+});
+
+test("changing an answer takes back the attestation", async () => {
+  await renderRouter(routes);
+  await toEligibility();
+  await fireEvent.press(
+    screen.getByRole("button", { name: "Is it sealed? Yes" }),
+  );
+  await fireEvent.press(
+    screen.getByRole("button", { name: "Do you have the label? Yes" }),
+  );
+  await fireEvent.press(screen.getByRole("checkbox", { name: attest }));
+  // Tapping the answer already chosen changes nothing.
+  await fireEvent.press(
+    screen.getByRole("button", { name: "Is it sealed? Yes" }),
+  );
+  expect(useDraft.getState().attested).toBe(true);
+  await fireEvent.press(
+    screen.getByRole("button", { name: "Is it sealed? Not sure" }),
+  );
+  expect(useDraft.getState().attested).toBe(false);
+});
+
+test("answers to an older question set start over", async () => {
+  await renderRouter(routes);
+  await toEligibility();
+  useDraft.setState({
+    answers: { sealed: "yes", label_ready: "yes" },
+    policyVersion: 2,
+    attested: true,
+  });
+  await waitFor(() =>
+    expect(
+      screen.getByRole("button", { name: "Is it sealed? Yes" }),
+    ).not.toBeSelected(),
+  );
+  expect(screen.queryByRole("checkbox")).toBeNull();
+  await fireEvent.press(
+    screen.getByRole("button", { name: "Is it sealed? Yes" }),
+  );
+  expect(useDraft.getState()).toMatchObject({
+    answers: { sealed: "yes" },
+    policyVersion: 3,
+    attested: false,
+  });
+});
+
+test("a blocking answer ends the flow with the reason", async () => {
+  await renderRouter(routes);
+  await toEligibility();
+  await fireEvent.press(
+    screen.getByRole("button", { name: "Is it sealed? No" }),
+  );
+  expect(await screen.findByText("We can't take this return")).toBeTruthy();
+  expect(screen.getByText("Is it sealed? No")).toBeTruthy();
+  // Back to fix a wrong tap: still blocked, no way to attest.
+  await fireEvent.press(screen.getByRole("button", { name: "Back" }));
+  await fireEvent.press(
+    screen.getByRole("button", { name: "Do you have the label? Yes" }),
+  );
+  expect(
+    screen.getByText("With this answer, we can't pick up this return."),
+  ).toBeTruthy();
+  expect(screen.queryByRole("checkbox")).toBeNull();
+  await fireEvent.press(
+    screen.getByRole("button", { name: "Is it sealed? No" }),
+  );
+  await fireEvent.press(
+    await screen.findByRole("button", { name: "Back to home" }),
+  );
+  expect(
+    await screen.findByRole("button", { name: "New return" }),
+  ).toBeTruthy();
+});
+
+test("the questions read in French", async () => {
+  i18n.changeLanguage("fr");
+  await renderRouter(routes);
+  await fireEvent.press(
+    await screen.findByRole("button", { name: "Nouveau retour" }),
+  );
+  useDraft.setState({ answers: { sealed: "no" } });
+  await act(async () => router.push("/new-return/blocked"));
+  expect(
+    await screen.findByText("Nous ne pouvons pas prendre ce retour"),
+  ).toBeTruthy();
+});
+
+test("switching language drops the questions loaded in the old one", async () => {
+  await renderRouter(routes);
+  await toEligibility();
+  for (let i = 0; i < 4; i++)
+    await fireEvent.press(screen.getByRole("button", { name: "Back" }));
+  await fireEvent.press(
+    await screen.findByRole("button", { name: "Français, switch to French" }),
+  );
+  expect(
+    queryClient.getQueryData(eligibilityQuestionsQueryKey()),
+  ).toBeUndefined();
 });

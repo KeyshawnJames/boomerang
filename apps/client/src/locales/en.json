@@ -62,6 +62,19 @@
     "cameraDenied": "Allow camera access in your phone's settings, or choose a photo from your library.",
     "wrongType": "Choose a JPEG, PNG or HEIC photo."
   },
+  "eligibility": {
+    "title": "A few questions",
+    "warning": "Some of your answers could cause a problem at pickup or drop-off.",
+    "acknowledge": "I understand",
+    "attest": "My answers are true, and I understand the driver can refuse a package that doesn't match them.",
+    "blocked": "With this answer, we can't pick up this return."
+  },
+  "blocked": {
+    "title": "We can't take this return",
+    "because": "Because of your answer:",
+    "explain": "A driver couldn't take this package. Nothing has been booked or charged. If you tapped the wrong answer, go back and change it.",
+    "home": "Back to home"
+  },
   "errors": {
     "generic": "Something went wrong. Check your connection and try again."
   }

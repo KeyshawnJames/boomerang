@@ -164,13 +164,14 @@ def test_require_role_allows_matching_role(client: TestClient, role_client: Test
     assert role_client.get("/driver-only", headers=bearer(token)).status_code == 200
 
 
-def test_require_role_rejects_wrong_role_in_user_locale(
+def test_require_role_rejects_wrong_role_in_app_language(
     client: TestClient, role_client: TestClient
 ):
-    assert register(client, "ida@example.com", locale="en").status_code == 201
+    # The profile says French; the app's language wins.
+    assert register(client, "ida@example.com", locale="fr").status_code == 201
     token = login(client, "ida@example.com").json()["access_token"]
 
-    response = role_client.get("/driver-only", headers=bearer(token))
+    response = role_client.get("/driver-only", headers={**bearer(token), "Accept-Language": "en"})
     assert response.status_code == 403
     assert response.json()["detail"] == "You don't have access to this."
 
@@ -196,13 +197,15 @@ def test_update_me_stores_phone_as_e164(client: TestClient):
     ],
 )
 @pytest.mark.parametrize("phone", ["123", "514-123-4567", "not a phone"])
-def test_update_me_rejects_invalid_phone_in_user_locale(
+def test_update_me_rejects_invalid_phone_in_app_language(
     client: TestClient, phone: str, locale: str, message: str
 ):
-    assert register(client, "kim@example.com", locale=locale).status_code == 201
+    assert register(client, "kim@example.com").status_code == 201
     token = login(client, "kim@example.com").json()["access_token"]
 
-    response = client.patch("/me", json={"phone": phone}, headers=bearer(token))
+    response = client.patch(
+        "/me", json={"phone": phone}, headers={**bearer(token), "Accept-Language": locale}
+    )
     assert response.status_code == 422
     assert response.json()["detail"] == message
 

@@ -63,8 +63,10 @@ def me(user: CurrentUser) -> User:
 
 
 @router.patch("/me", response_model=UserRead)
-def update_me(body: UpdateMeRequest, user: CurrentUser, session: SessionDep) -> User:
-    user.phone = e164(body.phone, user.locale)
+def update_me(
+    body: UpdateMeRequest, user: CurrentUser, request: Request, session: SessionDep
+) -> User:
+    user.phone = e164(body.phone, request_locale(request))
     session.add(user)
     session.commit()
     session.refresh(user)

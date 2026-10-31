@@ -28,7 +28,8 @@ def policy_version(questions: Sequence[EligibilityQuestion]) -> int:
 def evaluate(
     questions: Sequence[EligibilityQuestion], answers: dict[str, str], locale: Locale
 ) -> list[ReturnEligibilityAnswer]:
-    """One answer row per question, in question order, its text copied in the user's language.
+    """One answer row per question, in question order, its text copied in the language
+    the client read it in.
 
     The rows have no return_id yet: the caller sets it once it knows the return.
     """

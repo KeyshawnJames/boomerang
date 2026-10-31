@@ -12,6 +12,11 @@
 
 ---
 
+## 2026-10-31
+
+### Eligibility questions
+- **[Claude]** After the photos, the app now asks the eligibility questions. A "no" that rules the return out shows a screen explaining why, and nothing goes further. A "not sure" needs an "I understand", then the client confirms their answers are true. The server still makes the final call. Testing on Keyshawn's phone found the questions came in English with the app in French, so the server now answers in the app's language everywhere (ADR 0015). (#48)
+
 ## 2026-10-30
 
 ### Starting a return in the app
