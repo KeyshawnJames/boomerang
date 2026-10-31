@@ -100,7 +100,8 @@
     "taxes": "Plus GST/QST",
     "phone": "Phone number",
     "phoneHint": "The driver calls or texts it only if they can't find you.",
-    "book": "Book pickup"
+    "book": "Book pickup",
+    "slotGone": "This pickup time has passed. Go back and choose another."
   },
   "booked": {
     "title": "Pickup booked",

@@ -26,12 +26,13 @@ export default function Review() {
   const options = useQuery(bookingOptionsOptions());
   const me = useQuery(meOptions());
   const [phone, setPhone] = useState("");
-  // ADR 0012: the phone is asked for at the first booking, not at sign-up.
-  const needsPhone = me.isSuccess && !me.data.phone;
+  // ADR 0012: the phone is asked for at the first booking, not at sign-up. If the
+  // profile didn't load, asking is safer than a booking the server will refuse.
+  const needsPhone = !me.isPending && !me.data?.phone;
   // The offered copy of the slot: an ASAP window moves on while the client reads.
   const slot =
-    draft.slot &&
-    (options.data?.slots.find((s) => sameSlot(s, draft.slot!)) ?? draft.slot);
+    draft.slot && options.data?.slots.find((s) => sameSlot(s, draft.slot!));
+  const slotGone = !!options.data && !!draft.slot && !slot;
   const book = useMutation({
     mutationFn: async () => {
       if (needsPhone) {
@@ -68,7 +69,7 @@ export default function Review() {
       router.replace(`/returns/${data.id}`);
       useDraft.getState().reset();
     },
-    // The likeliest cause is a slot that has passed: the time step shows the current ones.
+    // A slot that has passed is the likeliest cause; the refetch shows slotGone if so.
     onError: () =>
       queryClient.invalidateQueries({ queryKey: bookingOptionsQueryKey() }),
   });
@@ -78,7 +79,15 @@ export default function Review() {
       title={t("review.title")}
       footer={
         <View className="gap-3">
-          {book.isError && (
+          {slotGone && (
+            <Text
+              accessibilityRole="alert"
+              className="font-sans text-base text-danger"
+            >
+              {t("review.slotGone")}
+            </Text>
+          )}
+          {book.isError && !slotGone && (
             <Text
               accessibilityRole="alert"
               className="font-sans text-base text-danger"
@@ -89,7 +98,7 @@ export default function Review() {
           <Button
             label={t("review.book")}
             busy={book.isPending}
-            disabled={me.isPending || (needsPhone && !phone.trim())}
+            disabled={me.isPending || !slot || (needsPhone && !phone.trim())}
             onPress={() => book.mutate()}
           />
         </View>

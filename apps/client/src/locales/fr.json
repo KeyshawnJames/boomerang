@@ -99,8 +99,9 @@
     "priceLine": "{{price}}, tous frais compris",
     "taxes": "Plus TPS/TVQ",
     "phone": "Numéro de téléphone",
-    "phoneHint": "Le chauffeur l'appelle ou lui écrit seulement s'il ne vous trouve pas.",
-    "book": "Réserver le ramassage"
+    "phoneHint": "Le chauffeur vous appelle ou vous texte seulement s'il ne vous trouve pas.",
+    "book": "Réserver le ramassage",
+    "slotGone": "Cette plage de ramassage est passée. Revenez en arrière pour en choisir une autre."
   },
   "booked": {
     "title": "Ramassage réservé",

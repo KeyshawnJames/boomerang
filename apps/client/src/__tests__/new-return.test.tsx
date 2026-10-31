@@ -164,6 +164,8 @@ beforeEach(() => {
   } as ImagePicker.ImagePickerResult);
 });
 
+// The app retries failed queries; here an error should show at once.
+beforeAll(() => queryClient.setDefaultOptions({ queries: { retry: false } }));
 afterEach(() => queryClient.clear());
 
 function callTo(path: string, method = "GET") {
@@ -511,6 +513,8 @@ test("answers to an older question set start over", async () => {
     ).not.toBeSelected(),
   );
   expect(screen.queryByRole("checkbox")).toBeNull();
+  // The old attestation doesn't count either.
+  expect(screen.getByRole("button", { name: "Next" })).toBeDisabled();
   await fireEvent.press(
     screen.getByRole("button", { name: "Is it sealed? Yes" }),
   );
@@ -709,14 +713,16 @@ function withPhone() {
   replies["/me"] = [200, { ...(me as object), phone: "+15145550123" }];
 }
 const book = () => screen.findByRole("button", { name: "Book pickup" });
+// Book waits for the current pickup times, which come with the price.
+const loaded = () => screen.findByText("$4.99, all fees included");
 
 test("a return is booked and confirmed", async () => {
   withPhone();
   await openStep("/new-return/review", READY);
   expect(await screen.findByText("Simons")).toBeTruthy();
   expect(screen.getByText(ADDRESS)).toBeTruthy();
+  expect(await loaded()).toBeTruthy();
   expect(screen.getByText(slotLabel(SLOT))).toBeTruthy();
-  expect(await screen.findByText("$4.99, all fees included")).toBeTruthy();
   expect(screen.getByText("Plus GST/QST")).toBeTruthy();
   expect(screen.queryByLabelText("Phone number")).toBeNull();
   await fireEvent.press(await book());
@@ -750,6 +756,7 @@ test("a return is booked and confirmed", async () => {
 test("ASAP is booked as ASAP", async () => {
   withPhone();
   await openStep("/new-return/review", { ...READY, slot: ASAP });
+  await loaded();
   await fireEvent.press(await book());
   await screen.findByText("Pickup booked");
   const [request] = callTo("/returns", "POST")!;
@@ -762,6 +769,7 @@ test("ASAP is booked as ASAP", async () => {
 test("without a phone number, it is asked for first", async () => {
   await openStep("/new-return/review", READY);
   const phone = await screen.findByLabelText("Phone number");
+  await loaded();
   expect(await book()).toBeDisabled();
   await fireEvent.changeText(phone, "514 555 0123");
   await fireEvent.press(await book());
@@ -780,7 +788,7 @@ test("a refused booking says why, books nothing and refreshes the times", async 
     { detail: "This pickup time is no longer available. Choose another." },
   ];
   await openStep("/new-return/review", READY);
-  await screen.findByText("$4.99, all fees included");
+  await loaded();
   const fetched = callsTo("/booking/options").length;
   await fireEvent.press(await book());
   expect(
@@ -797,6 +805,7 @@ test("a refused booking says why, books nothing and refreshes the times", async 
 test("a double tap books once", async () => {
   withPhone();
   await openStep("/new-return/review", READY);
+  await loaded();
   const button = await book();
   await fireEvent.press(button);
   await fireEvent.press(button);
@@ -819,4 +828,31 @@ test("the booking steps read in French", async () => {
     await screen.findByText(/^4,99\s\$, tous frais compris$/),
   ).toBeTruthy();
   expect(screen.getByText("Plus TPS/TVQ")).toBeTruthy();
+});
+
+test("a search error clears once the search does", async () => {
+  replies["/addresses/autocomplete"] = [502, { detail: "Search is down." }];
+  await openStep("/new-return/address");
+  await fireEvent.changeText(search(), "1 rue");
+  expect(await screen.findByText("Search is down.")).toBeTruthy();
+  await fireEvent.changeText(search(), "");
+  await waitFor(() => expect(screen.queryByText("Search is down.")).toBeNull());
+});
+
+test("a time that has passed can't be booked from the review", async () => {
+  withPhone();
+  replies["/booking/options"] = [200, { pickup_fee: 499, slots: [ASAP] }];
+  await openStep("/new-return/review", READY);
+  expect(
+    await screen.findByText(
+      "This pickup time has passed. Go back and choose another.",
+    ),
+  ).toBeTruthy();
+  expect(await book()).toBeDisabled();
+});
+
+test("if the profile can't load, the phone is asked for anyway", async () => {
+  replies["/me"] = [500, { detail: "Down." }];
+  await openStep("/new-return/review", READY);
+  expect(await screen.findByLabelText("Phone number")).toBeTruthy();
 });

@@ -76,7 +76,7 @@ export default function Address() {
         maxLength={200}
       />
       {(suggestions.isFetching || resolve.isPending) && <ActivityIndicator />}
-      {[suggestions.error, resolve.error].map(
+      {[searching && suggestions.error, resolve.error].map(
         (error, i) =>
           error && (
             <Text

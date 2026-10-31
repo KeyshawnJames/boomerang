@@ -39,7 +39,9 @@ export function slotLabel(slot: PickupSlot, now = new Date()): string {
   const name =
     day(start) === day(now)
       ? i18n.t("time.today")
-      : day(start) === day(new Date(now.getTime() + DAY))
+      : // Back from the slot, not forward from now: slots are daytime, so a DST hour
+        // can't push this across midnight.
+        day(new Date(start.getTime() - DAY)) === day(now)
         ? i18n.t("time.tomorrow")
         : weekday[0].toUpperCase() + weekday.slice(1);
   return `${name}, ${time(slot.start)} – ${time(slot.end)}`;

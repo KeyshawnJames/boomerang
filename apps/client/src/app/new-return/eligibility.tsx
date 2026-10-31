@@ -17,8 +17,8 @@ export default function Eligibility() {
   const { acknowledgedWarnings, attested, update } = draft;
   const data = questions.data;
   // Answers to an older question set don't count: POST /returns would refuse them.
-  const answers =
-    data && draft.policyVersion === data.policy_version ? draft.answers : {};
+  const current = !!data && draft.policyVersion === data.policy_version;
+  const answers = current ? draft.answers : {};
   const outcome = data ? preview(data.questions, answers) : null;
   return (
     <Step
@@ -26,7 +26,7 @@ export default function Eligibility() {
       footer={
         <Button
           label={t("newReturn.next")}
-          disabled={!attested}
+          disabled={!current || !attested}
           onPress={() => router.push("/new-return/address")}
         />
       }

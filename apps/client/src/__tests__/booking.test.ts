@@ -37,6 +37,16 @@ test("slots say today or tomorrow, in Montreal time", () => {
   expect(slotLabel(TODAY, NOW)).toMatch(/^Aujourd'hui, 16\sh\s00 – 18\sh\s00$/);
 });
 
+test("tomorrow is still tomorrow the night the clocks go forward", () => {
+  const night = new Date("2026-03-07T23:30:00-05:00");
+  const sunday = {
+    start: "2026-03-08T09:00:00-04:00",
+    end: "2026-03-08T11:00:00-04:00",
+    asap: false,
+  };
+  expect(slotLabel(sunday, night)).toMatch(/^Tomorrow, /);
+});
+
 test("a later day is named, capitalized", () => {
   const monday = { ...TOMORROW, start: "2026-11-02T09:00:00-05:00" };
   expect(slotLabel(monday, NOW)).toMatch(/^Monday, /);
