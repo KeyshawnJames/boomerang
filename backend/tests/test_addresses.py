@@ -109,25 +109,46 @@ def test_resolve_returns_address_and_token(client: TestClient, google: FakeGoogl
     }
 
 
-@pytest.mark.parametrize(
-    "location",
-    [
-        {"latitude": 45.4039, "longitude": -73.9525},  # Sainte-Anne-de-Bellevue, west tip
-        {"latitude": 45.6836, "longitude": -73.4795},  # Pointe-aux-Trembles, east tip
-    ],
-)
-def test_resolve_accepts_the_whole_island(
-    client: TestClient, google: FakeGoogle, location: dict[str, float]
-):
-    google.location = location
-
-    response = client.get(
+def resolve_at(client: TestClient, google: FakeGoogle, latitude: float, longitude: float):
+    google.location = {"latitude": latitude, "longitude": longitude}
+    return client.get(
         "/addresses/resolve",
         params={"place_id": "pvm", "session": SESSION},
         headers=bearer(client_token(client)),
     )
 
-    assert response.status_code == 200
+
+@pytest.mark.parametrize(
+    "latitude, longitude",
+    [
+        (45.4206, -73.9536),  # Senneville, the west tip
+        (45.4039, -73.9525),  # Sainte-Anne-de-Bellevue
+        (45.4910, -73.8540),  # Pierrefonds
+        (45.4950, -73.8900),  # Île Bizard
+        (45.4620, -73.5450),  # Nuns' Island
+        (45.6570, -73.5700),  # Rivière-des-Prairies
+        (45.7025, -73.4760),  # Pointe-aux-Trembles, the east tip
+    ],
+)
+def test_resolve_accepts_the_whole_island(
+    client: TestClient, google: FakeGoogle, latitude: float, longitude: float
+):
+    assert resolve_at(client, google, latitude, longitude).status_code == 200
+
+
+@pytest.mark.parametrize(
+    "latitude, longitude",
+    [
+        (45.5550, -73.7000),  # Laval, across the Rivière des Prairies
+        (45.5312, -73.5181),  # Longueuil, across the St. Lawrence
+        (45.3900, -73.9500),  # Île Perrot, off the west tip
+        (45.7420, -73.4500),  # Repentigny, off the east tip
+    ],
+)
+def test_resolve_refuses_the_far_shore(
+    client: TestClient, google: FakeGoogle, latitude: float, longitude: float
+):
+    assert resolve_at(client, google, latitude, longitude).status_code == 422
 
 
 @pytest.mark.parametrize(

@@ -1,6 +1,6 @@
 # 0013. Pickup addresses are looked up by the server, through Google Places
 
-- **Status:** accepted (the service-area radius is a placeholder until the business sets it)
+- **Status:** accepted. The service-area circle is replaced by [0016](0016-service-area-is-the-island.md)
 - **Date:** 2026-10-29
 
 ## Context
@@ -28,11 +28,11 @@ A client types their pickup address while booking. We need three things from tha
 
 **The server checks the service area and vouches for the address.**
 
-- The point must be within **35 km of downtown Montreal** (a setting). That circle stands in
-  for the island of Montreal from [ADR 0012](0012-booking-rules.md). It reaches both ends of
-  the island (the far west is 32 km away) and also takes in Laval, Longueuil and nearby South
-  Shore towns. A real map outline can replace it later. (Changed from 15 km on 2026-10-31:
-  15 km left out Pierrefonds, Rivière-des-Prairies, Pointe-aux-Trembles and the West Island.)
+- The point must be within **15 km of downtown Montreal** (a setting). That circle stands in
+  for the island of Montreal from [ADR 0012](0012-booking-rules.md): it also takes in nearby
+  parts of Laval and Longueuil, and misses the far west of the island. A real map outline can
+  replace it later. (Replaced on 2026-10-31 by the island's outline,
+  [ADR 0016](0016-service-area-is-the-island.md).)
 - Outside the area, the client gets a clear message in French or English.
 - It must be a real street address (with a house number), not a city, a street or a
   neighbourhood, so the driver has a door to go to. Suggestions only offer street addresses,

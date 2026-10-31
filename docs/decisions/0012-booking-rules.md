@@ -45,7 +45,7 @@ number on file.
 **Service area**
 
 - For the MVP, we pick up on the **island of Montreal** only. Address lookup (#44,
-  ADR 0013) enforces it.
+  ADR 0013) enforces it, using the island's outline ([ADR 0016](0016-service-area-is-the-island.md)).
 
 ## Consequences
 

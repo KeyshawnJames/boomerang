@@ -1,4 +1,5 @@
 import uuid
+from pathlib import Path
 
 import httpx
 from sqlalchemy import func
@@ -8,8 +9,16 @@ from app.core.config import settings
 from app.models import Locale
 from app.schemas.address import AddressSuggestion
 
-# Downtown Montreal, the centre of the service area (ADR 0013).
+# Downtown Montreal. Suggestions favour addresses within 35 km of it, which reaches both
+# ends of the island (Google allows up to 50 km).
 MONTREAL_LATITUDE, MONTREAL_LONGITUDE = 45.5017, -73.5673
+SUGGESTION_RADIUS_M = 35_000
+# The service area (ADR 0016): the agglomeration of Montreal, so the whole island plus
+# Île Bizard, Nuns' Island and the other islands that belong to it. From the Ville de
+# Montréal's open data ("Limites administratives de l'agglomération de Montréal", CC BY 4.0),
+# merged into one outline, simplified to about 20 m and widened by 150 m for shoreline
+# addresses.
+SERVICE_AREA_WKT = (Path(__file__).parent / "montreal.wkt").read_text().strip()
 # Places with a door a driver can knock on; no cities, streets or neighbourhoods.
 ADDRESS_TYPES = ["street_address", "premise", "subpremise"]
 
@@ -50,9 +59,7 @@ class GooglePlaces:
             "sessionToken": str(session),
             "includedRegionCodes": ["ca"],
             "includedPrimaryTypes": ADDRESS_TYPES,
-            "locationBias": {
-                "circle": {"center": center, "radius": settings.service_area_radius_m}
-            },
+            "locationBias": {"circle": {"center": center, "radius": SUGGESTION_RADIUS_M}},
             "languageCode": locale.value,
         }
         data = self._send(self.http.build_request("POST", "/places:autocomplete", json=body))
@@ -92,8 +99,7 @@ def point(latitude: float, longitude: float) -> str:
 
 
 def in_service_area(session: Session, latitude: float, longitude: float) -> bool:
-    here = func.ST_GeogFromText(point(latitude, longitude))
-    downtown = func.ST_GeogFromText(point(MONTREAL_LATITUDE, MONTREAL_LONGITUDE))
+    area = func.ST_GeomFromText(SERVICE_AREA_WKT, 4326)
     return session.exec(
-        select(func.ST_DWithin(here, downtown, settings.service_area_radius_m))
+        select(func.ST_Covers(area, func.ST_GeomFromEWKT(point(latitude, longitude))))
     ).one()
