@@ -14,6 +14,12 @@
 
 ## 2026-10-30
 
+### Clients can create a return
+- **[Claude]** The server can now create a return. It re-checks every eligibility answer
+  itself, so a blocked answer is refused and logged even if someone bypasses the app. It
+  also checks the pickup time, the address, both photos and the phone number. It sets the
+  price itself, and the return waits for payment, which comes in M5. (#46)
+
 ### Clients can upload their label and package photos
 - **[Claude]** The app can now ask the server for a short-lived upload link (15 minutes,
   one photo, up to 10 MB, JPEG, PNG or HEIC) and send the label or package photo to it.
