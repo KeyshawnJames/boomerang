@@ -4,6 +4,7 @@ import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, Text, View } from "react-native";
 
+import { Button } from "../../components/form";
 import { Check, Choice, SectionTitle, Step } from "../../components/step";
 import { useDraft } from "../../draft";
 import { preview } from "../../eligibility";
@@ -20,7 +21,16 @@ export default function Eligibility() {
     data && draft.policyVersion === data.policy_version ? draft.answers : {};
   const outcome = data ? preview(data.questions, answers) : null;
   return (
-    <Step title={t("eligibility.title")}>
+    <Step
+      title={t("eligibility.title")}
+      footer={
+        <Button
+          label={t("newReturn.next")}
+          disabled={!attested}
+          onPress={() => router.push("/new-return/address")}
+        />
+      }
+    >
       {questions.isPending && <ActivityIndicator />}
       {questions.isError && (
         <Text

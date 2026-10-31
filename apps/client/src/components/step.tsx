@@ -1,7 +1,14 @@
 import { router } from "expo-router";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // The frame shared by the new-return steps.
@@ -16,7 +23,11 @@ export function Step({
 }) {
   const { t } = useTranslation();
   return (
-    <View className="flex-1 bg-bg">
+    // Keeps the footer button above the keyboard on the steps with text fields.
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      className="flex-1 bg-bg"
+    >
       <SafeAreaView style={{ flex: 1 }}>
         <Pressable
           accessibilityRole="button"
@@ -27,7 +38,11 @@ export function Step({
             {t("newReturn.back")}
           </Text>
         </Pressable>
-        <ScrollView contentContainerClassName="gap-3 px-6 pb-6">
+        {/* "handled": a tap on an address suggestion picks it instead of only closing the keyboard. */}
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          contentContainerClassName="gap-3 px-6 pb-6"
+        >
           <Text className="mb-2 font-sans-extrabold text-3xl text-ink">
             {title}
           </Text>
@@ -35,7 +50,7 @@ export function Step({
         </ScrollView>
         {footer && <View className="px-6 pb-4">{footer}</View>}
       </SafeAreaView>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -100,5 +115,26 @@ export function Check({
       </View>
       <Text className="flex-1 font-sans text-base text-ink">{label}</Text>
     </Pressable>
+  );
+}
+
+// One labelled line of a summary, with an optional second line under the value.
+export function Row({
+  label,
+  value,
+  note,
+}: {
+  label: string;
+  value: string;
+  note?: string | null;
+}) {
+  return (
+    <View className="gap-1 border-b border-line/10 py-3">
+      <Text className="font-sans text-sm text-muted">{label}</Text>
+      <Text className="font-sans-semibold text-base text-ink">{value}</Text>
+      {note ? (
+        <Text className="font-sans text-base text-muted">{note}</Text>
+      ) : null}
+    </View>
   );
 }

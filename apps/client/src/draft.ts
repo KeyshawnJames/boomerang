@@ -1,4 +1,9 @@
-import type { CreateReturnRequest, LabelType } from "api";
+import type {
+  CreateReturnRequest,
+  LabelType,
+  PickupSlot,
+  ResolvedAddress,
+} from "api";
 import { create } from "zustand";
 
 // The uri shows the photo again after Back; only the key goes to POST /returns.
@@ -18,6 +23,10 @@ type Draft = {
   policyVersion: number | null;
   acknowledgedWarnings: boolean;
   attested: boolean;
+  // From GET /addresses/resolve: the address shown and the token POST /returns checks.
+  address: ResolvedAddress | null;
+  pickupNotes: string;
+  slot: PickupSlot | null;
 };
 
 const empty: Omit<Draft, "id"> = {
@@ -31,6 +40,9 @@ const empty: Omit<Draft, "id"> = {
   policyVersion: null,
   acknowledgedWarnings: false,
   attested: false,
+  address: null,
+  pickupNotes: "",
+  slot: null,
 };
 
 // The return being booked, kept across the steps so Back loses nothing.

@@ -75,6 +75,38 @@
     "explain": "Un chauffeur ne pourrait pas prendre ce colis. Rien n'a été réservé ni facturé. Si vous avez touché la mauvaise réponse, revenez en arrière pour la changer.",
     "home": "Retour à l'accueil"
   },
+  "address": {
+    "title": "Adresse de ramassage",
+    "search": "Adresse",
+    "searchHint": "Commencez à écrire, puis choisissez votre adresse.",
+    "chosen": "Ramassage au",
+    "notes": "Appartement, interphone ou note pour le chauffeur (facultatif)"
+  },
+  "time": {
+    "title": "Heure de ramassage",
+    "hint": "Un chauffeur passe pendant la plage choisie.",
+    "asap": "Dès que possible, d'ici {{end}}",
+    "today": "Aujourd'hui",
+    "tomorrow": "Demain"
+  },
+  "review": {
+    "title": "Vérifier et réserver",
+    "retailer": "Retour chez",
+    "label": "Étiquette",
+    "address": "Adresse de ramassage",
+    "time": "Heure de ramassage",
+    "price": "Prix",
+    "priceLine": "{{price}}, tous frais compris",
+    "taxes": "Plus TPS/TVQ",
+    "phone": "Numéro de téléphone",
+    "phoneHint": "Le chauffeur l'appelle ou lui écrit seulement s'il ne vous trouve pas.",
+    "book": "Réserver le ramassage"
+  },
+  "booked": {
+    "title": "Ramassage réservé",
+    "explain": "Préparez le colis pour le chauffeur.",
+    "home": "Retour à l'accueil"
+  },
   "errors": {
     "generic": "Un problème est survenu. Vérifiez votre connexion et réessayez."
   }

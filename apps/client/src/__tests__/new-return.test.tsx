@@ -8,7 +8,10 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 
-import { eligibilityQuestionsQueryKey } from "api/react-query";
+import {
+  bookingOptionsQueryKey,
+  eligibilityQuestionsQueryKey,
+} from "api/react-query";
 
 import { queryClient } from "../api";
 import RootLayout from "../app/_layout";
@@ -19,6 +22,11 @@ import Label from "../app/new-return/label";
 import Blocked from "../app/new-return/blocked";
 import Eligibility from "../app/new-return/eligibility";
 import Photos from "../app/new-return/photos";
+import Address from "../app/new-return/address";
+import Time from "../app/new-return/time";
+import Review from "../app/new-return/review";
+import Booked from "../app/returns/[id]";
+import { slotLabel } from "../booking";
 import { useDraft } from "../draft";
 import i18n from "../i18n";
 import { useSession } from "../session";
@@ -39,8 +47,39 @@ const routes = {
   "new-return/photos": Photos,
   "new-return/eligibility": Eligibility,
   "new-return/blocked": Blocked,
+  "new-return/address": Address,
+  "new-return/time": Time,
+  "new-return/review": Review,
+  "returns/[id]": Booked,
 };
 const UPLOAD_URL = "http://localhost:8000/uploads/u1/label/abc.png?token=t";
+
+const ADDRESS = "1 Rue Sainte-Catherine O, Montréal, QC H3B 1A1";
+const ASAP = {
+  start: "2026-10-31T14:07:00-04:00",
+  end: "2026-10-31T16:07:00-04:00",
+  asap: true,
+};
+const SLOT = {
+  start: "2026-10-31T16:00:00-04:00",
+  end: "2026-10-31T18:00:00-04:00",
+  asap: false,
+};
+const BOOKED = {
+  id: "ret1",
+  status: "awaiting_payment",
+  retailer_id: "r1",
+  carrier: "canada_post",
+  label_type: "qr_code",
+  order_number: "A-123",
+  pickup_address: ADDRESS,
+  pickup_notes: null,
+  pickup_window_start: SLOT.start,
+  pickup_window_end: SLOT.end,
+  pickup_fee: 499,
+  eligibility_outcome: "eligible",
+  created_at: "2026-10-31T14:07:00-04:00",
+};
 
 type Reply = [status: number, body: unknown];
 let replies: Record<string, Reply>;
@@ -63,6 +102,14 @@ beforeEach(() => {
         { id: "r2", name: "Zara", logo_url: null, return_policy_url: null },
       ],
     ],
+    "/addresses/autocomplete": [
+      200,
+      [{ place_id: "p1", text: "1 Rue Sainte-Catherine O, Montréal" }],
+    ],
+    "/addresses/resolve": [200, { address: ADDRESS, token: "addr-tok" }],
+    "/booking/options": [200, { pickup_fee: 499, slots: [ASAP, SLOT] }],
+    "/returns": [201, BOOKED],
+    "/returns/ret1": [200, BOOKED],
     "/uploads/presign": [200, { key: "u1/label/abc.png", url: UPLOAD_URL }],
     "/uploads/u1/label/abc.png": [204, null],
     "/eligibility/questions": [
@@ -526,4 +573,250 @@ test("switching language drops the questions loaded in the old one", async () =>
   expect(
     queryClient.getQueryData(eligibilityQuestionsQueryKey()),
   ).toBeUndefined();
+});
+
+test("Next leaves the questions once attested", async () => {
+  await renderRouter(routes);
+  await toEligibility();
+  await fireEvent.press(
+    screen.getByRole("button", { name: "Is it sealed? Yes" }),
+  );
+  await fireEvent.press(
+    screen.getByRole("button", { name: "Do you have the label? Yes" }),
+  );
+  const next = screen.getByRole("button", { name: "Next" });
+  expect(next).toBeDisabled();
+  await fireEvent.press(screen.getByRole("checkbox", { name: attest }));
+  await fireEvent.press(next);
+  expect(await screen.findByText("Pickup address")).toBeTruthy();
+});
+
+// Starts a new return (which clears the draft), then jumps to a step.
+async function openStep(path: string, draft: typeof READY = {}) {
+  await renderRouter(routes);
+  await fireEvent.press(
+    await screen.findByRole("button", { name: "New return" }),
+  );
+  await act(async () => {
+    useDraft.setState(draft);
+    router.push(path as never);
+  });
+}
+
+const search = () => screen.getByLabelText("Street address");
+
+function callsTo(path: string, method = "GET") {
+  return fetchMock.mock.calls.filter(([input, init]) => {
+    const verb = init?.method ?? (input as Request).method ?? "GET";
+    return new URL(urlOf(input)).pathname === path && verb === method;
+  });
+}
+
+test("an address is searched, chosen and kept", async () => {
+  await openStep("/new-return/address");
+  expect(screen.getByRole("button", { name: "Next" })).toBeDisabled();
+  await fireEvent.changeText(search(), "1 rue");
+  await fireEvent.press(
+    await screen.findByRole("button", {
+      name: "1 Rue Sainte-Catherine O, Montréal",
+    }),
+  );
+  await screen.findByText(ADDRESS);
+  expect(useDraft.getState().address).toEqual({
+    address: ADDRESS,
+    token: "addr-tok",
+  });
+  // One Google session from typing to choosing (billing).
+  const session = (path: string) =>
+    new URL(urlOf(callTo(path)![0])).searchParams.get("session");
+  expect(session("/addresses/autocomplete")).toBeTruthy();
+  expect(session("/addresses/resolve")).toBe(
+    session("/addresses/autocomplete"),
+  );
+  await fireEvent.changeText(
+    screen.getByLabelText(
+      "Apartment, buzzer or notes for the driver (optional)",
+    ),
+    "Apt 4, buzz 204",
+  );
+  expect(useDraft.getState().pickupNotes).toBe("Apt 4, buzz 204");
+  await fireEvent.press(screen.getByRole("button", { name: "Next" }));
+  expect(await screen.findByText("Pickup time")).toBeTruthy();
+});
+
+test("only the settled text is searched", async () => {
+  await openStep("/new-return/address");
+  for (const text of ["1", "1 r", "1 ru", "1 rue"])
+    await fireEvent.changeText(search(), text);
+  await screen.findByRole("button", {
+    name: "1 Rue Sainte-Catherine O, Montréal",
+  });
+  const calls = callsTo("/addresses/autocomplete");
+  expect(calls).toHaveLength(1);
+  expect(new URL(urlOf(calls[0][0])).searchParams.get("q")).toBe("1 rue");
+});
+
+test("an address outside the area is refused with the API's message", async () => {
+  replies["/addresses/resolve"] = [
+    422,
+    { detail: "We don't pick up there yet." },
+  ];
+  await openStep("/new-return/address");
+  await fireEvent.changeText(search(), "1 rue");
+  await fireEvent.press(
+    await screen.findByRole("button", {
+      name: "1 Rue Sainte-Catherine O, Montréal",
+    }),
+  );
+  expect(await screen.findByText("We don't pick up there yet.")).toBeTruthy();
+  expect(useDraft.getState().address).toBeNull();
+  expect(screen.getByRole("button", { name: "Next" })).toBeDisabled();
+});
+
+test("a pickup time is chosen, and a time that's gone can't be kept", async () => {
+  await openStep("/new-return/time");
+  const next = screen.getByRole("button", { name: "Next" });
+  expect(next).toBeDisabled();
+  await fireEvent.press(
+    await screen.findByRole("button", { name: slotLabel(SLOT) }),
+  );
+  expect(next).toBeEnabled();
+  expect(useDraft.getState().slot).toEqual(SLOT);
+  replies["/booking/options"] = [200, { pickup_fee: 499, slots: [ASAP] }];
+  await act(() =>
+    queryClient.invalidateQueries({ queryKey: bookingOptionsQueryKey() }),
+  );
+  await waitFor(() => expect(next).toBeDisabled());
+});
+
+const READY: Partial<ReturnType<typeof useDraft.getState>> = {
+  retailerId: "r1",
+  labelType: "qr_code",
+  carrier: "canada_post",
+  orderNumber: " A-123 ",
+  labelPhoto: { key: "u1/label/abc.png", uri: "file:///qr.png" },
+  packagePhoto: { key: "u1/package/def.jpg", uri: "file:///box.jpg" },
+  answers: { sealed: "yes", label_ready: "yes" },
+  policyVersion: 3,
+  acknowledgedWarnings: false,
+  attested: true,
+  address: { address: ADDRESS, token: "addr-tok" },
+  pickupNotes: "  ",
+  slot: SLOT,
+};
+function withPhone() {
+  const [, me] = replies["/me"];
+  replies["/me"] = [200, { ...(me as object), phone: "+15145550123" }];
+}
+const book = () => screen.findByRole("button", { name: "Book pickup" });
+
+test("a return is booked and confirmed", async () => {
+  withPhone();
+  await openStep("/new-return/review", READY);
+  expect(await screen.findByText("Simons")).toBeTruthy();
+  expect(screen.getByText(ADDRESS)).toBeTruthy();
+  expect(screen.getByText(slotLabel(SLOT))).toBeTruthy();
+  expect(await screen.findByText("$4.99, all fees included")).toBeTruthy();
+  expect(screen.getByText("Plus GST/QST")).toBeTruthy();
+  expect(screen.queryByLabelText("Phone number")).toBeNull();
+  await fireEvent.press(await book());
+  expect(await screen.findByText("Pickup booked")).toBeTruthy();
+  expect(await screen.findByText(ADDRESS)).toBeTruthy();
+  const [request] = callTo("/returns", "POST")!;
+  expect(await (request as Request).json()).toEqual({
+    retailer_id: "r1",
+    carrier: "canada_post",
+    label_type: "qr_code",
+    order_number: "A-123",
+    label_photo_key: "u1/label/abc.png",
+    package_photo_key: "u1/package/def.jpg",
+    address_token: "addr-tok",
+    pickup_notes: null,
+    asap: false,
+    pickup_window_start: SLOT.start,
+    answers: { sealed: "yes", label_ready: "yes" },
+    policy_version: 3,
+    acknowledged_warnings: false,
+    attested: true,
+  });
+  expect(useDraft.getState().address).toBeNull();
+  // The booking is spent: Back goes home, not to the review.
+  await fireEvent.press(screen.getByRole("button", { name: "Back" }));
+  expect(
+    await screen.findByRole("button", { name: "New return" }),
+  ).toBeTruthy();
+});
+
+test("ASAP is booked as ASAP", async () => {
+  withPhone();
+  await openStep("/new-return/review", { ...READY, slot: ASAP });
+  await fireEvent.press(await book());
+  await screen.findByText("Pickup booked");
+  const [request] = callTo("/returns", "POST")!;
+  expect(await (request as Request).json()).toMatchObject({
+    asap: true,
+    pickup_window_start: null,
+  });
+});
+
+test("without a phone number, it is asked for first", async () => {
+  await openStep("/new-return/review", READY);
+  const phone = await screen.findByLabelText("Phone number");
+  expect(await book()).toBeDisabled();
+  await fireEvent.changeText(phone, "514 555 0123");
+  await fireEvent.press(await book());
+  await screen.findByText("Pickup booked");
+  const patch = callTo("/me", "PATCH")!;
+  expect(await (patch[0] as Request).json()).toEqual({ phone: "514 555 0123" });
+  expect(fetchMock.mock.calls.indexOf(patch)).toBeLessThan(
+    fetchMock.mock.calls.indexOf(callTo("/returns", "POST")!),
+  );
+});
+
+test("a refused booking says why, books nothing and refreshes the times", async () => {
+  withPhone();
+  replies["/returns"] = [
+    422,
+    { detail: "This pickup time is no longer available. Choose another." },
+  ];
+  await openStep("/new-return/review", READY);
+  await screen.findByText("$4.99, all fees included");
+  const fetched = callsTo("/booking/options").length;
+  await fireEvent.press(await book());
+  expect(
+    await screen.findByText(
+      "This pickup time is no longer available. Choose another.",
+    ),
+  ).toBeTruthy();
+  expect(screen.queryByText("Pickup booked")).toBeNull();
+  await waitFor(() =>
+    expect(callsTo("/booking/options").length).toBeGreaterThan(fetched),
+  );
+});
+
+test("a double tap books once", async () => {
+  withPhone();
+  await openStep("/new-return/review", READY);
+  const button = await book();
+  await fireEvent.press(button);
+  await fireEvent.press(button);
+  await screen.findByText("Pickup booked");
+  expect(callsTo("/returns", "POST")).toHaveLength(1);
+});
+
+test("the booking steps read in French", async () => {
+  i18n.changeLanguage("fr");
+  withPhone();
+  await renderRouter(routes);
+  await fireEvent.press(
+    await screen.findByRole("button", { name: "Nouveau retour" }),
+  );
+  await act(async () => {
+    useDraft.setState(READY);
+    router.push("/new-return/review");
+  });
+  expect(
+    await screen.findByText(/^4,99\s\$, tous frais compris$/),
+  ).toBeTruthy();
+  expect(screen.getByText("Plus TPS/TVQ")).toBeTruthy();
 });
