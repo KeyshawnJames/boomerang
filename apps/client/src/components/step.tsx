@@ -72,3 +72,33 @@ export function SectionTitle({ children }: { children: string }) {
     <Text className="mt-3 font-sans-bold text-lg text-ink">{children}</Text>
   );
 }
+
+// A tick box; the label is set so screen readers don't read the tick mark.
+export function Check({
+  label,
+  checked,
+  onPress,
+}: {
+  label: string;
+  checked: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="checkbox"
+      accessibilityLabel={label}
+      accessibilityState={{ checked }}
+      onPress={onPress}
+      className="flex-row items-start gap-3 py-2"
+    >
+      <View
+        className={`mt-0.5 h-6 w-6 items-center justify-center rounded-sm border-2 ${checked ? "border-primary bg-primary" : "border-line/40 bg-surface"}`}
+      >
+        {checked && (
+          <Text className="font-sans-bold text-sm text-on-primary">✓</Text>
+        )}
+      </View>
+      <Text className="flex-1 font-sans text-base text-ink">{label}</Text>
+    </Pressable>
+  );
+}

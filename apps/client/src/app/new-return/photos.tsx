@@ -1,9 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
 import type { PresignRequest } from "api";
 import * as ImagePicker from "expo-image-picker";
+import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, Image, Text, View } from "react-native";
 
+import { Button } from "../../components/form";
 import { Choice, SectionTitle, Step } from "../../components/step";
 import { type Photo, useDraft } from "../../draft";
 import { errorMessage } from "../../errors";
@@ -14,7 +16,16 @@ export default function Photos() {
   const { t } = useTranslation();
   const { labelType, labelPhoto, packagePhoto, update } = useDraft();
   return (
-    <Step title={t("photos.title")}>
+    <Step
+      title={t("photos.title")}
+      footer={
+        <Button
+          label={t("newReturn.next")}
+          disabled={!labelPhoto || !packagePhoto}
+          onPress={() => router.push("/new-return/eligibility")}
+        />
+      }
+    >
       <PhotoSlot
         kind="label"
         title={t("photos.label")}

@@ -62,6 +62,19 @@
     "cameraDenied": "Autorisez l'accès à l'appareil photo dans les réglages de votre téléphone, ou choisissez une photo dans votre galerie.",
     "wrongType": "Choisissez une photo JPEG, PNG ou HEIC."
   },
+  "eligibility": {
+    "title": "Quelques questions",
+    "warning": "Certaines de vos réponses pourraient causer un problème au ramassage ou au dépôt.",
+    "acknowledge": "Je comprends",
+    "attest": "Mes réponses sont exactes, et je comprends que le chauffeur peut refuser un colis qui n'y correspond pas.",
+    "blocked": "Avec cette réponse, nous ne pouvons pas ramasser ce retour."
+  },
+  "blocked": {
+    "title": "Nous ne pouvons pas prendre ce retour",
+    "because": "En raison de votre réponse :",
+    "explain": "Un chauffeur ne pourrait pas prendre ce colis. Rien n'a été réservé ni facturé. Si vous avez touché la mauvaise réponse, revenez en arrière pour la changer.",
+    "home": "Retour à l'accueil"
+  },
   "errors": {
     "generic": "Un problème est survenu. Vérifiez votre connexion et réessayez."
   }
