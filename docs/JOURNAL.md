@@ -14,6 +14,12 @@
 
 ## 2026-10-30
 
+### Starting a return in the app
+- **[Claude]** The client app has a "New return" button. It walks through picking the
+  retailer, the label type and carrier, an optional order number, then a photo of the label
+  and of the package, which upload straight away. Going back keeps every choice. The steps
+  after the photos come next. (#47)
+
 ### Clients can create a return
 - **[Claude]** The server can now create a return. It re-checks every eligibility answer
   itself, so a blocked answer is refused and logged even if someone bypasses the app. It
