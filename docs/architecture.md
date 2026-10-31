@@ -144,7 +144,8 @@ are accurate. The carrier question set:
 - `GET /addresses/autocomplete`, `GET /addresses/resolve`: address suggestions, then a
   signed address token once the server has checked the service area
   ([ADR 0013](decisions/0013-address-lookup.md)).
-- `POST /uploads/presign`: a presigned URL for the label or package photo.
+- `POST /uploads/presign`: a signed upload link for the label or package photo
+  ([ADR 0014](decisions/0014-photo-uploads.md)).
 - `POST /returns`: create a return. Re-runs eligibility; `422` plus codes on a block.
 - `GET /returns`, `GET /returns/{id}`: history; status plus timeline.
 - `POST /returns/{id}/pay`: Stripe PaymentIntent for the fee and tip.

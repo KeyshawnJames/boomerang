@@ -28,6 +28,9 @@ class Settings(BaseSettings):
     service_area_radius_m: int = Field(default=15_000, gt=0, le=50_000)
     # Places API (New) key, server only. Empty until #43; Google then refuses the calls.
     google_maps_api_key: SecretStr = SecretStr("")
+    # Photo uploads (#45). Dev keeps them in a gitignored folder; Supabase Storage at M10.
+    upload_dir: Path = Path(__file__).resolve().parents[2] / "uploads"
+    upload_max_bytes: int = Field(default=10_000_000, gt=0)
 
     @model_validator(mode="after")
     def open_before_close(self) -> Self:

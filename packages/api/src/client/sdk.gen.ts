@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AutocompleteAddressData, AutocompleteAddressErrors, AutocompleteAddressResponses, BookingOptionsData, BookingOptionsResponses, EligibilityQuestionsData, EligibilityQuestionsResponses, HealthData, HealthResponses, ListRetailersData, ListRetailersResponses, LoginData, LoginErrors, LoginResponses, MeData, MeResponses, RegisterData, RegisterErrors, RegisterResponses, ResolveAddressData, ResolveAddressErrors, ResolveAddressResponses, UpdateMeData, UpdateMeErrors, UpdateMeResponses } from './types.gen';
+import type { AutocompleteAddressData, AutocompleteAddressErrors, AutocompleteAddressResponses, BookingOptionsData, BookingOptionsResponses, EligibilityQuestionsData, EligibilityQuestionsResponses, HealthData, HealthResponses, ListRetailersData, ListRetailersResponses, LoginData, LoginErrors, LoginResponses, MeData, MeResponses, PresignUploadData, PresignUploadErrors, PresignUploadResponses, RegisterData, RegisterErrors, RegisterResponses, ResolveAddressData, ResolveAddressErrors, ResolveAddressResponses, UpdateMeData, UpdateMeErrors, UpdateMeResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -107,6 +107,19 @@ export const resolveAddress = <ThrowOnError extends boolean = false>(options: Op
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/addresses/resolve',
     ...options
+});
+
+/**
+ * Presign Upload
+ */
+export const presignUpload = <ThrowOnError extends boolean = false>(options: Options<PresignUploadData, ThrowOnError>): RequestResult<PresignUploadResponses, PresignUploadErrors, ThrowOnError> => (options.client ?? client).post<PresignUploadResponses, PresignUploadErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/uploads/presign',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
 });
 
 /**

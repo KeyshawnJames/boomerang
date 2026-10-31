@@ -121,6 +121,34 @@ export type PickupSlot = {
 };
 
 /**
+ * PresignRequest
+ */
+export type PresignRequest = {
+    /**
+     * Kind
+     */
+    kind: 'label' | 'package';
+    /**
+     * Content Type
+     */
+    content_type: 'image/jpeg' | 'image/png' | 'image/heic';
+};
+
+/**
+ * PresignedUpload
+ */
+export type PresignedUpload = {
+    /**
+     * Key
+     */
+    key: string;
+    /**
+     * Url
+     */
+    url: string;
+};
+
+/**
  * QuestionOption
  */
 export type QuestionOption = {
@@ -493,6 +521,31 @@ export type ResolveAddressResponses = {
 };
 
 export type ResolveAddressResponse = ResolveAddressResponses[keyof ResolveAddressResponses];
+
+export type PresignUploadData = {
+    body: PresignRequest;
+    path?: never;
+    query?: never;
+    url: '/uploads/presign';
+};
+
+export type PresignUploadErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type PresignUploadError = PresignUploadErrors[keyof PresignUploadErrors];
+
+export type PresignUploadResponses = {
+    /**
+     * Successful Response
+     */
+    200: PresignedUpload;
+};
+
+export type PresignUploadResponse = PresignUploadResponses[keyof PresignUploadResponses];
 
 export type HealthData = {
     body?: never;
