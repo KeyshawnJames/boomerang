@@ -14,6 +14,9 @@
 
 ## 2026-10-31
 
+### Pickup address, time and booking
+- **[Claude]** A client can now finish booking a return: pick the pickup address, add notes for the driver, choose a time, check the all-in price on a review screen (adding a phone number the first time), book, and see a confirmation. Keyshawn booked real returns from his phone in English and French. His West Island address was refused because "Montreal" was a 15 km circle around downtown, so the service area is now the island's official outline (ADR 0016). Testing also showed that pickups can be offered when no drop-off is open, which is now #59. (#49)
+
 ### Eligibility questions
 - **[Claude]** After the photos, the app now asks the eligibility questions. A "no" that rules the return out shows a screen explaining why, and nothing goes further. A "not sure" needs an "I understand", then the client confirms their answers are true. The server still makes the final call. Testing on Keyshawn's phone found the questions came in English with the app in French, so the server now answers in the app's language everywhere (ADR 0015). (#48)
 

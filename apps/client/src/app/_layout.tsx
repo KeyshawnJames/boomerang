@@ -41,6 +41,7 @@ export default function RootLayout() {
         <Stack.Protected guard={signedIn}>
           <Stack.Screen name="index" />
           <Stack.Screen name="new-return" />
+          <Stack.Screen name="returns/[id]" />
         </Stack.Protected>
         <Stack.Protected guard={!signedIn}>
           <Stack.Screen name="login" />

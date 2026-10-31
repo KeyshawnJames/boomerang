@@ -75,6 +75,40 @@
     "explain": "A driver couldn't take this package. Nothing has been booked or charged. If you tapped the wrong answer, go back and change it.",
     "home": "Back to home"
   },
+  "address": {
+    "title": "Pickup address",
+    "search": "Street address",
+    "searchHint": "Start typing, then choose your address.",
+    "chosen": "Picking up at",
+    "notes": "Apartment, buzzer or notes for the driver (optional)",
+    "change": "Change address"
+  },
+  "time": {
+    "title": "Pickup time",
+    "hint": "A driver comes by during the window you choose.",
+    "asap": "As soon as possible, by {{end}}",
+    "today": "Today",
+    "tomorrow": "Tomorrow"
+  },
+  "review": {
+    "title": "Review and book",
+    "retailer": "Returning to",
+    "label": "Label",
+    "address": "Pickup address",
+    "time": "Pickup time",
+    "price": "Price",
+    "priceLine": "{{price}}, all fees included",
+    "taxes": "Plus GST/QST",
+    "phone": "Phone number",
+    "phoneHint": "The driver calls or texts it only if they can't find you.",
+    "book": "Book pickup",
+    "slotGone": "This pickup time has passed. Go back and choose another."
+  },
+  "booked": {
+    "title": "Pickup booked",
+    "explain": "Have the package ready for the driver.",
+    "home": "Back to home"
+  },
   "errors": {
     "generic": "Something went wrong. Check your connection and try again."
   }
