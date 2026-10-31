@@ -51,6 +51,46 @@ MESSAGES: dict[str, dict[Locale, str]] = {
         Locale.en: "This photo is too large. Try a smaller one.",
         Locale.fr: "Cette photo est trop volumineuse. Essayez-en une plus petite.",
     },
+    "retailer_not_found": {
+        Locale.en: "Choose a retailer from the list.",
+        Locale.fr: "Choisissez un détaillant dans la liste.",
+    },
+    "invalid_answers": {
+        Locale.en: "Some questions changed or weren't answered. Review your answers.",
+        Locale.fr: "Certaines questions ont changé ou sont sans réponse. Revoyez vos réponses.",
+    },
+    "return_blocked": {
+        Locale.en: "We can't pick up this return. Check the answers that block it.",
+        Locale.fr: "Nous ne pouvons pas collecter ce retour. Vérifiez les réponses en cause.",
+    },
+    "warnings_not_acknowledged": {
+        Locale.en: "Confirm that you've read the warnings.",
+        Locale.fr: "Confirmez que vous avez lu les avertissements.",
+    },
+    "attestation_required": {
+        Locale.en: "Confirm that your answers are accurate.",
+        Locale.fr: "Confirmez que vos réponses sont exactes.",
+    },
+    "phone_required": {
+        Locale.en: "Add a phone number so the driver can reach you.",
+        Locale.fr: "Ajoutez un numéro de téléphone pour que le chauffeur puisse vous joindre.",
+    },
+    "slot_unavailable": {
+        Locale.en: "This pickup time is no longer available. Choose another.",
+        Locale.fr: "Cette plage de collecte n'est plus offerte. Choisissez-en une autre.",
+    },
+    "address_expired": {
+        Locale.en: "Your address check has expired. Enter the address again.",
+        Locale.fr: "La vérification de votre adresse a expiré. Entrez l'adresse de nouveau.",
+    },
+    "photo_missing": {
+        Locale.en: "A photo didn't upload. Add it again.",
+        Locale.fr: "Une photo n'a pas été téléversée. Ajoutez-la de nouveau.",
+    },
+    "return_not_found": {
+        Locale.en: "This return doesn't exist.",
+        Locale.fr: "Ce retour n'existe pas.",
+    },
 }
 
 

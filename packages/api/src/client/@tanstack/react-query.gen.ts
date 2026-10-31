@@ -3,8 +3,8 @@
 import { type DefaultError, queryOptions, type UseMutationOptions } from '@tanstack/react-query';
 
 import { client } from '../client.gen';
-import { autocompleteAddress, bookingOptions, eligibilityQuestions, health, listRetailers, login, me, type Options, presignUpload, register, resolveAddress, updateMe } from '../sdk.gen';
-import type { AutocompleteAddressData, AutocompleteAddressError, AutocompleteAddressResponse, BookingOptionsData, BookingOptionsResponse, EligibilityQuestionsData, EligibilityQuestionsResponse, HealthData, HealthResponse, ListRetailersData, ListRetailersResponse, LoginData, LoginError, LoginResponse, MeData, MeResponse, PresignUploadData, PresignUploadError, PresignUploadResponse, RegisterData, RegisterError, RegisterResponse, ResolveAddressData, ResolveAddressError, ResolveAddressResponse, UpdateMeData, UpdateMeError, UpdateMeResponse } from '../types.gen';
+import { autocompleteAddress, bookingOptions, createReturn, eligibilityQuestions, getReturn, health, listRetailers, login, me, type Options, presignUpload, register, resolveAddress, updateMe } from '../sdk.gen';
+import type { AutocompleteAddressData, AutocompleteAddressError, AutocompleteAddressResponse, BookingOptionsData, BookingOptionsResponse, CreateReturnData, CreateReturnError, CreateReturnResponse, EligibilityQuestionsData, EligibilityQuestionsResponse, GetReturnData, GetReturnError, GetReturnResponse, HealthData, HealthResponse, ListRetailersData, ListRetailersResponse, LoginData, LoginError, LoginResponse, MeData, MeResponse, PresignUploadData, PresignUploadError, PresignUploadResponse, RegisterData, RegisterError, RegisterResponse, ResolveAddressData, ResolveAddressError, ResolveAddressResponse, UpdateMeData, UpdateMeError, UpdateMeResponse } from '../types.gen';
 
 /**
  * Register
@@ -214,6 +214,41 @@ export const presignUploadMutation = (options?: Partial<Options<PresignUploadDat
     };
     return mutationOptions;
 };
+
+/**
+ * Create Return
+ */
+export const createReturnMutation = (options?: Partial<Options<CreateReturnData>>): UseMutationOptions<CreateReturnResponse, CreateReturnError, Options<CreateReturnData>> => {
+    const mutationOptions: UseMutationOptions<CreateReturnResponse, CreateReturnError, Options<CreateReturnData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await createReturn({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const getReturnQueryKey = (options: Options<GetReturnData>) => createQueryKey('getReturn', options);
+
+/**
+ * Get Return
+ */
+export const getReturnOptions = (options: Options<GetReturnData>) => queryOptions<GetReturnResponse, GetReturnError, GetReturnResponse, ReturnType<typeof getReturnQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getReturn({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getReturnQueryKey(options)
+});
 
 export const healthQueryKey = (options?: Options<HealthData>) => createQueryKey('health', options);
 

@@ -6,7 +6,7 @@ from sqlmodel import select
 
 from app.api.deps import SessionDep, require_role
 from app.core.config import settings
-from app.models import EligibilityQuestion, Locale, Retailer, User, UserRole
+from app.models import Locale, Retailer, User, UserRole
 from app.schemas.booking import (
     BookingOptions,
     EligibilityQuestionRead,
@@ -15,6 +15,7 @@ from app.schemas.booking import (
     RetailerRead,
 )
 from app.services.booking import MONTREAL, pickup_slots
+from app.services.eligibility import active_questions, policy_version
 
 router = APIRouter()
 
@@ -28,16 +29,10 @@ def list_retailers(_: ClientUser, session: SessionDep) -> list[Retailer]:
 
 @router.get("/eligibility/questions")
 def eligibility_questions(user: ClientUser, session: SessionDep) -> EligibilityQuestions:
-    rows = session.exec(
-        select(EligibilityQuestion)
-        .where(EligibilityQuestion.active)
-        .order_by(EligibilityQuestion.sort_order)
-    ).all()
+    rows = active_questions(session)
     en = user.locale == Locale.en
     return EligibilityQuestions(
-        # A changed or added question takes the next version, so the highest names the set.
-        # shortcut: retiring the newest question lowers it; bump another until an admin tool.
-        policy_version=max((q.version for q in rows), default=0),
+        policy_version=policy_version(rows),
         questions=[
             EligibilityQuestionRead(
                 code=q.code,
