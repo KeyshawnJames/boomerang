@@ -152,7 +152,8 @@ are accurate. The carrier question set:
   ([ADR 0014](decisions/0014-photo-uploads.md)).
 - `POST /returns`: create a return. Re-runs eligibility; `422` plus codes on a block.
 - `GET /returns`, `GET /returns/{id}`: history; status plus timeline.
-- `POST /returns/{id}/pay`: Stripe PaymentIntent for the fee and tip.
+- `POST /returns/{id}/pay`: Stripe PaymentIntent for the fee and tip
+  ([ADR 0018](decisions/0018-payments.md)).
 - `POST /returns/{id}/cancel`, `POST /returns/{id}/rating`
 
 **Driver**
@@ -166,7 +167,7 @@ are accurate. The carrier question set:
 
 **Real-time**: `WS /ws/returns/{id}` streams status plus driver location.
 
-**Webhooks**: `POST /webhooks/stripe`
+**Webhooks**: `POST /webhooks/stripe`: a paid return moves to `requested` ([ADR 0018](decisions/0018-payments.md)).
 
 ## Repo structure
 

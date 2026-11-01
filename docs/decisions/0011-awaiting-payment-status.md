@@ -1,6 +1,6 @@
 # 0011. A return waits for payment before drivers can see it
 
-- **Status:** accepted
+- **Status:** accepted. When unpaid returns expire is settled by [0018](0018-payments.md)
 - **Date:** 2026-10-29
 
 ## Context
