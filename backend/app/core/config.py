@@ -48,6 +48,12 @@ class Settings(BaseSettings):
     # Photo uploads (#45). Dev keeps them in a gitignored folder; Supabase Storage at M10.
     upload_dir: Path = Path(__file__).resolve().parents[2] / "uploads"
     upload_max_bytes: int = Field(default=10_000_000, gt=0)
+    # Payments (ADR 0018). Test keys only in dev; empty and Stripe refuses the calls.
+    stripe_secret_key: SecretStr = SecretStr("")
+    # A return can be paid this long after it's created; then the client books again.
+    payment_window_minutes: int = Field(default=30, gt=0)
+    # The driver's share of the pickup fee, in percent. The tip always goes to the driver.
+    driver_fee_share_percent: int = Field(default=75, ge=0, le=100)
 
     @model_validator(mode="after")
     def open_before_close(self) -> Self:

@@ -501,6 +501,61 @@
         }
       }
     },
+    "/returns/{return_id}/pay": {
+      "post": {
+        "summary": "Pay For Return",
+        "operationId": "pay_for_return",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "return_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Return Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PayRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentIntentRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "summary": "Health",
@@ -810,6 +865,37 @@
           "password"
         ],
         "title": "LoginRequest"
+      },
+      "PayRequest": {
+        "properties": {
+          "tip": {
+            "type": "integer",
+            "maximum": 5000.0,
+            "minimum": 0.0,
+            "title": "Tip",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "PayRequest"
+      },
+      "PaymentIntentRead": {
+        "properties": {
+          "client_secret": {
+            "type": "string",
+            "title": "Client Secret"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "client_secret",
+          "total"
+        ],
+        "title": "PaymentIntentRead"
       },
       "PickupSlot": {
         "properties": {
