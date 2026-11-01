@@ -14,6 +14,7 @@
 
 ## 2026-11-01
 
+- **[Claude]** Milestone 4 is done: a client can now create a return from the app. They pick the retailer, upload the label and package photos, answer the eligibility questions (the server refuses a blocked answer even if the app is bypassed), enter the pickup address and choose a time a drop-off counter can take. The milestone is tagged and the changelog lists what it contains. Next up: payments. (#50)
 - **[Claude]** The app now only offers pickup times a drop-off counter can take on the same trip: a counter for the return's carrier within 10 km must still be open 45 minutes after the window ends. 50 hand-checked counters across the island (counter hours, not store hours), no pickups on Quebec holidays, and the rest of today plus all of tomorrow instead of a rolling 24 hours (ADR 0017) (#59)
 
 ## 2026-10-31
