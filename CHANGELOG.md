@@ -2,6 +2,21 @@
 
 Generated from commit history by [git-cliff](https://git-cliff.org). Do not edit by hand; the human story is in `docs/JOURNAL.md`.
 
+## m4 — 2026-11-01
+
+### Features
+- **backend:** only offer pickup windows a drop-off can take the same trip (#61) (4950b4b)
+- **client:** pickup address, time, review and submit (#60) (85fab34)
+- **client:** eligibility step (#58) (026eb90)
+- **client:** new return – retailer, label and photos (#57) (097df3a)
+- **backend:** create a return (#56) (b80a8fa)
+- **backend:** presigned photo uploads (#55) (56568f5)
+- **backend:** address lookup (#53) (cdffa1b)
+- **backend:** booking reference endpoints (#52) (6c88faf)
+- **backend:** status-machine service (#51) (42f1b0b)
+
+### Chores
+- **deps-dev:** bump ruff from 0.17.2 to 0.17.3 in /backend in the backend group (#54) (f6e7f74)
 ## m3 — 2026-10-30
 
 ### Features
@@ -11,6 +26,7 @@ Generated from commit history by [git-cliff](https://git-cliff.org). Do not edit
 - **client:** NativeWind v4 and base theme (#36) (79bf122)
 
 ### Chores
+- **release:** m3 (#40) (fb3ad30)
 - **client:** pnpm workspace and Expo SDK 58 client app (#35) (f9de624)
 ## m2 — 2026-10-29
 
