@@ -1,0 +1,2462 @@
+[
+  {
+    "key": "osm-node-5570232487",
+    "carrier": "canada_post",
+    "name": "Postes Canada – Pharmaprix Griffintown",
+    "address": "1000 Rue Wellington, Montréal, QC",
+    "latitude": 45.49404,
+    "longitude": -73.55667,
+    "hours": {
+      "mon": [
+        [
+          "09:00",
+          "21:00"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "21:00"
+        ]
+      ],
+      "wed": [
+        [
+          "09:00",
+          "21:00"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "21:00"
+        ]
+      ],
+      "fri": [
+        [
+          "09:00",
+          "21:00"
+        ]
+      ],
+      "sat": [
+        [
+          "09:00",
+          "17:00"
+        ]
+      ],
+      "sun": [
+        [
+          "09:00",
+          "17:00"
+        ]
+      ]
+    },
+    "source": "Canada Post finder (counter hours), checked 2026-11-01, outlet 105116"
+  },
+  {
+    "key": "osm-node-2518068089",
+    "carrier": "canada_post",
+    "name": "Postes Canada – Sainte-Catherine Ouest",
+    "address": "1974 Rue Sainte-Catherine Ouest, Montréal, QC H3H 1N4",
+    "latitude": 45.49186,
+    "longitude": -73.58109,
+    "hours": {
+      "mon": [
+        [
+          "09:00",
+          "17:00"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "17:00"
+        ]
+      ],
+      "wed": [
+        [
+          "09:00",
+          "17:00"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "17:00"
+        ]
+      ],
+      "fri": [
+        [
+          "09:00",
+          "17:00"
+        ]
+      ]
+    },
+    "source": "Canada Post finder (counter hours), checked 2026-11-01, outlet 224693"
+  },
+  {
+    "key": "osm-node-5362633016",
+    "carrier": "canada_post",
+    "name": "Postes Canada – Uniprix De La Gauchetière",
+    "address": "895 Rue De La Gauchetière Ouest, Montréal, QC",
+    "latitude": 45.50064,
+    "longitude": -73.56703,
+    "hours": {
+      "mon": [
+        [
+          "08:00",
+          "18:00"
+        ]
+      ],
+      "tue": [
+        [
+          "08:00",
+          "18:00"
+        ]
+      ],
+      "wed": [
+        [
+          "08:00",
+          "18:00"
+        ]
+      ],
+      "thu": [
+        [
+          "08:00",
+          "18:00"
+        ]
+      ],
+      "fri": [
+        [
+          "08:00",
+          "18:00"
+        ]
+      ]
+    },
+    "source": "Canada Post finder (counter hours), checked 2026-11-01, outlet 104933"
+  },
+  {
+    "key": "cp-101094",
+    "carrier": "canada_post",
+    "name": "Postes Canada – Pharmaprix Sainte-Catherine",
+    "address": "1500 Rue Sainte-Catherine Ouest, Montréal, QC",
+    "latitude": 45.49524,
+    "longitude": -73.57732,
+    "hours": {
+      "mon": [
+        [
+          "09:00",
+          "20:00"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "20:00"
+        ]
+      ],
+      "wed": [
+        [
+          "09:00",
+          "20:00"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "20:00"
+        ]
+      ],
+      "fri": [
+        [
+          "09:00",
+          "20:00"
+        ]
+      ],
+      "sat": [
+        [
+          "10:00",
+          "18:00"
+        ]
+      ],
+      "sun": [
+        [
+          "10:00",
+          "18:00"
+        ]
+      ]
+    },
+    "source": "Canada Post finder (counter hours), checked 2026-11-01, outlet 101094"
+  },
+  {
+    "key": "cp-102913",
+    "carrier": "canada_post",
+    "name": "Postes Canada – Uniprix Du Parc",
+    "address": "3575 Avenue du Parc, Montréal, QC H2X 3P9",
+    "latitude": 45.51046,
+    "longitude": -73.575,
+    "hours": {
+      "mon": [
+        [
+          "08:00",
+          "21:00"
+        ]
+      ],
+      "tue": [
+        [
+          "08:00",
+          "21:00"
+        ]
+      ],
+      "wed": [
+        [
+          "08:00",
+          "21:00"
+        ]
+      ],
+      "thu": [
+        [
+          "08:00",
+          "21:00"
+        ]
+      ],
+      "fri": [
+        [
+          "08:00",
+          "21:00"
+        ]
+      ],
+      "sat": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "sun": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ]
+    },
+    "source": "Canada Post finder (counter hours), checked 2026-11-01, outlet 102913"
+  },
+  {
+    "key": "cp-102226",
+    "carrier": "canada_post",
+    "name": "Postes Canada – Pharmaprix Pointe-Claire",
+    "address": "6815 Route Transcanadienne, Pointe-Claire, QC",
+    "latitude": 45.46435,
+    "longitude": -73.83218,
+    "hours": {
+      "mon": [
+        [
+          "09:00",
+          "19:00"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "19:00"
+        ]
+      ],
+      "wed": [
+        [
+          "09:00",
+          "19:00"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "21:00"
+        ]
+      ],
+      "fri": [
+        [
+          "09:00",
+          "21:00"
+        ]
+      ],
+      "sat": [
+        [
+          "10:00",
+          "17:00"
+        ]
+      ],
+      "sun": [
+        [
+          "12:00",
+          "16:00"
+        ]
+      ]
+    },
+    "source": "Canada Post finder (counter hours), checked 2026-11-01, outlet 102226"
+  },
+  {
+    "key": "cp-104759",
+    "carrier": "canada_post",
+    "name": "Postes Canada – Pharmaprix Kirkland",
+    "address": "3790 Boulevard Saint-Charles, Kirkland, QC",
+    "latitude": 45.45935,
+    "longitude": -73.86665,
+    "hours": {
+      "mon": [
+        [
+          "09:00",
+          "20:00"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "20:00"
+        ]
+      ],
+      "wed": [
+        [
+          "09:00",
+          "20:00"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "20:00"
+        ]
+      ],
+      "fri": [
+        [
+          "09:00",
+          "20:00"
+        ]
+      ],
+      "sat": [
+        [
+          "10:00",
+          "16:00"
+        ]
+      ],
+      "sun": [
+        [
+          "12:00",
+          "16:00"
+        ]
+      ]
+    },
+    "source": "Canada Post finder (counter hours), checked 2026-11-01, outlet 104759"
+  },
+  {
+    "key": "cp-130001",
+    "carrier": "canada_post",
+    "name": "Postes Canada – Pharmaprix Saint-Laurent",
+    "address": "1051 Boulevard Décarie, Saint-Laurent, QC",
+    "latitude": 45.51329,
+    "longitude": -73.68118,
+    "hours": {
+      "mon": [
+        [
+          "09:00",
+          "21:00"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "21:00"
+        ]
+      ],
+      "wed": [
+        [
+          "09:00",
+          "21:00"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "21:00"
+        ]
+      ],
+      "fri": [
+        [
+          "09:00",
+          "21:00"
+        ]
+      ],
+      "sat": [
+        [
+          "09:00",
+          "17:00"
+        ]
+      ],
+      "sun": [
+        [
+          "09:00",
+          "14:00"
+        ]
+      ]
+    },
+    "source": "Canada Post finder (counter hours), checked 2026-11-01, outlet 130001"
+  },
+  {
+    "key": "cp-383937",
+    "carrier": "canada_post",
+    "name": "Postes Canada – Pharmaprix Montréal-Nord",
+    "address": "6000 Boulevard Henri-Bourassa Est, Montréal-Nord, QC",
+    "latitude": 45.60723,
+    "longitude": -73.61944,
+    "hours": {
+      "mon": [
+        [
+          "09:00",
+          "21:00"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "21:00"
+        ]
+      ],
+      "wed": [
+        [
+          "09:00",
+          "21:00"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "21:00"
+        ]
+      ],
+      "fri": [
+        [
+          "09:00",
+          "21:00"
+        ]
+      ],
+      "sat": [
+        [
+          "09:00",
+          "17:00"
+        ]
+      ],
+      "sun": [
+        [
+          "11:00",
+          "15:00"
+        ]
+      ]
+    },
+    "source": "Canada Post finder (counter hours), checked 2026-11-01, outlet 383937"
+  },
+  {
+    "key": "cp-105478",
+    "carrier": "canada_post",
+    "name": "Postes Canada – Dépanneur de la Rive des Prairies",
+    "address": "7095 Boulevard Gouin Est, Montréal, QC",
+    "latitude": 45.63114,
+    "longitude": -73.61681,
+    "hours": {
+      "mon": [
+        [
+          "08:00",
+          "18:00"
+        ]
+      ],
+      "tue": [
+        [
+          "08:00",
+          "18:00"
+        ]
+      ],
+      "wed": [
+        [
+          "08:00",
+          "18:00"
+        ]
+      ],
+      "thu": [
+        [
+          "08:00",
+          "18:00"
+        ]
+      ],
+      "fri": [
+        [
+          "08:00",
+          "18:00"
+        ]
+      ],
+      "sat": [
+        [
+          "08:00",
+          "17:00"
+        ]
+      ],
+      "sun": [
+        [
+          "09:00",
+          "16:00"
+        ]
+      ]
+    },
+    "source": "Canada Post finder (counter hours), checked 2026-11-01, outlet 105478"
+  },
+  {
+    "key": "cp-106607",
+    "carrier": "canada_post",
+    "name": "Postes Canada – Tabagie Le Coin Bleu",
+    "address": "12675 Rue Sherbrooke Est, Pointe-aux-Trembles, QC",
+    "latitude": 45.65404,
+    "longitude": -73.51307,
+    "hours": {
+      "mon": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "wed": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "19:30"
+        ]
+      ],
+      "fri": [
+        [
+          "09:00",
+          "19:30"
+        ]
+      ],
+      "sat": [
+        [
+          "10:30",
+          "17:00"
+        ]
+      ]
+    },
+    "source": "Canada Post finder (counter hours), checked 2026-11-01, outlet 106607"
+  },
+  {
+    "key": "cp-105093",
+    "carrier": "canada_post",
+    "name": "Postes Canada – Familiprix Masson",
+    "address": "3815 Rue Masson, Montréal, QC",
+    "latitude": 45.54988,
+    "longitude": -73.57396,
+    "hours": {
+      "mon": [
+        [
+          "09:00",
+          "20:00"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "20:00"
+        ]
+      ],
+      "wed": [
+        [
+          "09:00",
+          "20:00"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "20:00"
+        ]
+      ],
+      "fri": [
+        [
+          "09:00",
+          "20:00"
+        ]
+      ],
+      "sat": [
+        [
+          "10:00",
+          "17:00"
+        ]
+      ],
+      "sun": [
+        [
+          "10:00",
+          "17:00"
+        ]
+      ]
+    },
+    "source": "Canada Post finder (counter hours), checked 2026-11-01, outlet 105093"
+  },
+  {
+    "key": "cp-101561",
+    "carrier": "canada_post",
+    "name": "Postes Canada – Pharmaprix LaSalle",
+    "address": "7077 Boulevard Newman, LaSalle, QC",
+    "latitude": 45.44722,
+    "longitude": -73.61848,
+    "hours": {
+      "mon": [
+        [
+          "09:00",
+          "19:00"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "19:00"
+        ]
+      ],
+      "wed": [
+        [
+          "09:00",
+          "21:00"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "21:00"
+        ]
+      ],
+      "fri": [
+        [
+          "09:00",
+          "21:00"
+        ]
+      ],
+      "sat": [
+        [
+          "09:00",
+          "17:00"
+        ]
+      ],
+      "sun": [
+        [
+          "12:00",
+          "16:00"
+        ]
+      ]
+    },
+    "source": "Canada Post finder (counter hours), checked 2026-11-01, outlet 101561"
+  },
+  {
+    "key": "cp-388815",
+    "carrier": "canada_post",
+    "name": "Postes Canada – Pharmaprix Notre-Dame-de-Grâce",
+    "address": "5038 Rue Sherbrooke Ouest, Montréal, QC",
+    "latitude": 45.4766,
+    "longitude": -73.60582,
+    "hours": {
+      "mon": [
+        [
+          "08:30",
+          "21:00"
+        ]
+      ],
+      "tue": [
+        [
+          "08:30",
+          "21:00"
+        ]
+      ],
+      "wed": [
+        [
+          "08:30",
+          "21:00"
+        ]
+      ],
+      "thu": [
+        [
+          "08:30",
+          "21:00"
+        ]
+      ],
+      "fri": [
+        [
+          "08:30",
+          "21:00"
+        ]
+      ],
+      "sat": [
+        [
+          "09:00",
+          "17:00"
+        ]
+      ],
+      "sun": [
+        [
+          "12:00",
+          "16:00"
+        ]
+      ]
+    },
+    "source": "Canada Post finder (counter hours), checked 2026-11-01, outlet 388815"
+  },
+  {
+    "key": "cp-103965",
+    "carrier": "canada_post",
+    "name": "Postes Canada – Jean Coutu Fleury",
+    "address": "50 Rue Fleury Est, Montréal, QC",
+    "latitude": 45.5486,
+    "longitude": -73.66448,
+    "hours": {
+      "mon": [
+        [
+          "09:00",
+          "20:00"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "20:00"
+        ]
+      ],
+      "wed": [
+        [
+          "09:00",
+          "20:00"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "20:00"
+        ]
+      ],
+      "fri": [
+        [
+          "09:00",
+          "20:00"
+        ]
+      ],
+      "sat": [
+        [
+          "11:00",
+          "16:00"
+        ]
+      ]
+    },
+    "source": "Canada Post finder (counter hours), checked 2026-11-01, outlet 103965"
+  },
+  {
+    "key": "cp-106745",
+    "carrier": "canada_post",
+    "name": "Postes Canada – Uniprix Saint-Léonard",
+    "address": "9235 Boulevard Lacordaire, Saint-Léonard, QC",
+    "latitude": 45.59738,
+    "longitude": -73.60911,
+    "hours": {
+      "mon": [
+        [
+          "09:00",
+          "20:00"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "20:00"
+        ]
+      ],
+      "wed": [
+        [
+          "09:00",
+          "20:00"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "20:00"
+        ]
+      ],
+      "fri": [
+        [
+          "09:00",
+          "20:00"
+        ]
+      ],
+      "sat": [
+        [
+          "09:00",
+          "17:00"
+        ]
+      ],
+      "sun": [
+        [
+          "09:00",
+          "17:00"
+        ]
+      ]
+    },
+    "source": "Canada Post finder (counter hours), checked 2026-11-01, outlet 106745"
+  },
+  {
+    "key": "osm-node-11999925850",
+    "carrier": "ups",
+    "name": "The UPS Store #459 – Saint-Denis",
+    "address": "3450 Rue Saint-Denis, Montréal, QC H2X 3L3",
+    "latitude": 45.5172,
+    "longitude": -73.56843,
+    "hours": {
+      "mon": [
+        [
+          "10:00",
+          "18:00"
+        ]
+      ],
+      "tue": [
+        [
+          "10:00",
+          "18:00"
+        ]
+      ],
+      "wed": [
+        [
+          "10:00",
+          "18:00"
+        ]
+      ],
+      "thu": [
+        [
+          "10:00",
+          "18:00"
+        ]
+      ],
+      "fri": [
+        [
+          "10:00",
+          "18:00"
+        ]
+      ],
+      "sat": [
+        [
+          "10:00",
+          "15:00"
+        ]
+      ]
+    },
+    "source": "theupsstore.ca store page (store hours), checked 2026-11-01"
+  },
+  {
+    "key": "osm-node-11948896433",
+    "carrier": "ups",
+    "name": "The UPS Store #560 – Westmount",
+    "address": "4146A Rue Sainte-Catherine Ouest, Westmount, QC H3Z 1P4",
+    "latitude": 45.4867,
+    "longitude": -73.58707,
+    "hours": {
+      "mon": [
+        [
+          "09:00",
+          "18:30"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "18:30"
+        ]
+      ],
+      "wed": [
+        [
+          "09:00",
+          "18:30"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "18:30"
+        ]
+      ],
+      "fri": [
+        [
+          "09:00",
+          "18:30"
+        ]
+      ],
+      "sat": [
+        [
+          "10:00",
+          "15:00"
+        ]
+      ]
+    },
+    "source": "theupsstore.ca store page (store hours), checked 2026-11-01"
+  },
+  {
+    "key": "ups-store-340",
+    "carrier": "ups",
+    "name": "The UPS Store #340 – De Maisonneuve",
+    "address": "925 Boulevard De Maisonneuve Ouest, Montréal, QC H3A 0A5",
+    "latitude": 45.50262,
+    "longitude": -73.57359,
+    "hours": {
+      "mon": [
+        [
+          "09:00",
+          "18:30"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "18:30"
+        ]
+      ],
+      "wed": [
+        [
+          "09:00",
+          "18:30"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "18:30"
+        ]
+      ],
+      "fri": [
+        [
+          "09:00",
+          "18:30"
+        ]
+      ],
+      "sat": [
+        [
+          "10:00",
+          "15:00"
+        ]
+      ]
+    },
+    "source": "theupsstore.ca store page (store hours), checked 2026-11-01"
+  },
+  {
+    "key": "ups-store-306",
+    "carrier": "ups",
+    "name": "The UPS Store #306 – Beaubien",
+    "address": "765 Rue Beaubien Est, Montréal, QC H2S 1S8",
+    "latitude": 45.53566,
+    "longitude": -73.60363,
+    "hours": {
+      "mon": [
+        [
+          "09:30",
+          "18:00"
+        ]
+      ],
+      "tue": [
+        [
+          "09:30",
+          "18:00"
+        ]
+      ],
+      "wed": [
+        [
+          "09:30",
+          "18:00"
+        ]
+      ],
+      "thu": [
+        [
+          "09:30",
+          "19:00"
+        ]
+      ],
+      "fri": [
+        [
+          "09:30",
+          "18:00"
+        ]
+      ],
+      "sat": [
+        [
+          "10:00",
+          "17:00"
+        ]
+      ],
+      "sun": [
+        [
+          "12:00",
+          "17:00"
+        ]
+      ]
+    },
+    "source": "theupsstore.ca store page (store hours), checked 2026-11-01"
+  },
+  {
+    "key": "ups-store-354",
+    "carrier": "ups",
+    "name": "The UPS Store #354 – De l'Acadie",
+    "address": "9150 Boulevard de l'Acadie, Montréal, QC H4N 2T2",
+    "latitude": 45.53208,
+    "longitude": -73.65427,
+    "hours": {
+      "mon": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "wed": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "fri": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "sat": [
+        [
+          "10:00",
+          "15:00"
+        ]
+      ]
+    },
+    "source": "theupsstore.ca store page (store hours), checked 2026-11-01"
+  },
+  {
+    "key": "ups-store-545",
+    "carrier": "ups",
+    "name": "The UPS Store #545 – Jean-Talon Ouest",
+    "address": "5400 Rue Jean-Talon Ouest, Montréal, QC H4P 2T5",
+    "latitude": 45.49173,
+    "longitude": -73.65354,
+    "hours": {
+      "mon": [
+        [
+          "10:00",
+          "19:00"
+        ]
+      ],
+      "tue": [
+        [
+          "10:00",
+          "19:00"
+        ]
+      ],
+      "wed": [
+        [
+          "10:00",
+          "19:00"
+        ]
+      ],
+      "thu": [
+        [
+          "10:00",
+          "19:00"
+        ]
+      ],
+      "fri": [
+        [
+          "10:00",
+          "19:00"
+        ]
+      ],
+      "sat": [
+        [
+          "10:00",
+          "17:00"
+        ]
+      ],
+      "sun": [
+        [
+          "10:00",
+          "17:00"
+        ]
+      ]
+    },
+    "source": "theupsstore.ca store page (store hours), checked 2026-11-01"
+  },
+  {
+    "key": "ups-store-343",
+    "carrier": "ups",
+    "name": "The UPS Store #343 – Dollard-des-Ormeaux",
+    "address": "3484 Boulevard des Sources, Dollard-des-Ormeaux, QC H9B 1Z9",
+    "latitude": 45.48579,
+    "longitude": -73.79943,
+    "hours": {
+      "mon": [
+        [
+          "09:00",
+          "18:30"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "18:30"
+        ]
+      ],
+      "wed": [
+        [
+          "09:00",
+          "18:30"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "18:30"
+        ]
+      ],
+      "fri": [
+        [
+          "09:00",
+          "18:30"
+        ]
+      ],
+      "sat": [
+        [
+          "10:00",
+          "15:00"
+        ]
+      ]
+    },
+    "source": "theupsstore.ca store page (store hours), checked 2026-11-01"
+  },
+  {
+    "key": "ups-store-363",
+    "carrier": "ups",
+    "name": "The UPS Store #363 – Saint-Léonard",
+    "address": "6683 Rue Jean-Talon Est, Saint-Léonard, QC H1S 0A5",
+    "latitude": 45.59429,
+    "longitude": -73.5745,
+    "hours": {
+      "mon": [
+        [
+          "09:00",
+          "18:30"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "18:30"
+        ]
+      ],
+      "wed": [
+        [
+          "09:00",
+          "18:30"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "18:30"
+        ]
+      ],
+      "fri": [
+        [
+          "09:00",
+          "18:30"
+        ]
+      ],
+      "sat": [
+        [
+          "10:00",
+          "15:00"
+        ]
+      ]
+    },
+    "source": "theupsstore.ca store page (store hours), checked 2026-11-01"
+  },
+  {
+    "key": "ups-store-120",
+    "carrier": "ups",
+    "name": "The UPS Store #120 – Kirkland",
+    "address": "3551 Boulevard Saint-Charles, Kirkland, QC H9H 3C4",
+    "latitude": 45.45747,
+    "longitude": -73.86214,
+    "hours": {
+      "mon": [
+        [
+          "09:00",
+          "18:30"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "18:30"
+        ]
+      ],
+      "wed": [
+        [
+          "09:00",
+          "18:30"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "18:30"
+        ]
+      ],
+      "fri": [
+        [
+          "09:00",
+          "18:30"
+        ]
+      ],
+      "sat": [
+        [
+          "10:00",
+          "14:00"
+        ]
+      ]
+    },
+    "source": "theupsstore.ca store page (store hours), checked 2026-11-01"
+  },
+  {
+    "key": "ups-ap-192105",
+    "carrier": "ups",
+    "name": "UPS Access Point – Comptant.com Anjou",
+    "address": "8690 Avenue de Chaumont, Anjou, QC H1K 1N6",
+    "latitude": 45.61042,
+    "longitude": -73.54692,
+    "hours": {
+      "mon": [
+        [
+          "10:00",
+          "19:00"
+        ]
+      ],
+      "tue": [
+        [
+          "10:00",
+          "19:00"
+        ]
+      ],
+      "wed": [
+        [
+          "10:00",
+          "19:00"
+        ]
+      ],
+      "thu": [
+        [
+          "10:00",
+          "19:00"
+        ]
+      ],
+      "fri": [
+        [
+          "10:00",
+          "19:00"
+        ]
+      ],
+      "sat": [
+        [
+          "10:00",
+          "17:00"
+        ]
+      ],
+      "sun": [
+        [
+          "12:00",
+          "17:00"
+        ]
+      ]
+    },
+    "source": "locations.ups.com Access Point page, checked 2026-11-01"
+  },
+  {
+    "key": "ups-ap-207911",
+    "carrier": "ups",
+    "name": "UPS Access Point – Comptant.com Pointe-aux-Trembles",
+    "address": "1590 Boulevard Saint-Jean-Baptiste, Pointe-aux-Trembles, QC H1B 4A4",
+    "latitude": 45.64226,
+    "longitude": -73.5059,
+    "hours": {
+      "mon": [
+        [
+          "10:00",
+          "19:00"
+        ]
+      ],
+      "tue": [
+        [
+          "10:00",
+          "19:00"
+        ]
+      ],
+      "wed": [
+        [
+          "10:00",
+          "19:00"
+        ]
+      ],
+      "thu": [
+        [
+          "10:00",
+          "19:00"
+        ]
+      ],
+      "fri": [
+        [
+          "10:00",
+          "19:00"
+        ]
+      ],
+      "sat": [
+        [
+          "10:00",
+          "17:00"
+        ]
+      ],
+      "sun": [
+        [
+          "10:00",
+          "17:00"
+        ]
+      ]
+    },
+    "source": "locations.ups.com Access Point page, checked 2026-11-01"
+  },
+  {
+    "key": "ups-ap-154335",
+    "carrier": "ups",
+    "name": "UPS Access Point – Comptant.com Langelier",
+    "address": "11859 Boulevard Langelier, Montréal-Nord, QC H1G 3M4",
+    "latitude": 45.61769,
+    "longitude": -73.615,
+    "hours": {
+      "mon": [
+        [
+          "10:00",
+          "19:00"
+        ]
+      ],
+      "tue": [
+        [
+          "10:00",
+          "19:00"
+        ]
+      ],
+      "wed": [
+        [
+          "10:00",
+          "19:00"
+        ]
+      ],
+      "thu": [
+        [
+          "10:00",
+          "19:00"
+        ]
+      ],
+      "fri": [
+        [
+          "10:00",
+          "19:00"
+        ]
+      ],
+      "sat": [
+        [
+          "10:00",
+          "17:00"
+        ]
+      ],
+      "sun": [
+        [
+          "12:00",
+          "17:00"
+        ]
+      ]
+    },
+    "source": "locations.ups.com Access Point page, checked 2026-11-01"
+  },
+  {
+    "key": "ups-ap-201676",
+    "carrier": "ups",
+    "name": "UPS Access Point – Jean Coutu LaSalle",
+    "address": "8188 Boulevard Champlain, LaSalle, QC H8P 1B4",
+    "latitude": 45.4259,
+    "longitude": -73.61194,
+    "hours": {
+      "mon": [
+        [
+          "08:00",
+          "20:00"
+        ]
+      ],
+      "tue": [
+        [
+          "08:00",
+          "20:00"
+        ]
+      ],
+      "wed": [
+        [
+          "08:00",
+          "20:00"
+        ]
+      ],
+      "thu": [
+        [
+          "08:00",
+          "20:00"
+        ]
+      ],
+      "fri": [
+        [
+          "08:00",
+          "20:00"
+        ]
+      ],
+      "sat": [
+        [
+          "08:00",
+          "20:00"
+        ]
+      ],
+      "sun": [
+        [
+          "08:00",
+          "20:00"
+        ]
+      ]
+    },
+    "source": "locations.ups.com Access Point page, checked 2026-11-01"
+  },
+  {
+    "key": "ups-ap-146974",
+    "carrier": "ups",
+    "name": "UPS Access Point – Comptant.com Pierrefonds",
+    "address": "11112 Rue Meighen, Pierrefonds, QC H8Y 3K8",
+    "latitude": 45.51146,
+    "longitude": -73.81556,
+    "hours": {
+      "mon": [
+        [
+          "10:00",
+          "19:00"
+        ]
+      ],
+      "tue": [
+        [
+          "10:00",
+          "19:00"
+        ]
+      ],
+      "wed": [
+        [
+          "10:00",
+          "19:00"
+        ]
+      ],
+      "thu": [
+        [
+          "10:00",
+          "19:00"
+        ]
+      ],
+      "fri": [
+        [
+          "10:00",
+          "19:00"
+        ]
+      ],
+      "sat": [
+        [
+          "10:00",
+          "17:00"
+        ]
+      ],
+      "sun": [
+        [
+          "12:00",
+          "17:00"
+        ]
+      ]
+    },
+    "source": "locations.ups.com Access Point page, checked 2026-11-01"
+  },
+  {
+    "key": "ups-ap-175500",
+    "carrier": "ups",
+    "name": "UPS Access Point – Dépanneur 7 Jours Lachine",
+    "address": "65 45e Avenue, Lachine, QC H8T 2L8",
+    "latitude": 45.43744,
+    "longitude": -73.70624,
+    "hours": {
+      "mon": [
+        [
+          "07:00",
+          "22:00"
+        ]
+      ],
+      "tue": [
+        [
+          "07:00",
+          "22:00"
+        ]
+      ],
+      "wed": [
+        [
+          "07:00",
+          "22:00"
+        ]
+      ],
+      "thu": [
+        [
+          "07:00",
+          "22:00"
+        ]
+      ],
+      "fri": [
+        [
+          "07:00",
+          "22:00"
+        ]
+      ],
+      "sat": [
+        [
+          "07:00",
+          "22:00"
+        ]
+      ],
+      "sun": [
+        [
+          "07:00",
+          "22:00"
+        ]
+      ]
+    },
+    "source": "locations.ups.com Access Point page, checked 2026-11-01"
+  },
+  {
+    "key": "ups-ap-152096",
+    "carrier": "ups",
+    "name": "UPS Access Point – Dépanneur Trenmore",
+    "address": "5601 Rue Bannantyne, Verdun, QC H4H 1G7",
+    "latitude": 45.45148,
+    "longitude": -73.57685,
+    "hours": {
+      "mon": [
+        [
+          "07:00",
+          "23:00"
+        ]
+      ],
+      "tue": [
+        [
+          "07:00",
+          "23:00"
+        ]
+      ],
+      "wed": [
+        [
+          "07:00",
+          "23:00"
+        ]
+      ],
+      "thu": [
+        [
+          "07:00",
+          "23:00"
+        ]
+      ],
+      "fri": [
+        [
+          "07:00",
+          "23:00"
+        ]
+      ],
+      "sat": [
+        [
+          "07:00",
+          "23:00"
+        ]
+      ],
+      "sun": [
+        [
+          "07:00",
+          "23:00"
+        ]
+      ]
+    },
+    "source": "locations.ups.com Access Point page, checked 2026-11-01"
+  },
+  {
+    "key": "puro-ST022",
+    "carrier": "purolator",
+    "name": "Purolator – Bureau en Gros Notre-Dame",
+    "address": "770 Rue Notre-Dame Ouest, Montréal, QC H3C 1J5",
+    "latitude": 45.49899,
+    "longitude": -73.56048,
+    "hours": {
+      "mon": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "wed": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "19:00"
+        ]
+      ],
+      "fri": [
+        [
+          "09:00",
+          "19:00"
+        ]
+      ],
+      "sat": [
+        [
+          "09:00",
+          "17:00"
+        ]
+      ],
+      "sun": [
+        [
+          "10:00",
+          "17:00"
+        ]
+      ]
+    },
+    "source": "purolator.com location finder (counter hours), checked 2026-11-01"
+  },
+  {
+    "key": "puro-RA3257",
+    "carrier": "purolator",
+    "name": "Purolator – Uniprix Du Parc",
+    "address": "3575 Avenue du Parc, Montréal, QC H2X 3P9",
+    "latitude": 45.51031,
+    "longitude": -73.57488,
+    "hours": {
+      "mon": [
+        [
+          "09:00",
+          "21:00"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "21:00"
+        ]
+      ],
+      "wed": [
+        [
+          "09:00",
+          "21:00"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "21:00"
+        ]
+      ],
+      "fri": [
+        [
+          "09:00",
+          "21:00"
+        ]
+      ],
+      "sat": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "sun": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ]
+    },
+    "source": "purolator.com location finder (counter hours), checked 2026-11-01"
+  },
+  {
+    "key": "puro-ST306",
+    "carrier": "purolator",
+    "name": "Purolator – Bureau en Gros Place Dupuis",
+    "address": "845 Rue Sainte-Catherine Est, Montréal, QC H2L 2E4",
+    "latitude": 45.51595,
+    "longitude": -73.55868,
+    "hours": {
+      "mon": [
+        [
+          "08:00",
+          "18:00"
+        ]
+      ],
+      "tue": [
+        [
+          "08:00",
+          "18:00"
+        ]
+      ],
+      "wed": [
+        [
+          "08:00",
+          "18:00"
+        ]
+      ],
+      "thu": [
+        [
+          "08:00",
+          "19:00"
+        ]
+      ],
+      "fri": [
+        [
+          "08:00",
+          "19:00"
+        ]
+      ],
+      "sat": [
+        [
+          "09:00",
+          "17:00"
+        ]
+      ],
+      "sun": [
+        [
+          "10:00",
+          "17:00"
+        ]
+      ]
+    },
+    "source": "purolator.com location finder (counter hours), checked 2026-11-01"
+  },
+  {
+    "key": "puro-ST247",
+    "carrier": "purolator",
+    "name": "Purolator – Bureau en Gros Atwater",
+    "address": "4036 Rue Sainte-Catherine Ouest, Westmount, QC H3Z 1P2",
+    "latitude": 45.48809,
+    "longitude": -73.58563,
+    "hours": {
+      "mon": [
+        [
+          "08:00",
+          "18:00"
+        ]
+      ],
+      "tue": [
+        [
+          "08:00",
+          "18:00"
+        ]
+      ],
+      "wed": [
+        [
+          "08:00",
+          "18:00"
+        ]
+      ],
+      "thu": [
+        [
+          "08:00",
+          "19:00"
+        ]
+      ],
+      "fri": [
+        [
+          "08:00",
+          "19:00"
+        ]
+      ],
+      "sat": [
+        [
+          "09:00",
+          "17:00"
+        ]
+      ],
+      "sun": [
+        [
+          "10:00",
+          "17:00"
+        ]
+      ]
+    },
+    "source": "purolator.com location finder (counter hours), checked 2026-11-01"
+  },
+  {
+    "key": "puro-ST027",
+    "carrier": "purolator",
+    "name": "Purolator – Bureau en Gros Kirkland",
+    "address": "16908 Route Transcanadienne, Kirkland, QC H9H 0C5",
+    "latitude": 45.45285,
+    "longitude": -73.85371,
+    "hours": {
+      "mon": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "wed": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "19:00"
+        ]
+      ],
+      "fri": [
+        [
+          "09:00",
+          "19:00"
+        ]
+      ],
+      "sat": [
+        [
+          "09:00",
+          "17:00"
+        ]
+      ],
+      "sun": [
+        [
+          "10:00",
+          "17:00"
+        ]
+      ]
+    },
+    "source": "purolator.com location finder (counter hours), checked 2026-11-01"
+  },
+  {
+    "key": "puro-ST077",
+    "carrier": "purolator",
+    "name": "Purolator – Bureau en Gros Des Sources",
+    "address": "3165 Boulevard des Sources, Dollard-des-Ormeaux, QC H9B 1Z6",
+    "latitude": 45.48371,
+    "longitude": -73.79038,
+    "hours": {
+      "mon": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "wed": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "19:00"
+        ]
+      ],
+      "fri": [
+        [
+          "09:00",
+          "19:00"
+        ]
+      ],
+      "sat": [
+        [
+          "09:00",
+          "17:00"
+        ]
+      ],
+      "sun": [
+        [
+          "10:00",
+          "17:00"
+        ]
+      ]
+    },
+    "source": "purolator.com location finder (counter hours), checked 2026-11-01"
+  },
+  {
+    "key": "puro-ST021",
+    "carrier": "purolator",
+    "name": "Purolator – Bureau en Gros Saint-Laurent",
+    "address": "3660 Boulevard de la Côte-Vertu, Saint-Laurent, QC H4R 1P8",
+    "latitude": 45.49125,
+    "longitude": -73.70588,
+    "hours": {
+      "mon": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "wed": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "19:00"
+        ]
+      ],
+      "fri": [
+        [
+          "09:00",
+          "19:00"
+        ]
+      ],
+      "sat": [
+        [
+          "09:00",
+          "17:00"
+        ]
+      ],
+      "sun": [
+        [
+          "10:00",
+          "17:00"
+        ]
+      ]
+    },
+    "source": "purolator.com location finder (counter hours), checked 2026-11-01"
+  },
+  {
+    "key": "puro-ST049",
+    "carrier": "purolator",
+    "name": "Purolator – Bureau en Gros Marché Central",
+    "address": "1041 Rue du Marché-Central, Montréal, QC H4N 1J8",
+    "latitude": 45.53432,
+    "longitude": -73.6574,
+    "hours": {
+      "mon": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "wed": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "19:00"
+        ]
+      ],
+      "fri": [
+        [
+          "09:00",
+          "19:00"
+        ]
+      ],
+      "sat": [
+        [
+          "09:00",
+          "17:00"
+        ]
+      ],
+      "sun": [
+        [
+          "10:00",
+          "17:00"
+        ]
+      ]
+    },
+    "source": "purolator.com location finder (counter hours), checked 2026-11-01"
+  },
+  {
+    "key": "puro-ST236",
+    "carrier": "purolator",
+    "name": "Purolator – Bureau en Gros Anjou",
+    "address": "11250 Rue Renaude-Lapointe, Anjou, QC H1J 2V7",
+    "latitude": 45.61228,
+    "longitude": -73.59748,
+    "hours": {
+      "mon": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "wed": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "19:00"
+        ]
+      ],
+      "fri": [
+        [
+          "09:00",
+          "19:00"
+        ]
+      ],
+      "sat": [
+        [
+          "09:00",
+          "17:00"
+        ]
+      ],
+      "sun": [
+        [
+          "10:00",
+          "17:00"
+        ]
+      ]
+    },
+    "source": "purolator.com location finder (counter hours), checked 2026-11-01"
+  },
+  {
+    "key": "puro-ST282",
+    "carrier": "purolator",
+    "name": "Purolator – Bureau en Gros Place Versailles",
+    "address": "7275 Rue Sherbrooke Est, Montréal, QC H1N 1E9",
+    "latitude": 45.59001,
+    "longitude": -73.53923,
+    "hours": {
+      "mon": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "wed": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "19:00"
+        ]
+      ],
+      "fri": [
+        [
+          "09:00",
+          "19:00"
+        ]
+      ],
+      "sat": [
+        [
+          "09:00",
+          "17:00"
+        ]
+      ],
+      "sun": [
+        [
+          "10:00",
+          "17:00"
+        ]
+      ]
+    },
+    "source": "purolator.com location finder (counter hours), checked 2026-11-01"
+  },
+  {
+    "key": "puro-ST031",
+    "carrier": "purolator",
+    "name": "Purolator – Bureau en Gros LaSalle",
+    "address": "7097 Boulevard Newman, LaSalle, QC H8N 1X1",
+    "latitude": 45.4456,
+    "longitude": -73.614,
+    "hours": {
+      "mon": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "wed": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "19:00"
+        ]
+      ],
+      "fri": [
+        [
+          "09:00",
+          "19:00"
+        ]
+      ],
+      "sat": [
+        [
+          "09:00",
+          "17:00"
+        ]
+      ],
+      "sun": [
+        [
+          "10:00",
+          "17:00"
+        ]
+      ]
+    },
+    "source": "purolator.com location finder (counter hours), checked 2026-11-01"
+  },
+  {
+    "key": "puro-ST289",
+    "carrier": "purolator",
+    "name": "Purolator – Bureau en Gros Sherbrooke Ouest",
+    "address": "5157 Rue Sherbrooke Ouest, Montréal, QC H4A 1T5",
+    "latitude": 45.47581,
+    "longitude": -73.60753,
+    "hours": {
+      "mon": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "wed": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "19:00"
+        ]
+      ],
+      "fri": [
+        [
+          "09:00",
+          "19:00"
+        ]
+      ],
+      "sat": [
+        [
+          "09:00",
+          "17:00"
+        ]
+      ],
+      "sun": [
+        [
+          "10:00",
+          "17:00"
+        ]
+      ]
+    },
+    "source": "purolator.com location finder (counter hours), checked 2026-11-01"
+  },
+  {
+    "key": "puro-ST074",
+    "carrier": "purolator",
+    "name": "Purolator – Bureau en Gros Jean-Talon Est",
+    "address": "4625 Rue Jean-Talon Est, Saint-Léonard, QC H1S 1K3",
+    "latitude": 45.57245,
+    "longitude": -73.58828,
+    "hours": {
+      "mon": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "wed": [
+        [
+          "09:00",
+          "18:00"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "19:00"
+        ]
+      ],
+      "fri": [
+        [
+          "09:00",
+          "19:00"
+        ]
+      ],
+      "sat": [
+        [
+          "09:00",
+          "17:00"
+        ]
+      ],
+      "sun": [
+        [
+          "10:00",
+          "17:00"
+        ]
+      ]
+    },
+    "source": "purolator.com location finder (counter hours), checked 2026-11-01"
+  },
+  {
+    "key": "puro-PP3014",
+    "carrier": "purolator",
+    "name": "Purolator – Dépanneur Forget Pointe-aux-Trembles",
+    "address": "15550 Rue Sherbrooke Est, Montréal, QC H1A 1C9",
+    "latitude": 45.69074,
+    "longitude": -73.49674,
+    "hours": {
+      "mon": [
+        [
+          "08:00",
+          "20:00"
+        ]
+      ],
+      "tue": [
+        [
+          "08:00",
+          "20:00"
+        ]
+      ],
+      "wed": [
+        [
+          "08:00",
+          "20:00"
+        ]
+      ],
+      "thu": [
+        [
+          "08:00",
+          "20:00"
+        ]
+      ],
+      "fri": [
+        [
+          "08:00",
+          "20:00"
+        ]
+      ],
+      "sat": [
+        [
+          "08:00",
+          "20:00"
+        ]
+      ],
+      "sun": [
+        [
+          "08:00",
+          "20:00"
+        ]
+      ]
+    },
+    "source": "purolator.com location finder (counter hours), checked 2026-11-01"
+  },
+  {
+    "key": "puro-QS3241",
+    "carrier": "purolator",
+    "name": "Purolator – Dépanneur 7 Jours Lachine",
+    "address": "65 45e Avenue, Lachine, QC H8T 2L8",
+    "latitude": 45.43754,
+    "longitude": -73.7061,
+    "hours": {
+      "mon": [
+        [
+          "07:00",
+          "22:30"
+        ]
+      ],
+      "tue": [
+        [
+          "07:00",
+          "22:30"
+        ]
+      ],
+      "wed": [
+        [
+          "07:00",
+          "22:30"
+        ]
+      ],
+      "thu": [
+        [
+          "07:00",
+          "22:30"
+        ]
+      ],
+      "fri": [
+        [
+          "07:00",
+          "22:30"
+        ]
+      ],
+      "sat": [
+        [
+          "07:00",
+          "22:30"
+        ]
+      ],
+      "sun": [
+        [
+          "07:00",
+          "22:00"
+        ]
+      ]
+    },
+    "source": "purolator.com location finder (counter hours), checked 2026-11-01"
+  },
+  {
+    "key": "puro-QS3448",
+    "carrier": "purolator",
+    "name": "Purolator – Pharmacie Proxim Gouin Ouest",
+    "address": "9546 Boulevard Gouin Ouest, Montréal, QC H8Y 1R3",
+    "latitude": 45.50389,
+    "longitude": -73.77955,
+    "hours": {
+      "mon": [
+        [
+          "10:00",
+          "19:00"
+        ]
+      ],
+      "tue": [
+        [
+          "10:00",
+          "19:00"
+        ]
+      ],
+      "wed": [
+        [
+          "10:00",
+          "19:00"
+        ]
+      ],
+      "thu": [
+        [
+          "10:00",
+          "19:00"
+        ]
+      ],
+      "fri": [
+        [
+          "10:00",
+          "19:00"
+        ]
+      ],
+      "sat": [
+        [
+          "10:00",
+          "16:00"
+        ]
+      ]
+    },
+    "source": "purolator.com location finder (counter hours), checked 2026-11-01"
+  }
+]
