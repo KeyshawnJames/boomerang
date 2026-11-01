@@ -812,6 +812,59 @@
     "source": "Canada Post finder (counter hours), checked 2026-11-01, outlet 106745"
   },
   {
+    "key": "cp-106601",
+    "carrier": "canada_post",
+    "name": "Postes Canada – Uniprix Sainte-Anne-de-Bellevue",
+    "address": "88 Rue Sainte-Anne, Sainte-Anne-de-Bellevue, QC H9X 1L8",
+    "latitude": 45.40322,
+    "longitude": -73.95134,
+    "hours": {
+      "mon": [
+        [
+          "09:00",
+          "19:30"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "19:30"
+        ]
+      ],
+      "wed": [
+        [
+          "09:00",
+          "19:30"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "19:30"
+        ]
+      ],
+      "fri": [
+        [
+          "09:00",
+          "19:30"
+        ]
+      ],
+      "sat": [
+        [
+          "09:00",
+          "16:30"
+        ]
+      ],
+      "sun": [
+        [
+          "09:00",
+          "12:30"
+        ]
+      ]
+    },
+    "source": "Canada Post finder (counter hours), checked 2026-11-01, outlet 106601"
+  },
+  {
     "key": "osm-node-11999925850",
     "carrier": "ups",
     "name": "The UPS Store #459 – Saint-Denis",
@@ -2454,6 +2507,59 @@
         [
           "10:00",
           "16:00"
+        ]
+      ]
+    },
+    "source": "purolator.com location finder (counter hours), checked 2026-11-01"
+  },
+  {
+    "key": "puro-QS3432",
+    "carrier": "purolator",
+    "name": "Purolator – Uniprix Sainte-Anne-de-Bellevue",
+    "address": "88 Rue Sainte-Anne, Sainte-Anne-de-Bellevue, QC H9X 1L8",
+    "latitude": 45.40322,
+    "longitude": -73.95134,
+    "hours": {
+      "mon": [
+        [
+          "09:00",
+          "20:00"
+        ]
+      ],
+      "tue": [
+        [
+          "09:00",
+          "20:00"
+        ]
+      ],
+      "wed": [
+        [
+          "09:00",
+          "20:00"
+        ]
+      ],
+      "thu": [
+        [
+          "09:00",
+          "20:00"
+        ]
+      ],
+      "fri": [
+        [
+          "09:00",
+          "20:00"
+        ]
+      ],
+      "sat": [
+        [
+          "09:00",
+          "17:00"
+        ]
+      ],
+      "sun": [
+        [
+          "09:00",
+          "13:00"
         ]
       ]
     },

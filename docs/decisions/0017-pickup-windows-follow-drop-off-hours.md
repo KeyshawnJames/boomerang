@@ -43,7 +43,8 @@ tomorrow's 7 to 9 PM window, which is a strange thing to leave out.
 - The hours come from each carrier's own location finder (Canada Post's post office finder,
   The UPS Store and UPS Access Point pages, Purolator's location finder), checked by hand,
   with the date they were checked. We keep 15 or so locations per carrier spread across the
-  island, so every address has one within 10 km.
+  island, so every address has one within 10 km. The one gap: UPS has no counter on the
+  island west of Kirkland, so the Senneville shore gets no UPS windows until it opens one.
 - A location with no hours on file counts as closed.
 - **No pickups on Quebec statutory holidays.** Counter hours on those days vary too much to
   trust. The holiday dates are a setting.

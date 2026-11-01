@@ -4,7 +4,8 @@ Run with `uv run python -m app.seed`. Safe to re-run: retailers and questions al
 are left alone, so an edit here does not reach a database that was already seeded. Drop-off
 locations are updated, so re-checked counter hours do reach it (ADR 0017).
 Drop-off locations and their counter hours are hand-checked against each carrier's own
-location finder (`dropoffs.json`, each row says where and when).
+location finder (`dropoffs.json`, each row says where and when). The `osm-node-*` rows'
+coordinates come from OpenStreetMap (© OpenStreetMap contributors, ODbL).
 """
 
 import json

@@ -6,6 +6,7 @@ from sqlmodel import Session, select
 from app.models import Carrier, DropOffLocation, EligibilityQuestion, Retailer
 from app.seed import seed
 from app.services.addresses import in_service_area
+from app.services.booking import nearby_counters
 
 
 def count_rows(session: Session) -> dict[str, int]:
@@ -76,3 +77,15 @@ def test_reseeding_updates_dropoff_hours(session: Session):
     session.refresh(row)
 
     assert row.hours
+
+
+def test_the_west_tip_has_a_counter_for_every_carrier(session: Session):
+    # Senneville and western Sainte-Anne-de-Bellevue, the far end of the service area.
+    seed(session)
+    west_tip = (45.4250, -73.9850)
+    assert in_service_area(session, *west_tip)
+
+    # shortcut: no UPS counter on the island west of Kirkland (10.2 km away), so this sliver gets
+    # no UPS windows; add one if UPS opens an Access Point in Sainte-Anne-de-Bellevue.
+    for carrier in (Carrier.canada_post, Carrier.purolator):
+        assert nearby_counters(session, carrier, *west_tip), carrier
