@@ -179,6 +179,30 @@ export type LoginRequest = {
 };
 
 /**
+ * PayRequest
+ */
+export type PayRequest = {
+    /**
+     * Tip
+     */
+    tip?: number;
+};
+
+/**
+ * PaymentIntentRead
+ */
+export type PaymentIntentRead = {
+    /**
+     * Client Secret
+     */
+    client_secret: string;
+    /**
+     * Total
+     */
+    total: number;
+};
+
+/**
  * PickupSlot
  */
 export type PickupSlot = {
@@ -746,6 +770,36 @@ export type GetReturnResponses = {
 };
 
 export type GetReturnResponse = GetReturnResponses[keyof GetReturnResponses];
+
+export type PayForReturnData = {
+    body: PayRequest;
+    path: {
+        /**
+         * Return Id
+         */
+        return_id: string;
+    };
+    query?: never;
+    url: '/returns/{return_id}/pay';
+};
+
+export type PayForReturnErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type PayForReturnError = PayForReturnErrors[keyof PayForReturnErrors];
+
+export type PayForReturnResponses = {
+    /**
+     * Successful Response
+     */
+    200: PaymentIntentRead;
+};
+
+export type PayForReturnResponse = PayForReturnResponses[keyof PayForReturnResponses];
 
 export type HealthData = {
     body?: never;

@@ -3,8 +3,8 @@
 import { type DefaultError, queryOptions, type UseMutationOptions } from '@tanstack/react-query';
 
 import { client } from '../client.gen';
-import { autocompleteAddress, bookingOptions, createReturn, eligibilityQuestions, getReturn, health, listRetailers, login, me, type Options, presignUpload, register, resolveAddress, updateMe } from '../sdk.gen';
-import type { AutocompleteAddressData, AutocompleteAddressError, AutocompleteAddressResponse, BookingOptionsData, BookingOptionsError, BookingOptionsResponse, CreateReturnData, CreateReturnError, CreateReturnResponse, EligibilityQuestionsData, EligibilityQuestionsResponse, GetReturnData, GetReturnError, GetReturnResponse, HealthData, HealthResponse, ListRetailersData, ListRetailersResponse, LoginData, LoginError, LoginResponse, MeData, MeResponse, PresignUploadData, PresignUploadError, PresignUploadResponse, RegisterData, RegisterError, RegisterResponse, ResolveAddressData, ResolveAddressError, ResolveAddressResponse, UpdateMeData, UpdateMeError, UpdateMeResponse } from '../types.gen';
+import { autocompleteAddress, bookingOptions, createReturn, eligibilityQuestions, getReturn, health, listRetailers, login, me, type Options, payForReturn, presignUpload, register, resolveAddress, updateMe } from '../sdk.gen';
+import type { AutocompleteAddressData, AutocompleteAddressError, AutocompleteAddressResponse, BookingOptionsData, BookingOptionsError, BookingOptionsResponse, CreateReturnData, CreateReturnError, CreateReturnResponse, EligibilityQuestionsData, EligibilityQuestionsResponse, GetReturnData, GetReturnError, GetReturnResponse, HealthData, HealthResponse, ListRetailersData, ListRetailersResponse, LoginData, LoginError, LoginResponse, MeData, MeResponse, PayForReturnData, PayForReturnError, PayForReturnResponse, PresignUploadData, PresignUploadError, PresignUploadResponse, RegisterData, RegisterError, RegisterResponse, ResolveAddressData, ResolveAddressError, ResolveAddressResponse, UpdateMeData, UpdateMeError, UpdateMeResponse } from '../types.gen';
 
 /**
  * Register
@@ -251,6 +251,23 @@ export const getReturnOptions = (options: Options<GetReturnData>) => queryOption
     },
     queryKey: getReturnQueryKey(options)
 });
+
+/**
+ * Pay For Return
+ */
+export const payForReturnMutation = (options?: Partial<Options<PayForReturnData>>): UseMutationOptions<PayForReturnResponse, PayForReturnError, Options<PayForReturnData>> => {
+    const mutationOptions: UseMutationOptions<PayForReturnResponse, PayForReturnError, Options<PayForReturnData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await payForReturn({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
 
 export const healthQueryKey = (options?: Options<HealthData>) => createQueryKey('health', options);
 

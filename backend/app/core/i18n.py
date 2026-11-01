@@ -91,6 +91,22 @@ MESSAGES: dict[str, dict[Locale, str]] = {
         Locale.en: "This return doesn't exist.",
         Locale.fr: "Ce retour n'existe pas.",
     },
+    "payment_closed": {
+        Locale.en: "This return is already paid or cancelled.",
+        Locale.fr: "Ce retour est déjà payé ou annulé.",
+    },
+    "payment_expired": {
+        Locale.en: "This booking has expired. Book your pickup again.",
+        Locale.fr: "Cette réservation a expiré. Réservez votre collecte de nouveau.",
+    },
+    "payment_in_progress": {
+        Locale.en: "Your payment is already going through.",
+        Locale.fr: "Votre paiement est déjà en cours de traitement.",
+    },
+    "payment_unavailable": {
+        Locale.en: "Payment isn't working right now. Try again.",
+        Locale.fr: "Le paiement ne fonctionne pas pour le moment. Réessayez.",
+    },
 }
 
 
