@@ -6,24 +6,37 @@ from app.schemas.booking import PickupSlot
 
 MONTREAL = ZoneInfo("America/Montreal")
 SLOT = timedelta(hours=2)
-HORIZON = timedelta(hours=24)
+DAYS = ("mon", "tue", "wed", "thu", "fri", "sat", "sun")
 
 
-def pickup_slots(now: datetime) -> list[PickupSlot]:
-    """The pickup windows on offer at `now` (ADR 0012)."""
+def open_at(hours: dict, moment: datetime) -> bool:
+    """Whether a counter with these weekly hours takes parcels at `moment` (ADR 0017)."""
+    local = moment.astimezone(MONTREAL)
+    clock = local.strftime("%H:%M")  # zero-padded, so string order is time order
+    return any(start <= clock < end for start, end in hours.get(DAYS[local.weekday()], []))
+
+
+def pickup_slots(now: datetime, counters: list[dict | None]) -> list[PickupSlot]:
+    """The pickup windows on offer at `now`, given the nearby counters' hours (ADR 0012, 0017)."""
     now = now.astimezone(MONTREAL).replace(second=0, microsecond=0)
-    # In UTC: same-zone datetime arithmetic is wall-clock time and drifts an hour on DST days.
-    horizon = now.astimezone(UTC) + HORIZON
-    slots = []
+    travel = timedelta(minutes=settings.dropoff_travel_minutes)
+    candidates = []
 
     today_open = datetime.combine(now.date(), time(settings.service_open_hour), MONTREAL)
     today_close = datetime.combine(now.date(), time(settings.service_close_hour), MONTREAL)
     if today_open <= now and now + SLOT <= today_close:
-        slots.append(PickupSlot(start=now, end=now + SLOT, asap=True))
+        candidates.append(PickupSlot(start=now, end=now + SLOT, asap=True))
 
     for day in (now.date(), now.date() + timedelta(days=1)):
         for hour in range(settings.service_open_hour, settings.service_close_hour - 1, 2):
             start = datetime.combine(day, time(hour), MONTREAL)
-            if now < start <= horizon:
-                slots.append(PickupSlot(start=start, end=start + SLOT, asap=False))
-    return slots
+            if now < start:
+                candidates.append(PickupSlot(start=start, end=start + SLOT, asap=False))
+
+    # In UTC: same-zone datetime arithmetic is wall-clock time and drifts an hour on DST days.
+    return [
+        slot
+        for slot in candidates
+        if slot.start.date() not in settings.holidays
+        and any(open_at(h, slot.end.astimezone(UTC) + travel) for h in counters if h)
+    ]

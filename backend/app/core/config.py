@@ -1,3 +1,4 @@
+from datetime import date
 from pathlib import Path
 from typing import Self
 
@@ -23,6 +24,25 @@ class Settings(BaseSettings):
     # Hours in America/Montreal; every pickup window falls inside them.
     service_open_hour: int = Field(default=9, ge=0, le=23)
     service_close_hour: int = Field(default=21, ge=0, le=23)
+    # A window is offered only if a counter within this distance is still open this long after
+    # it ends (ADR 0017).
+    dropoff_travel_minutes: int = Field(default=45, ge=0)
+    dropoff_radius_m: int = Field(default=10_000, gt=0)
+    # No pickups on these days: Quebec statutory holidays plus Boxing Day. Update each year.
+    holidays: list[date] = [
+        date(2026, 12, 25),
+        date(2026, 12, 26),
+        date(2027, 1, 1),
+        date(2027, 3, 26),  # Good Friday
+        date(2027, 3, 29),  # Easter Monday
+        date(2027, 5, 24),  # National Patriots' Day
+        date(2027, 6, 24),
+        date(2027, 7, 1),
+        date(2027, 9, 6),  # Labour Day
+        date(2027, 10, 11),  # Thanksgiving
+        date(2027, 12, 25),
+        date(2027, 12, 26),
+    ]
     # Places API (New) key, server only. Empty until #43; Google then refuses the calls.
     google_maps_api_key: SecretStr = SecretStr("")
     # Photo uploads (#45). Dev keeps them in a gitignored folder; Supabase Storage at M10.
