@@ -1,6 +1,6 @@
 # 0012. Booking rules: pickup windows, price, phone and service area
 
-- **Status:** accepted (the fee, the hours and the service area are placeholders until the business sets them). Service-area check settled by [0013](0013-address-lookup.md). Pickup windows changed by [0017](0017-pickup-windows-follow-drop-off-hours.md)
+- **Status:** accepted (the fee, the hours and the service area are placeholders until the business sets them). Service-area check settled by [0013](0013-address-lookup.md). Pickup windows changed by [0017](0017-pickup-windows-follow-drop-off-hours.md). Tax line changed by [0018](0018-payments.md)
 - **Date:** 2026-10-29
 
 ## Context

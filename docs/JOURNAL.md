@@ -14,6 +14,7 @@
 
 ## 2026-11-01
 
+- **[Claude]** Decided how payments work, as defaults the business can change (ADR 0018): the $4.99 fee stays, the client tips at booking (no tip, $1, $2, $3 or any amount) and the driver gets the whole tip plus 75% of the fee. No GST/QST until Boomerang registers (ask an accountant before launch). Unpaid returns expire after 30 minutes, and cancelling before a driver accepts refunds everything to the card. Payments are split into five issues, #63 to #67. (#20)
 - **[Claude]** Milestone 4 is done: a client can now create a return from the app. They pick the retailer, upload the label and package photos, answer the eligibility questions (the server refuses a blocked answer even if the app is bypassed), enter the pickup address and choose a time a drop-off counter can take. The milestone is tagged and the changelog lists what it contains. Next up: payments. (#50)
 - **[Claude]** The app now only offers pickup times a drop-off counter can take on the same trip: a counter for the return's carrier within 10 km must still be open 45 minutes after the window ends. 50 hand-checked counters across the island (counter hours, not store hours), no pickups on Quebec holidays, and the rest of today plus all of tomorrow instead of a rolling 24 hours (ADR 0017) (#59)
 
