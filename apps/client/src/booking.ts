@@ -1,4 +1,5 @@
-import type { PickupSlot } from "api";
+import type { BookingOptionsData, PickupSlot } from "api";
+import { bookingOptionsOptions } from "api/react-query";
 
 import i18n from "./i18n";
 
@@ -50,4 +51,19 @@ export function slotLabel(slot: PickupSlot, now = new Date()): string {
 // ASAP's start is "now", which moves on every fetch, so it matches by kind.
 export function sameSlot(a: PickupSlot, b: PickupSlot): boolean {
   return a.asap === b.asap && (a.asap || a.start === b.start);
+}
+
+// Windows are asked for this carrier near this address (ADR 0017). Both are set by the steps
+// before the time step; the draft empties once a return is booked, so the query waits then.
+export function bookingOptionsQuery(draft: {
+  carrier: BookingOptionsData["query"]["carrier"] | null;
+  address: { token: string } | null;
+}) {
+  const { carrier, address } = draft;
+  return {
+    ...bookingOptionsOptions({
+      query: { carrier: carrier!, address_token: address?.token ?? "" },
+    }),
+    enabled: !!carrier && !!address,
+  };
 }
