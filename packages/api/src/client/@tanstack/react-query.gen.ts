@@ -4,7 +4,7 @@ import { type DefaultError, queryOptions, type UseMutationOptions } from '@tanst
 
 import { client } from '../client.gen';
 import { autocompleteAddress, bookingOptions, createReturn, eligibilityQuestions, getReturn, health, listRetailers, login, me, type Options, presignUpload, register, resolveAddress, updateMe } from '../sdk.gen';
-import type { AutocompleteAddressData, AutocompleteAddressError, AutocompleteAddressResponse, BookingOptionsData, BookingOptionsResponse, CreateReturnData, CreateReturnError, CreateReturnResponse, EligibilityQuestionsData, EligibilityQuestionsResponse, GetReturnData, GetReturnError, GetReturnResponse, HealthData, HealthResponse, ListRetailersData, ListRetailersResponse, LoginData, LoginError, LoginResponse, MeData, MeResponse, PresignUploadData, PresignUploadError, PresignUploadResponse, RegisterData, RegisterError, RegisterResponse, ResolveAddressData, ResolveAddressError, ResolveAddressResponse, UpdateMeData, UpdateMeError, UpdateMeResponse } from '../types.gen';
+import type { AutocompleteAddressData, AutocompleteAddressError, AutocompleteAddressResponse, BookingOptionsData, BookingOptionsError, BookingOptionsResponse, CreateReturnData, CreateReturnError, CreateReturnResponse, EligibilityQuestionsData, EligibilityQuestionsResponse, GetReturnData, GetReturnError, GetReturnResponse, HealthData, HealthResponse, ListRetailersData, ListRetailersResponse, LoginData, LoginError, LoginResponse, MeData, MeResponse, PresignUploadData, PresignUploadError, PresignUploadResponse, RegisterData, RegisterError, RegisterResponse, ResolveAddressData, ResolveAddressError, ResolveAddressResponse, UpdateMeData, UpdateMeError, UpdateMeResponse } from '../types.gen';
 
 /**
  * Register
@@ -144,12 +144,14 @@ export const eligibilityQuestionsOptions = (options?: Options<EligibilityQuestio
     queryKey: eligibilityQuestionsQueryKey(options)
 });
 
-export const bookingOptionsQueryKey = (options?: Options<BookingOptionsData>) => createQueryKey('bookingOptions', options);
+export const bookingOptionsQueryKey = (options: Options<BookingOptionsData>) => createQueryKey('bookingOptions', options);
 
 /**
  * Booking Options
+ *
+ * Windows a drop-off for this carrier near this address can take the same trip (ADR 0017).
  */
-export const bookingOptionsOptions = (options?: Options<BookingOptionsData>) => queryOptions<BookingOptionsResponse, DefaultError, BookingOptionsResponse, ReturnType<typeof bookingOptionsQueryKey>>({
+export const bookingOptionsOptions = (options: Options<BookingOptionsData>) => queryOptions<BookingOptionsResponse, BookingOptionsError, BookingOptionsResponse, ReturnType<typeof bookingOptionsQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
         const { data } = await bookingOptions({
             ...options,

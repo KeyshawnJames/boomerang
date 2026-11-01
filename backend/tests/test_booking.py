@@ -1,3 +1,4 @@
+import uuid
 from datetime import date, datetime, timedelta
 
 import pytest
@@ -6,9 +7,11 @@ from pydantic import ValidationError
 from sqlmodel import Session
 
 from app.core.config import Settings, settings
-from app.models import EligibilityQuestion, Retailer
+from app.core.security import create_address_token
+from app.models import Carrier, DropOffLocation, EligibilityQuestion, Retailer
 from app.seed import seed
-from app.services.booking import MONTREAL, pickup_slots
+from app.services.addresses import point
+from app.services.booking import MONTREAL, nearby_counters, pickup_slots
 from tests.test_auth import bearer, token_for
 
 
@@ -118,8 +121,43 @@ def test_no_counters_no_windows():
     assert windows(mtl(2, 6), [None]) == []
 
 
-def test_booking_options_has_fee_and_slots(client: TestClient):
-    response = client.get("/booking/options", headers=bearer(token_for(client, "bo@example.com")))
+PVM = (45.5017, -73.5690)  # Place Ville-Marie
+
+
+def counter(session: Session, carrier: Carrier, latitude: float, longitude: float, hours=ALWAYS):
+    session.add(
+        DropOffLocation(
+            carrier=carrier,
+            name=f"Test {carrier}",
+            address="Test",
+            location=point(latitude, longitude),
+            hours=hours,
+        )
+    )
+    session.flush()
+
+
+def options(client: TestClient, carrier: str = "ups", token: str | None = None, **address):
+    token = token or token_for(client, f"{uuid.uuid4()}@example.com")
+    user_id = uuid.UUID(client.get("/me", headers=bearer(token)).json()["id"])
+    address_token = create_address_token(user_id, "1 Place Ville-Marie", *PVM)
+    query = {"carrier": carrier, "address_token": address_token} | address
+    return client.get("/booking/options", params=query, headers=bearer(token))
+
+
+def test_nearby_counters_only_counts_the_carrier_within_10_km(session: Session):
+    near = {"mon": [["09:00", "17:00"]]}
+    counter(session, Carrier.ups, *PVM, hours=near)
+    counter(session, Carrier.ups, 45.5017, -73.7230)  # about 12 km west
+    counter(session, Carrier.canada_post, *PVM)
+
+    assert nearby_counters(session, Carrier.ups, *PVM) == [near]
+
+
+def test_booking_options_has_fee_and_slots(client: TestClient, session: Session):
+    counter(session, Carrier.ups, *PVM)
+
+    response = options(client)
 
     assert response.status_code == 200
     assert response.json()["pickup_fee"] == 499
@@ -129,6 +167,30 @@ def test_booking_options_has_fee_and_slots(client: TestClient):
         datetime.fromisoformat(s["end"]) - datetime.fromisoformat(s["start"]) == timedelta(hours=2)
         for s in slots
     )
+
+
+def test_booking_options_without_a_nearby_counter_has_no_slots(
+    client: TestClient, session: Session
+):
+    counter(session, Carrier.canada_post, *PVM)
+
+    response = options(client, carrier="ups")
+
+    assert response.status_code == 200
+    assert response.json()["slots"] == []
+
+
+def test_booking_options_refuses_another_users_address(client: TestClient):
+    other = uuid.uuid4()
+    token = token_for(client, "bo-other@example.com")
+    response = client.get(
+        "/booking/options",
+        params={"carrier": "ups", "address_token": create_address_token(other, "x", *PVM)},
+        headers={**bearer(token), "Accept-Language": "en"},
+    )
+
+    assert response.status_code == 422
+    assert response.json()["detail"] == "Your address check has expired. Enter the address again."
 
 
 def test_retailers_sorted_by_name(client: TestClient, session: Session):

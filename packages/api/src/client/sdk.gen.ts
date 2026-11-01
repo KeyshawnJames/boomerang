@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AutocompleteAddressData, AutocompleteAddressErrors, AutocompleteAddressResponses, BookingOptionsData, BookingOptionsResponses, CreateReturnData, CreateReturnErrors, CreateReturnResponses, EligibilityQuestionsData, EligibilityQuestionsResponses, GetReturnData, GetReturnErrors, GetReturnResponses, HealthData, HealthResponses, ListRetailersData, ListRetailersResponses, LoginData, LoginErrors, LoginResponses, MeData, MeResponses, PresignUploadData, PresignUploadErrors, PresignUploadResponses, RegisterData, RegisterErrors, RegisterResponses, ResolveAddressData, ResolveAddressErrors, ResolveAddressResponses, UpdateMeData, UpdateMeErrors, UpdateMeResponses } from './types.gen';
+import type { AutocompleteAddressData, AutocompleteAddressErrors, AutocompleteAddressResponses, BookingOptionsData, BookingOptionsErrors, BookingOptionsResponses, CreateReturnData, CreateReturnErrors, CreateReturnResponses, EligibilityQuestionsData, EligibilityQuestionsResponses, GetReturnData, GetReturnErrors, GetReturnResponses, HealthData, HealthResponses, ListRetailersData, ListRetailersResponses, LoginData, LoginErrors, LoginResponses, MeData, MeResponses, PresignUploadData, PresignUploadErrors, PresignUploadResponses, RegisterData, RegisterErrors, RegisterResponses, ResolveAddressData, ResolveAddressErrors, ResolveAddressResponses, UpdateMeData, UpdateMeErrors, UpdateMeResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -84,8 +84,10 @@ export const eligibilityQuestions = <ThrowOnError extends boolean = false>(optio
 
 /**
  * Booking Options
+ *
+ * Windows a drop-off for this carrier near this address can take the same trip (ADR 0017).
  */
-export const bookingOptions = <ThrowOnError extends boolean = false>(options?: Options<BookingOptionsData, ThrowOnError>): RequestResult<BookingOptionsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<BookingOptionsResponses, unknown, ThrowOnError>({
+export const bookingOptions = <ThrowOnError extends boolean = false>(options: Options<BookingOptionsData, ThrowOnError>): RequestResult<BookingOptionsResponses, BookingOptionsErrors, ThrowOnError> => (options.client ?? client).get<BookingOptionsResponses, BookingOptionsErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/booking/options',
     ...options

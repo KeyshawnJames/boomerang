@@ -1,8 +1,13 @@
 from datetime import UTC, datetime, time, timedelta
 from zoneinfo import ZoneInfo
 
+from sqlalchemy import func
+from sqlmodel import Session, select
+
 from app.core.config import settings
+from app.models import Carrier, DropOffLocation
 from app.schemas.booking import PickupSlot
+from app.services.addresses import point
 
 MONTREAL = ZoneInfo("America/Montreal")
 SLOT = timedelta(hours=2)
@@ -40,3 +45,16 @@ def pickup_slots(now: datetime, counters: list[dict | None]) -> list[PickupSlot]
         if slot.start.date() not in settings.holidays
         and any(open_at(h, slot.end.astimezone(UTC) + travel) for h in counters if h)
     ]
+
+
+def nearby_counters(
+    session: Session, carrier: Carrier, latitude: float, longitude: float
+) -> list[dict | None]:
+    """The weekly hours of this carrier's drop-off counters near the pickup (ADR 0017)."""
+    here = func.ST_GeogFromText(point(latitude, longitude))
+    return session.exec(
+        select(DropOffLocation.hours).where(
+            DropOffLocation.carrier == carrier,
+            func.ST_DWithin(DropOffLocation.location, here, settings.dropoff_radius_m),
+        )
+    ).all()
