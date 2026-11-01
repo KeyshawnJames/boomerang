@@ -88,7 +88,8 @@
     "hint": "Un chauffeur passe pendant la plage choisie.",
     "asap": "Dès que possible, d'ici {{end}}",
     "today": "Aujourd'hui",
-    "tomorrow": "Demain"
+    "tomorrow": "Demain",
+    "none": "Plus aucune plage de ramassage aujourd'hui ni demain : aucun comptoir {{carrier}} près de chez vous ne sera ouvert. Réessayez plus tard."
   },
   "review": {
     "title": "Vérifier et réserver",

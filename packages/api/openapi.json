@@ -198,7 +198,38 @@
     "/booking/options": {
       "get": {
         "summary": "Booking Options",
+        "description": "Windows a drop-off for this carrier near this address can take the same trip (ADR 0017).",
         "operationId": "booking_options",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "carrier",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "enum": [
+                "canada_post",
+                "ups",
+                "purolator"
+              ],
+              "type": "string",
+              "title": "Carrier"
+            }
+          },
+          {
+            "name": "address_token",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Address Token"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -209,13 +240,18 @@
                 }
               }
             }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
           }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ]
+        }
       }
     },
     "/addresses/autocomplete": {

@@ -1,14 +1,17 @@
-from datetime import datetime, timedelta
+import uuid
+from datetime import date, datetime, timedelta
 
 import pytest
 from fastapi.testclient import TestClient
 from pydantic import ValidationError
 from sqlmodel import Session
 
-from app.core.config import Settings
-from app.models import EligibilityQuestion, Retailer
+from app.core.config import Settings, settings
+from app.core.security import create_address_token
+from app.models import Carrier, DropOffLocation, EligibilityQuestion, Retailer
 from app.seed import seed
-from app.services.booking import MONTREAL, pickup_slots
+from app.services.addresses import point
+from app.services.booking import MONTREAL, nearby_counters, pickup_slots
 from tests.test_auth import bearer, token_for
 
 
@@ -16,25 +19,46 @@ def mtl(day: int, hour: int, minute: int = 0, month: int = 11) -> datetime:
     return datetime(2026, month, day, hour, minute, tzinfo=MONTREAL)
 
 
-def windows(now: datetime) -> list[tuple[datetime, datetime, bool]]:
-    return [(slot.start, slot.end, slot.asap) for slot in pickup_slots(now)]
+DAYS = ("mon", "tue", "wed", "thu", "fri", "sat", "sun")
+ALWAYS = {day: [["00:00", "24:00"]] for day in DAYS}
+
+
+def windows(
+    now: datetime, counters: list[dict] | None = None
+) -> list[tuple[datetime, datetime, bool]]:
+    return [
+        (s.start, s.end, s.asap)
+        for s in pickup_slots(now, [ALWAYS] if counters is None else counters)
+    ]
 
 
 def two_hour_blocks(day: int, hours: range) -> list[tuple[datetime, datetime, bool]]:
     return [(mtl(day, h), mtl(day, h + 2), False) for h in hours]
 
 
-# Service hours default to 9:00–21:00 (config).
-def test_open_offers_asap_then_blocks_up_to_24_hours_ahead():
+# Service hours default to 9:00–21:00 (config). Nov 2, 2026 is a Monday.
+def test_open_offers_asap_then_the_rest_of_today_and_all_of_tomorrow():
     assert windows(mtl(2, 10, 15)) == [
         (mtl(2, 10, 15), mtl(2, 12, 15), True),
         *two_hour_blocks(2, range(11, 21, 2)),
-        *two_hour_blocks(3, range(9, 10)),  # 9:00 tomorrow is within 24h; 11:00 is not
+        *two_hour_blocks(3, range(9, 21, 2)),
     ]
 
 
-def test_closed_in_the_morning_offers_todays_blocks_without_asap():
-    assert windows(mtl(2, 6)) == two_hour_blocks(2, range(9, 21, 2))
+def test_evening_still_offers_all_of_tomorrow():
+    # At 6:43 PM the old 24-hour limit hid tomorrow's 7 to 9 PM window.
+    assert windows(mtl(2, 18, 43)) == [
+        (mtl(2, 18, 43), mtl(2, 20, 43), True),
+        (mtl(2, 19), mtl(2, 21), False),
+        *two_hour_blocks(3, range(9, 21, 2)),
+    ]
+
+
+def test_closed_in_the_morning_offers_today_and_tomorrow_without_asap():
+    assert windows(mtl(2, 6)) == [
+        *two_hour_blocks(2, range(9, 21, 2)),
+        *two_hour_blocks(3, range(9, 21, 2)),
+    ]
 
 
 def test_late_evening_offers_no_asap_that_would_run_past_closing():
@@ -46,13 +70,94 @@ def test_after_closing_offers_tomorrows_blocks():
     assert windows(mtl(2, 23, 30)) == two_hour_blocks(3, range(9, 21, 2))
 
 
-def test_horizon_is_24_real_hours_across_a_clock_change():
-    # Clocks fall back on Nov 1, 2026: 24h after 19:30 EDT is 18:30 EST, so 19:00 is out.
-    assert windows(mtl(31, 19, 30, month=10)) == two_hour_blocks(1, range(9, 19, 2))
+def test_window_needs_a_counter_open_45_minutes_after_it_ends():
+    counter = {day: [["09:00", "17:30"]] for day in DAYS[:5]}
+    # 15–17 arrives at 17:45, after closing.
+    assert windows(mtl(2, 6), [counter]) == [
+        *two_hour_blocks(2, range(9, 15, 2)),
+        *two_hour_blocks(3, range(9, 15, 2)),
+    ]
 
 
-def test_booking_options_has_fee_and_slots(client: TestClient):
-    response = client.get("/booking/options", headers=bearer(token_for(client, "bo@example.com")))
+def test_arriving_at_closing_time_is_too_late():
+    counter = {"mon": [["09:00", "17:45"]]}
+    assert (mtl(2, 15), mtl(2, 17), False) not in windows(mtl(2, 6), [counter])
+
+
+def test_sunday_counter_hours():
+    # Saturday Nov 7 after the last window; Sunday's counter opens noon to 5 PM.
+    sunday = {"sun": [["12:00", "17:00"]]}
+    assert windows(mtl(7, 20), [sunday]) == two_hour_blocks(8, range(11, 15, 2))
+
+
+def test_asap_needs_an_open_counter():
+    counter = {"mon": [["09:00", "17:30"]]}
+    assert not any(asap for *_, asap in windows(mtl(2, 15, 30), [counter]))
+
+
+def test_two_counters_either_can_take_it():
+    morning = {"mon": [["09:00", "13:00"]]}
+    evening = {"mon": [["15:00", "21:00"]]}
+    # 11–13 arrives at 13:45, between the two; 19–21 arrives at 21:45, after both.
+    assert windows(mtl(2, 6), [morning, evening]) == [
+        (mtl(2, 9), mtl(2, 11), False),
+        *two_hour_blocks(2, range(13, 19, 2)),
+    ]
+
+
+def test_lunch_closure():
+    counter = {"mon": [["09:00", "12:00"], ["13:00", "17:00"]]}
+    # ASAP 10:00–12:00 arrives 12:45, during lunch.
+    assert windows(mtl(2, 10), [counter]) == two_hour_blocks(2, range(11, 15, 2))
+
+
+def test_no_windows_on_a_holiday(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(settings, "holidays", [date(2026, 11, 3)])
+    assert windows(mtl(2, 22)) == []
+
+
+def test_no_counters_no_windows():
+    assert windows(mtl(2, 6), []) == []
+    assert windows(mtl(2, 6), [None]) == []
+
+
+PVM = (45.5017, -73.5690)  # Place Ville-Marie
+
+
+def counter(session: Session, carrier: Carrier, latitude: float, longitude: float, hours=ALWAYS):
+    session.add(
+        DropOffLocation(
+            carrier=carrier,
+            name=f"Test {carrier}",
+            address="Test",
+            location=point(latitude, longitude),
+            hours=hours,
+        )
+    )
+    session.flush()
+
+
+def options(client: TestClient, carrier: str = "ups", token: str | None = None, **address):
+    token = token or token_for(client, f"{uuid.uuid4()}@example.com")
+    user_id = uuid.UUID(client.get("/me", headers=bearer(token)).json()["id"])
+    address_token = create_address_token(user_id, "1 Place Ville-Marie", *PVM)
+    query = {"carrier": carrier, "address_token": address_token} | address
+    return client.get("/booking/options", params=query, headers=bearer(token))
+
+
+def test_nearby_counters_only_counts_the_carrier_within_10_km(session: Session):
+    near = {"mon": [["09:00", "17:00"]]}
+    counter(session, Carrier.ups, *PVM, hours=near)
+    counter(session, Carrier.ups, 45.5017, -73.7230)  # about 12 km west
+    counter(session, Carrier.canada_post, *PVM)
+
+    assert nearby_counters(session, Carrier.ups, *PVM) == [near]
+
+
+def test_booking_options_has_fee_and_slots(client: TestClient, session: Session):
+    counter(session, Carrier.ups, *PVM)
+
+    response = options(client)
 
     assert response.status_code == 200
     assert response.json()["pickup_fee"] == 499
@@ -62,6 +167,30 @@ def test_booking_options_has_fee_and_slots(client: TestClient):
         datetime.fromisoformat(s["end"]) - datetime.fromisoformat(s["start"]) == timedelta(hours=2)
         for s in slots
     )
+
+
+def test_booking_options_without_a_nearby_counter_has_no_slots(
+    client: TestClient, session: Session
+):
+    counter(session, Carrier.canada_post, *PVM)
+
+    response = options(client, carrier="ups")
+
+    assert response.status_code == 200
+    assert response.json()["slots"] == []
+
+
+def test_booking_options_refuses_another_users_address(client: TestClient):
+    other = uuid.uuid4()
+    token = token_for(client, "bo-other@example.com")
+    response = client.get(
+        "/booking/options",
+        params={"carrier": "ups", "address_token": create_address_token(other, "x", *PVM)},
+        headers={**bearer(token), "Accept-Language": "en"},
+    )
+
+    assert response.status_code == 422
+    assert response.json()["detail"] == "Your address check has expired. Enter the address again."
 
 
 def test_retailers_sorted_by_name(client: TestClient, session: Session):

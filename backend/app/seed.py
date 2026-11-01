@@ -1,12 +1,18 @@
 """Montreal seed data: retailers, carrier drop-off locations and the v1 eligibility questions.
 
-Run with `uv run python -m app.seed`. Safe to re-run: rows already there are left alone, so
-an edit here does not reach a database that was already seeded.
-Drop-off locations come from OpenStreetMap (© OpenStreetMap contributors, ODbL).
+Run with `uv run python -m app.seed`. Safe to re-run: retailers and questions already there
+are left alone, so an edit here does not reach a database that was already seeded. Drop-off
+locations are updated, so re-checked counter hours do reach it (ADR 0017).
+Drop-off locations and their counter hours are hand-checked against each carrier's own
+location finder (`dropoffs.json`, each row says where and when). The `osm-node-*` rows'
+coordinates come from OpenStreetMap (© OpenStreetMap contributors, ODbL).
 """
 
+import json
 import uuid
+from pathlib import Path
 
+from sqlalchemy import delete
 from sqlalchemy.dialects.postgresql import insert
 from sqlmodel import Session
 
@@ -33,71 +39,17 @@ RETAILERS = [
 
 DROPOFF_LOCATIONS = [
     {
-        "id": seed_id(f"dropoff:osm-node-{osm_node}"),
-        "carrier": carrier,
-        "name": name,
-        "address": address,
-        "location": f"SRID=4326;POINT({lon} {lat})",
+        "id": seed_id(f"dropoff:{row['key']}"),
+        "carrier": Carrier(row["carrier"]),
+        "name": row["name"],
+        "address": row["address"],
+        "location": f"SRID=4326;POINT({row['longitude']} {row['latitude']})",
+        "hours": row["hours"],
     }
-    for osm_node, carrier, name, address, lon, lat in [
-        (
-            2518068089,
-            Carrier.canada_post,
-            "Postes Canada – Sainte-Catherine Ouest",
-            "1974 Rue Sainte-Catherine Ouest, Montréal, QC H3H 1N4",
-            -73.58109,
-            45.49186,
-        ),
-        (
-            5362633016,
-            Carrier.canada_post,
-            "Postes Canada – Belmont",
-            "895 Rue Belmont, Montréal, QC H3B 4G1",
-            -73.56703,
-            45.50064,
-        ),
-        (
-            5570232487,
-            Carrier.canada_post,
-            "Postes Canada – Griffintown",
-            "1000 Rue Wellington, Montréal, QC",
-            -73.55667,
-            45.49404,
-        ),
-        (
-            11999925850,
-            Carrier.ups,
-            "The UPS Store – Saint-Denis",
-            "3450 Rue Saint-Denis, Montréal, QC",
-            -73.56843,
-            45.51720,
-        ),
-        (
-            11948896433,
-            Carrier.ups,
-            "The UPS Store – Westmount",
-            "4150 Rue Sainte-Catherine Ouest, Westmount, QC H3Z 1P4",
-            -73.58707,
-            45.48670,
-        ),
-        (
-            12194842855,
-            Carrier.purolator,
-            "Purolator – Robert-Bourassa",
-            "Boulevard Robert-Bourassa, Montréal, QC H3B 3B4",
-            -73.56903,
-            45.50293,
-        ),
-        (
-            10098553358,
-            Carrier.purolator,
-            "Purolator – René-Lévesque",
-            "Boulevard René-Lévesque Ouest, Montréal, QC H3B 4N4",
-            -73.57083,
-            45.49868,
-        ),
-    ]
+    for row in json.loads((Path(__file__).parent / "dropoffs.json").read_text())
 ]
+# Seeded before ADR 0017: Purolator drop boxes, which have no counter to hand a parcel over at.
+RETIRED_DROPOFFS = [seed_id(f"dropoff:osm-node-{n}") for n in (12194842855, 10098553358)]
 
 YES = {"value": "yes", "label_en": "Yes", "label_fr": "Oui"}
 NO = {"value": "no", "label_en": "No", "label_fr": "Non"}
@@ -164,14 +116,19 @@ QUESTIONS = [
 
 
 def seed(session: Session) -> None:
-    for model, rows in [
-        (Retailer, RETAILERS),
-        (DropOffLocation, DROPOFF_LOCATIONS),
-        (EligibilityQuestion, QUESTIONS),
-    ]:
+    for model, rows in [(Retailer, RETAILERS), (EligibilityQuestion, QUESTIONS)]:
         statement = insert(model).values(rows).on_conflict_do_nothing(index_elements=["id"])
         inserted = session.exec(statement.returning(model.id)).all()
         print(f"{model.__tablename__}: {len(inserted)} new")
+
+    session.exec(delete(DropOffLocation).where(DropOffLocation.id.in_(RETIRED_DROPOFFS)))
+    statement = insert(DropOffLocation).values(DROPOFF_LOCATIONS)
+    statement = statement.on_conflict_do_update(
+        index_elements=["id"],
+        set_={c: statement.excluded[c] for c in DROPOFF_LOCATIONS[0] if c != "id"},
+    )
+    session.exec(statement)
+    print(f"dropoff_locations: {len(DROPOFF_LOCATIONS)} up to date")
 
 
 if __name__ == "__main__":

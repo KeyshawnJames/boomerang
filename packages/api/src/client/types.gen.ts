@@ -566,9 +566,27 @@ export type EligibilityQuestionsResponse = EligibilityQuestionsResponses[keyof E
 export type BookingOptionsData = {
     body?: never;
     path?: never;
-    query?: never;
+    query: {
+        /**
+         * Carrier
+         */
+        carrier: 'canada_post' | 'ups' | 'purolator';
+        /**
+         * Address Token
+         */
+        address_token: string;
+    };
     url: '/booking/options';
 };
+
+export type BookingOptionsErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type BookingOptionsError = BookingOptionsErrors[keyof BookingOptionsErrors];
 
 export type BookingOptionsResponses = {
     /**

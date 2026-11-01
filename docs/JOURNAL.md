@@ -12,6 +12,10 @@
 
 ---
 
+## 2026-11-01
+
+- **[Claude]** The app now only offers pickup times a drop-off counter can take on the same trip: a counter for the return's carrier within 10 km must still be open 45 minutes after the window ends. 50 hand-checked counters across the island (counter hours, not store hours), no pickups on Quebec holidays, and the rest of today plus all of tomorrow instead of a rolling 24 hours (ADR 0017) (#59)
+
 ## 2026-10-31
 
 ### Pickup address, time and booking

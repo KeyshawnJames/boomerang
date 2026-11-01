@@ -88,7 +88,8 @@
     "hint": "A driver comes by during the window you choose.",
     "asap": "As soon as possible, by {{end}}",
     "today": "Today",
-    "tomorrow": "Tomorrow"
+    "tomorrow": "Tomorrow",
+    "none": "No pickup times left today or tomorrow: no {{carrier}} counter near you will be open. Try again later."
   },
   "review": {
     "title": "Review and book",

@@ -8,10 +8,7 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 
-import {
-  bookingOptionsQueryKey,
-  eligibilityQuestionsQueryKey,
-} from "api/react-query";
+import { eligibilityQuestionsQueryKey } from "api/react-query";
 
 import { queryClient } from "../api";
 import RootLayout from "../app/_layout";
@@ -26,7 +23,7 @@ import Address from "../app/new-return/address";
 import Time from "../app/new-return/time";
 import Review from "../app/new-return/review";
 import Booked from "../app/returns/[id]";
-import { slotLabel } from "../booking";
+import { bookingOptionsQuery, slotLabel } from "../booking";
 import { useDraft } from "../draft";
 import i18n from "../i18n";
 import { useSession } from "../session";
@@ -679,8 +676,32 @@ test("an address outside the area is refused with the API's message", async () =
   expect(screen.getByRole("button", { name: "Next" })).toBeDisabled();
 });
 
+// The time step asks for the windows of this carrier near this address (ADR 0017).
+const WHERE: typeof READY = {
+  carrier: "canada_post",
+  address: { address: ADDRESS, token: "addr-tok" },
+};
+
+test("the time step asks for windows for the carrier and address", async () => {
+  await openStep("/new-return/time", WHERE);
+  await screen.findByRole("button", { name: slotLabel(SLOT) });
+  const url = new URL(urlOf(callsTo("/booking/options").at(-1)![0]));
+  expect(url.searchParams.get("carrier")).toBe("canada_post");
+  expect(url.searchParams.get("address_token")).toBe("addr-tok");
+});
+
+test("the time step says when no window is left", async () => {
+  replies["/booking/options"] = [200, { pickup_fee: 499, slots: [] }];
+  await openStep("/new-return/time", WHERE);
+  expect(
+    await screen.findByText(
+      "No pickup times left today or tomorrow: no Canada Post counter near you will be open. Try again later.",
+    ),
+  ).toBeTruthy();
+});
+
 test("a pickup time is chosen, and a time that's gone can't be kept", async () => {
-  await openStep("/new-return/time");
+  await openStep("/new-return/time", WHERE);
   const next = screen.getByRole("button", { name: "Next" });
   expect(next).toBeDisabled();
   await fireEvent.press(
@@ -690,7 +711,9 @@ test("a pickup time is chosen, and a time that's gone can't be kept", async () =
   expect(useDraft.getState().slot).toEqual(SLOT);
   replies["/booking/options"] = [200, { pickup_fee: 499, slots: [ASAP] }];
   await act(() =>
-    queryClient.invalidateQueries({ queryKey: bookingOptionsQueryKey() }),
+    queryClient.invalidateQueries({
+      queryKey: bookingOptionsQuery(useDraft.getState()).queryKey,
+    }),
   );
   await waitFor(() => expect(next).toBeDisabled());
 });

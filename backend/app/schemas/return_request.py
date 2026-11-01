@@ -7,11 +7,13 @@ from sqlmodel import Field, SQLModel
 
 from app.models import Carrier, EligibilityOutcome, LabelType, ReturnStatus
 
+# The carriers drivers drop off at for the MVP.
+DropOffCarrier = Literal[Carrier.canada_post, Carrier.ups, Carrier.purolator]
+
 
 class CreateReturnRequest(SQLModel):
     retailer_id: uuid.UUID
-    # The carriers drivers drop off at for the MVP.
-    carrier: Literal[Carrier.canada_post, Carrier.ups, Carrier.purolator]
+    carrier: DropOffCarrier
     label_type: LabelType
     order_number: str | None = Field(default=None, max_length=100)
     # Keys from POST /uploads/presign, once the upload has worked.

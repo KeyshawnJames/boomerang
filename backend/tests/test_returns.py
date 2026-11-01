@@ -11,17 +11,21 @@ from app.core.config import settings
 from app.core.security import create_address_token
 from app.models import (
     BlockedRequestLog,
+    Carrier,
+    DropOffLocation,
     ReturnEligibilityAnswer,
     ReturnRequest,
     ReturnStatusEvent,
 )
 from app.schemas.booking import PickupSlot
 from app.seed import seed, seed_id
+from app.services.addresses import point
 from app.services.booking import MONTREAL, pickup_slots
 from tests.test_auth import bearer, token_for
 from tests.test_uploads import presign, put
 
 PHONE = "+15145550123"
+ALWAYS_OPEN_DAYS = ("mon", "tue", "wed", "thu", "fri", "sat", "sun")
 ALL_PASS = {
     "merchant_approved": "yes",
     "label_ready": "yes",
@@ -35,6 +39,17 @@ ALL_PASS = {
 def setup(session: Session, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(settings, "upload_dir", tmp_path)
     seed(session)
+    # Open around the clock next to the pickup address, so the windows don't depend on the time
+    # the tests run at.
+    session.add(
+        DropOffLocation(
+            carrier=Carrier.canada_post,
+            name="Always open",
+            address="1 Place Ville-Marie",
+            location=point(45.5017, -73.5690),
+            hours={day: [["00:00", "24:00"]] for day in ALWAYS_OPEN_DAYS},
+        )
+    )
     session.flush()
 
 
@@ -51,7 +66,9 @@ def uploaded(client: TestClient, token: str, kind: str) -> str:
 
 def later_slot() -> PickupSlot:
     # The last window starts hours from now, so it is still offered when the request lands.
-    return pickup_slots(datetime.now(MONTREAL))[-1]
+    return pickup_slots(
+        datetime.now(MONTREAL), [{d: [["00:00", "24:00"]] for d in ALWAYS_OPEN_DAYS}]
+    )[-1]
 
 
 def booking(client: TestClient, token: str, user_id: uuid.UUID, **overrides) -> dict:
@@ -251,7 +268,7 @@ def test_a_photo_backs_only_one_return(client: TestClient):
 def test_asap_takes_the_servers_window(client: TestClient, monkeypatch: pytest.MonkeyPatch):
     now = datetime.now(MONTREAL)
     asap = PickupSlot(start=now, end=now + timedelta(hours=2), asap=True)
-    monkeypatch.setattr(returns, "pickup_slots", lambda _: [asap])
+    monkeypatch.setattr(returns, "pickup_slots", lambda *_: [asap])
     token, user_id = sign_in(client, phone=PHONE)
 
     body = booking(client, token, user_id, asap=True, pickup_window_start=None)
@@ -262,7 +279,7 @@ def test_asap_takes_the_servers_window(client: TestClient, monkeypatch: pytest.M
 
 
 def test_asap_when_not_offered_is_refused(client: TestClient, monkeypatch: pytest.MonkeyPatch):
-    monkeypatch.setattr(returns, "pickup_slots", lambda _: [later_slot()])
+    monkeypatch.setattr(returns, "pickup_slots", lambda *_: [later_slot()])
     token, user_id = sign_in(client, phone=PHONE)
     body = booking(client, token, user_id, asap=True, pickup_window_start=None)
     assert post(client, token, body).status_code == 422
@@ -282,3 +299,17 @@ def test_another_clients_return_is_not_found(client: TestClient):
     assert client.get(f"/returns/{return_id}", headers=bearer(other)).status_code == 404
     assert client.get(f"/returns/{uuid.uuid4()}", headers=bearer(token)).status_code == 404
     assert client.get(f"/returns/{return_id}").status_code == 401
+
+
+def test_a_window_no_counter_can_take_is_refused(client: TestClient, session: Session):
+    for row in session.exec(
+        select(DropOffLocation).where(DropOffLocation.carrier == Carrier.purolator)
+    ):
+        session.delete(row)
+    session.flush()
+    token, user_id = sign_in(client, phone=PHONE)
+
+    response = post(client, token, booking(client, token, user_id, carrier="purolator"))
+
+    assert response.status_code == 422
+    assert response.json()["detail"] == "This pickup time is no longer available. Choose another."

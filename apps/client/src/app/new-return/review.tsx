@@ -1,19 +1,13 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createReturn, updateMe } from "api";
-import {
-  bookingOptionsOptions,
-  bookingOptionsQueryKey,
-  listRetailersOptions,
-  meOptions,
-  meQueryKey,
-} from "api/react-query";
+import { listRetailersOptions, meOptions, meQueryKey } from "api/react-query";
 import { router } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Text, View } from "react-native";
 
 import { queryClient } from "../../api";
-import { price, sameSlot, slotLabel } from "../../booking";
+import { bookingOptionsQuery, price, sameSlot, slotLabel } from "../../booking";
 import { Button, Field } from "../../components/form";
 import { Row, Step } from "../../components/step";
 import { useDraft } from "../../draft";
@@ -23,7 +17,7 @@ export default function Review() {
   const { t } = useTranslation();
   const draft = useDraft();
   const retailers = useQuery(listRetailersOptions());
-  const options = useQuery(bookingOptionsOptions());
+  const options = useQuery(bookingOptionsQuery(draft));
   const me = useQuery(meOptions());
   const [phone, setPhone] = useState("");
   // ADR 0012: the phone is asked for at the first booking, not at sign-up. If the
@@ -71,7 +65,9 @@ export default function Review() {
     },
     // A slot that has passed is the likeliest cause; the refetch shows slotGone if so.
     onError: () =>
-      queryClient.invalidateQueries({ queryKey: bookingOptionsQueryKey() }),
+      queryClient.invalidateQueries({
+        queryKey: bookingOptionsQuery(draft).queryKey,
+      }),
   });
   const retailer = retailers.data?.find((r) => r.id === draft.retailerId);
   return (

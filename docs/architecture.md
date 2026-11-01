@@ -140,8 +140,10 @@ are accurate. The carrier question set:
 **Client**
 - `GET /retailers`
 - `GET /eligibility/questions`: the localized question set.
-- `GET /booking/options`: pickup windows and the all-in fee
-  ([ADR 0012](decisions/0012-booking-rules.md)).
+- `GET /booking/options?carrier=…&address_token=…`: the all-in fee and the pickup windows a
+  drop-off counter for that carrier near that address can take the same trip
+  ([ADR 0012](decisions/0012-booking-rules.md),
+  [ADR 0017](decisions/0017-pickup-windows-follow-drop-off-hours.md)).
 - `GET /addresses/autocomplete`, `GET /addresses/resolve`: address suggestions, then a
   signed address token once the server has checked the address is on the island of
   Montreal ([ADR 0013](decisions/0013-address-lookup.md),

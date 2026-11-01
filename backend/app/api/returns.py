@@ -24,7 +24,7 @@ from app.models import (
 from app.schemas.return_request import CreateReturnRequest, ReturnRead
 from app.services import status
 from app.services.addresses import point
-from app.services.booking import MONTREAL, pickup_slots
+from app.services.booking import MONTREAL, nearby_counters, pickup_slots
 from app.services.eligibility import InvalidAnswers, active_questions, evaluate, policy_version
 
 router = APIRouter()
@@ -70,20 +70,22 @@ def create_return(
 
     if user.phone is None:
         raise api_error(422, "phone_required", locale)
+    address = decode_address_token(body.address_token, user.id)
+    if address is None:
+        raise api_error(422, "address_expired", locale)
+    # The same rule as GET /booking/options: a counter must take it the same trip (ADR 0017).
+    counters = nearby_counters(session, body.carrier, address["latitude"], address["longitude"])
     # ASAP starts at "now", which has moved on since the app fetched it, so it isn't matched.
     slot = next(
         (
             s
-            for s in pickup_slots(datetime.now(MONTREAL))
+            for s in pickup_slots(datetime.now(MONTREAL), counters)
             if s.asap == body.asap and (s.asap or s.start == body.pickup_window_start)
         ),
         None,
     )
     if slot is None:
         raise api_error(422, "slot_unavailable", locale)
-    address = decode_address_token(body.address_token, user.id)
-    if address is None:
-        raise api_error(422, "address_expired", locale)
     if not (
         is_uploaded(user, "label", body.label_photo_key)
         and is_uploaded(user, "package", body.package_photo_key)
