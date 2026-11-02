@@ -122,7 +122,6 @@ export default function Review() {
           value={t("review.priceLine", {
             price: price(options.data.pickup_fee),
           })}
-          note={t("review.taxes")}
         />
       )}
       {needsPhone && (

@@ -99,7 +99,6 @@
     "time": "Heure de ramassage",
     "price": "Prix",
     "priceLine": "{{price}}, tous frais compris",
-    "taxes": "Plus TPS/TVQ",
     "phone": "Numéro de téléphone",
     "phoneHint": "Le chauffeur vous appelle ou vous texte seulement s'il ne vous trouve pas.",
     "book": "Réserver le ramassage",
@@ -109,6 +108,22 @@
     "title": "Ramassage réservé",
     "explain": "Préparez le colis pour le chauffeur.",
     "home": "Retour à l'accueil"
+  },
+  "pay": {
+    "title": "Pourboire et paiement",
+    "tip": "Pourboire pour le chauffeur",
+    "tipHint": "Facultatif. Le chauffeur reçoit la totalité du pourboire.",
+    "noTip": "Aucun pourboire",
+    "other": "Autre",
+    "otherAmount": "Montant du pourboire",
+    "otherHint": "Jusqu'à {{max}}.",
+    "fee": "Frais de ramassage",
+    "total": "Total",
+    "pay": "Payer {{total}}",
+    "confirming": "Confirmation de votre paiement",
+    "confirmingExplain": "Cela prend quelques secondes. Vous pouvez rester sur cet écran.",
+    "paid": "Payé",
+    "bookAgain": "Réserver de nouveau"
   },
   "errors": {
     "generic": "Un problème est survenu. Vérifiez votre connexion et réessayez."

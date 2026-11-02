@@ -748,11 +748,10 @@ test("a return is booked and confirmed", async () => {
   expect(screen.getByText(ADDRESS)).toBeTruthy();
   expect(await loaded()).toBeTruthy();
   expect(screen.getByText(slotLabel(SLOT))).toBeTruthy();
-  expect(screen.getByText("Plus GST/QST")).toBeTruthy();
   expect(screen.queryByLabelText("Phone number")).toBeNull();
   await fireEvent.press(await book());
-  expect(await screen.findByText("Pickup booked")).toBeTruthy();
-  expect(await screen.findByText(ADDRESS)).toBeTruthy();
+  expect(await screen.findByText("Tip and pay")).toBeTruthy();
+  expect(await screen.findByRole("button", { name: "Pay $4.99" })).toBeTruthy();
   const [request] = callTo("/returns", "POST")!;
   expect(await (request as Request).json()).toEqual({
     retailer_id: "r1",
@@ -783,7 +782,7 @@ test("ASAP is booked as ASAP", async () => {
   await openStep("/new-return/review", { ...READY, slot: ASAP });
   await loaded();
   await fireEvent.press(await book());
-  await screen.findByText("Pickup booked");
+  await screen.findByText("Tip and pay");
   const [request] = callTo("/returns", "POST")!;
   expect(await (request as Request).json()).toMatchObject({
     asap: true,
@@ -798,7 +797,7 @@ test("without a phone number, it is asked for first", async () => {
   expect(await book()).toBeDisabled();
   await fireEvent.changeText(phone, "514 555 0123");
   await fireEvent.press(await book());
-  await screen.findByText("Pickup booked");
+  await screen.findByText("Tip and pay");
   const patch = callTo("/me", "PATCH")!;
   expect(await (patch[0] as Request).json()).toEqual({ phone: "514 555 0123" });
   expect(fetchMock.mock.calls.indexOf(patch)).toBeLessThan(
@@ -821,7 +820,7 @@ test("a refused booking says why, books nothing and refreshes the times", async 
       "This pickup time is no longer available. Choose another.",
     ),
   ).toBeTruthy();
-  expect(screen.queryByText("Pickup booked")).toBeNull();
+  expect(screen.queryByText("Tip and pay")).toBeNull();
   await waitFor(() =>
     expect(callsTo("/booking/options").length).toBeGreaterThan(fetched),
   );
@@ -834,7 +833,7 @@ test("a double tap books once", async () => {
   const button = await book();
   await fireEvent.press(button);
   await fireEvent.press(button);
-  await screen.findByText("Pickup booked");
+  await screen.findByText("Tip and pay");
   expect(callsTo("/returns", "POST")).toHaveLength(1);
 });
 
@@ -852,7 +851,6 @@ test("the booking steps read in French", async () => {
   expect(
     await screen.findByText(/^4,99\s\$, tous frais compris$/),
   ).toBeTruthy();
-  expect(screen.getByText("Plus TPS/TVQ")).toBeTruthy();
 });
 
 test("a search error clears once the search does", async () => {
