@@ -1,8 +1,9 @@
 from sqlmodel import Session, select
-from stripe import StripeClient
+from stripe import PaymentIntent, StripeClient
 
 from app.core.config import settings
-from app.models import Payment, PaymentStatus, ReturnRequest
+from app.models import Payment, PaymentStatus, ReturnRequest, ReturnStatus
+from app.services import status
 
 
 def split(fee: int, tip: int) -> tuple[int, int]:
@@ -48,3 +49,44 @@ def start(session: Session, stripe: StripeClient, return_request: ReturnRequest,
     payment.driver_payout, payment.platform_fee = split(return_request.pickup_fee, tip)
     session.add(payment)
     return intent.client_secret
+
+
+def _payment_for(session: Session, intent_id: str) -> Payment | None:
+    # Locked until commit, so two deliveries of the same message are handled one at a time.
+    query = select(Payment).where(Payment.stripe_payment_intent_id == intent_id).with_for_update()
+    return session.exec(query).first()
+
+
+def succeeded(session: Session, stripe: StripeClient, intent: PaymentIntent) -> None:
+    """Stripe took the money: book the return, or refund it all if we can't.
+
+    Honoured even past the payment window (ADR 0018). Raises stripe.StripeError if a needed
+    refund fails, having written nothing, so Stripe sends the message again.
+    """
+    payment = _payment_for(session, intent.id)
+    if payment is None or payment.status in (PaymentStatus.succeeded, PaymentStatus.refunded):
+        return  # not ours, or already handled
+    return_request = session.get(ReturnRequest, payment.return_id, with_for_update=True)
+    paid_in_full = (
+        intent.currency == "cad" and intent.amount_received == payment.amount + payment.tip
+    )
+    # Cancelled meanwhile, already paid by another payment, or not the amount we asked for.
+    if return_request.status != ReturnStatus.awaiting_payment or not paid_in_full:
+        stripe.v1.refunds.create(
+            {"payment_intent": intent.id}, {"idempotency_key": f"refund-{intent.id}"}
+        )
+        payment.status = PaymentStatus.refunded
+        session.add(payment)
+        return
+    payment.status = PaymentStatus.succeeded
+    session.add(payment)
+    status.transition(session, return_request, ReturnStatus.requested, actor_id=None)
+
+
+def failed(session: Session, intent: PaymentIntent) -> None:
+    """The card was declined. The return keeps waiting, so the client can try again."""
+    payment = _payment_for(session, intent.id)
+    # Only a pending payment: Stripe may deliver this after the success.
+    if payment is not None and payment.status == PaymentStatus.pending:
+        payment.status = PaymentStatus.failed
+        session.add(payment)

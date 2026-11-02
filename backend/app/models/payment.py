@@ -11,6 +11,7 @@ class PaymentStatus(StrEnum):
     pending = "pending"
     succeeded = "succeeded"
     failed = "failed"
+    refunded = "refunded"
 
 
 class Payment(SQLModel, table=True):
