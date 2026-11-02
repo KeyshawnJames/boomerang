@@ -12,6 +12,10 @@
 
 ---
 
+## 2026-11-02
+
+- **[Claude]** When Stripe confirms a card payment, the return is now booked and drivers will be able to see it. Stripe tells the server with a signed message, and the server ignores any message without Stripe's signature, so nobody can fake a payment. The server also checks Stripe received exactly the fee plus the tip. If the client cancelled while paying, or the amount is wrong, the money goes straight back to the card. A declined card leaves the return waiting so the client can try again, and the same message arriving twice changes nothing. (#64)
+
 ## 2026-11-01
 
 - **[Claude]** The server can now start a card payment for a return. It works out the price itself (the fee plus the tip, never an amount sent by the app), asks Stripe to get ready to charge it, and records how much will go to the driver and how much Boomerang keeps. Only the client who booked the return can pay for it, and only in the first 30 minutes. Pressing Pay twice reuses the same payment, so nobody is charged twice. (#63)

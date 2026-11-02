@@ -10,7 +10,7 @@ from sqlmodel import Session, select
 
 from app.api.payments import get_stripe
 from app.main import app
-from app.models import Payment, ReturnRequest, ReturnStatus
+from app.models import Payment, PaymentStatus, ReturnRequest, ReturnStatus
 from app.models.base import utcnow
 from app.services import status
 from tests.test_auth import bearer
@@ -196,3 +196,23 @@ def test_stripe_down_is_502_and_writes_nothing(
 
 def test_pay_needs_a_signed_in_client(client: TestClient, intents: FakePaymentIntents):
     assert client.post(f"/returns/{uuid.uuid4()}/pay", json={}).status_code == 401
+
+
+def test_pay_after_a_decline_reuses_the_same_payment(
+    client: TestClient, session: Session, intents: FakePaymentIntents
+):
+    # A second PaymentIntent could be charged alongside the first one.
+    token, _, return_id = new_return(client)
+    assert pay(client, token, return_id, {"tip": 100}).status_code == 200
+    [payment] = payments(session, return_id)
+    payment.status = PaymentStatus.failed
+    session.add(payment)
+    session.flush()
+
+    response = pay(client, token, return_id, {"tip": 300})
+
+    assert response.status_code == 200, response.text
+    assert len(intents.created) == 1
+    assert intents.updated == [("pi_1", {"amount": 799})]
+    session.refresh(payment)
+    assert (payment.status, payment.tip) == ("pending", 300)

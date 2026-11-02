@@ -51,6 +51,32 @@ Address search needs a Google key ([ADR 0013](decisions/0013-address-lookup.md))
    with `q=1 Place Ville Marie` and any UUID as `session`. A list of suggestions means the
    key is good.
 
+### Stripe keys (payments)
+
+Payments use the **Boomerang sandbox** in Stripe ([ADR 0018](decisions/0018-payments.md)),
+never live keys. Tests don't need either key.
+
+1. `STRIPE_SECRET_KEY`: in the Stripe dashboard, switch to the sandbox, then **Developers →
+   API keys → Secret key** (`sk_test_…`).
+2. `STRIPE_WEBHOOK_SECRET`: Stripe tells the API a payment went through by sending it a signed
+   message. Locally, the [Stripe CLI](https://docs.stripe.com/stripe-cli) forwards those
+   messages to your machine:
+
+   ```bash
+   stripe listen --events payment_intent.succeeded,payment_intent.payment_failed \
+     --forward-to localhost:8000/webhooks/stripe
+   ```
+
+   It prints `Your webhook signing secret is whsec_…`. Put that in the root `.env` and
+   restart the API. The secret stays the same each time you run `stripe listen` on the same
+   machine. Without it the API refuses every message, so paid returns stay "waiting for
+   payment".
+
+   If `stripe listen` says *Permission denied*, the CLI's login has run out (it lasts 90
+   days): run `stripe login` again and pick the Boomerang sandbox.
+
+Both go in the root `.env`. Never commit them.
+
 ## Apps
 
 ```bash
