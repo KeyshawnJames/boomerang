@@ -2,6 +2,7 @@ import { useStripe } from "@stripe/stripe-react-native";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { payForReturn } from "api";
 import { getReturnOptions } from "api/react-query";
+import * as Linking from "expo-linking";
 import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -33,14 +34,14 @@ export default function Booked() {
   const [other, setOther] = useState("");
   // The total charged, once Stripe's card screen says it went through.
   const [paid, setPaid] = useState<number | null>(null);
+  // Charged here, or already going through (409): either way the webhook books it.
+  const [waiting, setWaiting] = useState(false);
   const [expired, setExpired] = useState(false);
   const booked = useQuery({
     ...getReturnOptions({ path: { return_id: id } }),
     // Only the server's webhook books it (ADR 0018), so ask until it has.
     refetchInterval: (query) =>
-      paid !== null && query.state.data?.status === "awaiting_payment"
-        ? 2000
-        : false,
+      waiting && query.state.data?.status === "awaiting_payment" ? 2000 : false,
   });
   const data = booked.data;
   const tip = choice === "other" ? cents(other) : choice;
@@ -54,11 +55,14 @@ export default function Booked() {
       });
       if (error) {
         if (response?.status === 410) setExpired(true);
+        if (response?.status === 409) setWaiting(true);
         throw error;
       }
       const init = await initPaymentSheet({
         merchantDisplayName: "Boomerang",
         paymentIntentClientSecret: data.client_secret,
+        // Closes the bank's 3D Secure page and comes back to the app.
+        returnURL: Linking.createURL("stripe-redirect"),
       });
       if (init.error) throw init.error;
       const { error: sheetError } = await presentPaymentSheet();
@@ -66,12 +70,16 @@ export default function Booked() {
       if (sheetError) throw sheetError;
       return data.total;
     },
-    onSuccess: (charged) => charged !== null && setPaid(charged),
+    onSuccess: (charged) => {
+      if (charged === null) return;
+      setPaid(charged);
+      setWaiting(true);
+    },
     // Paid or cancelled meanwhile: the refetch shows it.
     onError: () => booked.refetch(),
   });
   const unpaid = data?.status === "awaiting_payment";
-  const confirming = unpaid && paid !== null;
+  const confirming = unpaid && waiting;
   const title =
     data && !unpaid
       ? t("booked.title")
@@ -83,7 +91,7 @@ export default function Booked() {
       title={title}
       footer={
         <View className="gap-3">
-          {pay.isError && (
+          {pay.isError && unpaid && (
             <Text
               accessibilityRole="alert"
               className="font-sans text-base text-danger"

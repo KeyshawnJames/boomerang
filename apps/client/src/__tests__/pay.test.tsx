@@ -167,3 +167,20 @@ test("the pay screen reads in French", async () => {
     await screen.findByRole("button", { name: "Aucun pourboire" }),
   ).toBeTruthy();
 });
+
+test("a payment already going through waits for the webhook too", async () => {
+  replies["/returns/ret1/pay"] = [
+    409,
+    { detail: "Your payment is already going through." },
+  ];
+  await open();
+  await fireEvent.press(await payButton("$4.99"));
+  expect(await screen.findByText("Confirming your payment")).toBeTruthy();
+  expect(stripe.presentPaymentSheet).not.toHaveBeenCalled();
+  replies["/returns/ret1"] = [200, { ...RETURN, status: "requested" }];
+  expect(
+    await screen.findByText("Pickup booked", {}, { timeout: 4000 }),
+  ).toBeTruthy();
+  // Booked now, so the earlier error is no longer shown.
+  expect(screen.queryByRole("alert")).toBeNull();
+});
