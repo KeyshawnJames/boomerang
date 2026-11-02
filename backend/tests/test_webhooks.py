@@ -1,10 +1,7 @@
-import hmac
 import json
-import time
 import uuid
 from collections.abc import Iterator
 from datetime import timedelta
-from hashlib import sha256
 from types import SimpleNamespace
 
 import pytest
@@ -74,10 +71,10 @@ def deliver(
             },
         }
     )
-    t = int(time.time())
-    signature = hmac.new(secret.encode(), f"{t}.{payload}".encode(), sha256).hexdigest()
     if headers is None:
-        headers = {"Stripe-Signature": f"t={t},v1={signature}"}
+        headers = {
+            "Stripe-Signature": stripe.WebhookSignature.generate_signature_header(payload, secret)
+        }
     return client.post("/webhooks/stripe", content=payload, headers=headers)
 
 
@@ -229,6 +226,22 @@ def test_wrong_amount_is_refunded_and_not_booked(
     [payment] = payments(session, return_id)
     assert payment.status == "refunded"
     assert return_status(session, return_id) == ReturnStatus.awaiting_payment
+
+
+def test_refund_already_made_counts_as_refunded(
+    client: TestClient, session: Session, refunds: FakeRefunds
+):
+    # We refunded, then failed to save it; Stripe retries after its 24-hour duplicate guard.
+    return_id = paid_return(client)
+    cancel(session, return_id)
+    refunds.error = stripe.InvalidRequestError(
+        "already refunded", "charge", code="charge_already_refunded"
+    )
+
+    assert deliver(client, SUCCEEDED).status_code == 200
+
+    [payment] = payments(session, return_id)
+    assert payment.status == "refunded"
 
 
 def test_refund_failure_is_503_and_writes_nothing(

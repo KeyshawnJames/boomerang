@@ -1,5 +1,5 @@
 from sqlmodel import Session, select
-from stripe import PaymentIntent, StripeClient
+from stripe import InvalidRequestError, PaymentIntent, StripeClient
 
 from app.core.config import settings
 from app.models import Payment, PaymentStatus, ReturnRequest, ReturnStatus
@@ -20,7 +20,9 @@ def start(session: Session, stripe: StripeClient, return_request: ReturnRequest,
     total = return_request.pickup_fee + tip
     payment = session.exec(
         select(Payment).where(
-            Payment.return_id == return_request.id, Payment.status == PaymentStatus.pending
+            Payment.return_id == return_request.id,
+            # A declined payment is tried again, so a return never has two live PaymentIntents.
+            Payment.status.in_([PaymentStatus.pending, PaymentStatus.failed]),
         )
     ).first()
     if payment is None:
@@ -45,6 +47,7 @@ def start(session: Session, stripe: StripeClient, return_request: ReturnRequest,
             payment.stripe_payment_intent_id, {"amount": total}
         )
     # Recorded now, so a later change to the share never changes what's owed for this job.
+    payment.status = PaymentStatus.pending
     payment.tip = tip
     payment.driver_payout, payment.platform_fee = split(return_request.pickup_fee, tip)
     session.add(payment)
@@ -52,9 +55,15 @@ def start(session: Session, stripe: StripeClient, return_request: ReturnRequest,
 
 
 def _payment_for(session: Session, intent_id: str) -> Payment | None:
-    # Locked until commit, so two deliveries of the same message are handled one at a time.
-    query = select(Payment).where(Payment.stripe_payment_intent_id == intent_id).with_for_update()
-    return session.exec(query).first()
+    """The payment, locked until commit along with its return, so deliveries go one at a time."""
+    payment = session.exec(
+        select(Payment).where(Payment.stripe_payment_intent_id == intent_id)
+    ).first()
+    if payment is not None:
+        # Return first, then payment: the pay endpoint's order, so the two can't deadlock.
+        session.get(ReturnRequest, payment.return_id, with_for_update=True)
+        session.refresh(payment, with_for_update=True)
+    return payment
 
 
 def succeeded(session: Session, stripe: StripeClient, intent: PaymentIntent) -> None:
@@ -66,15 +75,20 @@ def succeeded(session: Session, stripe: StripeClient, intent: PaymentIntent) -> 
     payment = _payment_for(session, intent.id)
     if payment is None or payment.status in (PaymentStatus.succeeded, PaymentStatus.refunded):
         return  # not ours, or already handled
-    return_request = session.get(ReturnRequest, payment.return_id, with_for_update=True)
+    return_request = session.get(ReturnRequest, payment.return_id)
     paid_in_full = (
         intent.currency == "cad" and intent.amount_received == payment.amount + payment.tip
     )
     # Cancelled meanwhile, already paid by another payment, or not the amount we asked for.
     if return_request.status != ReturnStatus.awaiting_payment or not paid_in_full:
-        stripe.v1.refunds.create(
-            {"payment_intent": intent.id}, {"idempotency_key": f"refund-{intent.id}"}
-        )
+        try:
+            stripe.v1.refunds.create(
+                {"payment_intent": intent.id}, {"idempotency_key": f"refund-{intent.id}"}
+            )
+        except InvalidRequestError as e:
+            # Refunded on an earlier try whose save failed, after Stripe forgot the key (24 h).
+            if e.code != "charge_already_refunded":
+                raise
         payment.status = PaymentStatus.refunded
         session.add(payment)
         return
