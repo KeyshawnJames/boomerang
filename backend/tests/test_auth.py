@@ -9,9 +9,10 @@ from fastapi import Depends, FastAPI
 from fastapi.testclient import TestClient
 from sqlmodel import Session
 
-from app.api.deps import require_role
+from app.api.deps import require_approved_driver, require_role
 from app.core.config import settings
 from app.core.db import get_session
+from app.drivers import approve
 from app.main import app
 from app.models import DriverProfile, User, UserRole
 
@@ -178,6 +179,63 @@ def test_require_role_rejects_wrong_role_in_app_language(
 
 def test_require_role_rejects_missing_token(role_client: TestClient):
     assert role_client.get("/driver-only").status_code == 401
+
+
+@role_app.get("/approved-driver-only")
+def approved_driver_only(
+    user: Annotated[User, Depends(require_approved_driver)],
+) -> dict[str, str]:
+    return {"id": str(user.id)}
+
+
+@pytest.mark.parametrize(
+    ("locale", "message"),
+    [
+        ("en", "Your driver account hasn't been approved yet."),
+        ("fr", "Votre compte de chauffeur n'a pas encore été approuvé."),
+    ],
+)
+def test_unapproved_driver_is_refused(
+    client: TestClient, role_client: TestClient, locale: str, message: str
+):
+    token = token_for(client, "kai@example.com", role="driver")
+
+    response = role_client.get(
+        "/approved-driver-only", headers={**bearer(token), "Accept-Language": locale}
+    )
+    assert response.status_code == 403
+    assert response.json()["detail"] == message
+
+
+def test_approved_driver_passes(client: TestClient, role_client: TestClient, session: Session):
+    token = token_for(client, "lee@example.com", role="driver")
+    approve(session, "lee@example.com")
+    session.commit()
+
+    assert role_client.get("/approved-driver-only", headers=bearer(token)).status_code == 200
+
+
+def test_client_is_refused_by_driver_guard(client: TestClient, role_client: TestClient):
+    token = token_for(client, "max@example.com")
+
+    response = role_client.get(
+        "/approved-driver-only", headers={**bearer(token), "Accept-Language": "en"}
+    )
+    assert response.status_code == 403
+    assert response.json()["detail"] == "You don't have access to this."
+
+
+def test_me_says_whether_a_driver_is_approved(client: TestClient, session: Session):
+    driver = token_for(client, "ned@example.com", role="driver")
+    assert client.get("/me", headers=bearer(driver)).json()["is_approved"] is False
+
+    approve(session, "ned@example.com")
+    session.commit()
+    assert client.get("/me", headers=bearer(driver)).json()["is_approved"] is True
+
+    # Not a driver, so the question doesn't apply.
+    customer = token_for(client, "oli@example.com")
+    assert client.get("/me", headers=bearer(customer)).json()["is_approved"] is None
 
 
 def test_update_me_stores_phone_as_e164(client: TestClient):

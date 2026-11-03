@@ -8,7 +8,7 @@ from sqlmodel import Session
 from app.core.db import get_session
 from app.core.i18n import api_error, request_locale
 from app.core.security import decode_access_token
-from app.models import User, UserRole
+from app.models import DriverProfile, User, UserRole
 
 SessionDep = Annotated[Session, Depends(get_session)]
 
@@ -38,3 +38,14 @@ def require_role(*roles: UserRole) -> Callable[[User], User]:
         return user
 
     return check_role
+
+
+def require_approved_driver(
+    user: Annotated[User, Depends(require_role(UserRole.driver))],
+    request: Request,
+    session: SessionDep,
+) -> User:
+    profile = session.get(DriverProfile, user.id)
+    if profile is None or not profile.is_approved:
+        raise api_error(403, "driver_not_approved", request_locale(request))
+    return user

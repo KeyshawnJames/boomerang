@@ -41,3 +41,8 @@ class UserRead(SQLModel):
     phone: str | None
     locale: Locale
     created_at: datetime
+
+
+class MeRead(UserRead):
+    # Drivers only: whether Boomerang approved them (ADR 0019). Null for other roles.
+    is_approved: bool | None
