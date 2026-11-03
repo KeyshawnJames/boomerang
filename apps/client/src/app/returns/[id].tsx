@@ -90,17 +90,21 @@ export default function Booked() {
         getReturnQueryKey({ path: { return_id: id } }),
         cancelled,
       ),
+    // A driver accepted it meanwhile, say: the refetch shows it.
+    onError: () => booked.refetch(),
   });
   const unpaid = data?.status === "awaiting_payment";
   const cancelled = data?.status === "cancelled";
   const confirming = unpaid && waiting;
   // Before a driver accepts (ADR 0018). Not while the webhook is deciding.
   const cancellable =
-    (unpaid && !confirming && !expired) || data?.status === "requested";
+    (unpaid && !confirming && !expired && !pay.isPending) ||
+    data?.status === "requested";
   const confirmCancel = () =>
     Alert.alert(
       t("cancel.confirmTitle"),
-      unpaid ? t("cancel.confirmUnpaid") : t("cancel.confirmPaid"),
+      // Even unpaid, a charge may be going through: it's refunded too (ADR 0018).
+      t("cancel.confirmBody"),
       [
         { text: t("cancel.keep"), style: "cancel" },
         {

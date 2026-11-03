@@ -207,7 +207,7 @@ test("cancelling a paid return asks first, then shows it cancelled", async () =>
   const [title, message, buttons] = alert.mock.calls[0];
   expect([title, message]).toEqual([
     "Cancel this return?",
-    "You'll get the full amount back on your card.",
+    "If you paid, you'll get the full amount back on your card.",
   ]);
   expect(posted()).toEqual([]);
   (buttons as AlertButton[]).find((b) => b.style === "destructive")!.onPress!();
@@ -216,12 +216,44 @@ test("cancelling a paid return asks first, then shows it cancelled", async () =>
   expect(screen.queryByRole("button", { name: "Cancel return" })).toBeNull();
 });
 
-test("cancelling an unpaid return says nothing was charged", async () => {
+test("cancelling an unpaid return asks first too", async () => {
   await open();
   await fireEvent.press(
     await screen.findByRole("button", { name: "Cancel return" }),
   );
-  expect(alert.mock.calls[0][1]).toBe("Nothing has been charged.");
+  // A charge may still be going through, so the same promise holds either way.
+  expect(alert.mock.calls[0][1]).toBe(
+    "If you paid, you'll get the full amount back on your card.",
+  );
+});
+
+test("a refused cancel shows the return as it is now", async () => {
+  replies["/returns/ret1"] = [200, { ...RETURN, status: "requested" }];
+  replies["/returns/ret1/cancel"] = [
+    409,
+    { detail: "This return is already cancelled or a driver has accepted it." },
+  ];
+  await open();
+  await fireEvent.press(
+    await screen.findByRole("button", { name: "Cancel return" }),
+  );
+  replies["/returns/ret1"] = [200, { ...RETURN, status: "driver_assigned" }];
+  (alert.mock.calls[0][2] as AlertButton[]).find(
+    (b) => b.style === "destructive",
+  )!.onPress!();
+  await waitFor(() =>
+    expect(screen.queryByRole("button", { name: "Cancel return" })).toBeNull(),
+  );
+});
+
+test("no cancelling once Pay is pressed", async () => {
+  stripe.presentPaymentSheet.mockReturnValueOnce(new Promise(() => {}));
+  await open();
+  await fireEvent.press(await payButton("$4.99"));
+  await waitFor(() => expect(stripe.presentPaymentSheet).toHaveBeenCalled());
+  await waitFor(() =>
+    expect(screen.queryByRole("button", { name: "Cancel return" })).toBeNull(),
+  );
 });
 
 test("a failed cancel shows the server's message", async () => {

@@ -129,8 +129,7 @@
   "cancel": {
     "button": "Annuler le retour",
     "confirmTitle": "Annuler ce retour?",
-    "confirmPaid": "Le montant total sera remboursé sur votre carte.",
-    "confirmUnpaid": "Rien n'a été facturé.",
+    "confirmBody": "Si vous avez payé, le montant total sera remboursé sur votre carte.",
     "keep": "Le garder",
     "confirm": "Annuler le retour",
     "title": "Retour annulé",

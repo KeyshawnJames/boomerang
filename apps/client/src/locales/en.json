@@ -129,8 +129,7 @@
   "cancel": {
     "button": "Cancel return",
     "confirmTitle": "Cancel this return?",
-    "confirmPaid": "You'll get the full amount back on your card.",
-    "confirmUnpaid": "Nothing has been charged.",
+    "confirmBody": "If you paid, you'll get the full amount back on your card.",
     "keep": "Keep it",
     "confirm": "Cancel return",
     "title": "Return cancelled",
