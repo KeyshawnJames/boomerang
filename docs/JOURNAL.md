@@ -14,6 +14,7 @@
 
 ## 2026-11-03
 
+- **[Claude]** Decided how the driver app works in M6 (ADR 0019). Anyone can sign up as a driver, but they see no jobs until Boomerang approves them. Drivers see one list of every paid job on the island, showing only the postal area and their pay until they accept. The first to accept gets it, one job at a time. At pickup the driver scans the label's barcode (or types the number) and photographs the package. At the counter they photograph the carrier's receipt and confirm the tracking number, and the job then closes automatically. If the client isn't home after 10 minutes, or the package isn't as booked, the client gets the tip back and the fee is kept. A driver can hand a job back before pickup. No location tracking until M8. (#21)
 - **[Claude]** A client can now cancel a return before a driver accepts it. The app asks "Are you sure?" first. If they already paid, Stripe sends the whole amount (fee and tip) back to the same card automatically; if they hadn't paid, nothing is charged. Only the client who booked the return can cancel it, and cancelling twice never refunds twice. The return screen now says "Return cancelled" instead of "Pickup booked". Cancelling after a driver accepts (tip back, fee kept) comes with drivers in M6 (ADR 0018). (#66)
 
 ## 2026-11-02

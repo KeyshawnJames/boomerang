@@ -1,6 +1,6 @@
 # 0014. Photos go straight to storage through short-lived signed links
 
-- **Status:** accepted
+- **Status:** accepted. Driver photos and drivers viewing clients' photos are settled by [0019](0019-driver-app.md)
 - **Date:** 2026-10-30
 
 ## Context

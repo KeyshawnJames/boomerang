@@ -23,7 +23,7 @@
 | M3 | **Client app bootstrap**: SDK 58 in Expo Go, Expo Router, NativeWind, i18n (FR fallback, missing-key CI check), generated API client, login/register | A client registers and logs in from the app on a device |
 | M4 | **Create a return**: retailer pick, label/QR upload (presigned), package photo, eligibility gate, pickup address + window, all-in price, status machine | A client creates a return. A blocked answer is refused by the API even when the app is bypassed |
 | M5 | **Payments**: Stripe PaymentSheet (fee + tip), webhook, `Payment` rows | A test-card payment books the return, and the webhook updates its status |
-| M6 | **Driver app**: job feed (PostGIS), accept, pickup scan + photo, drop-off proof | Full chain: create → pay → accept → pickup → drop-off → completed |
+| M6 | **Driver app**: job list, accept, pickup scan + photo, drop-off proof ([ADR 0019](decisions/0019-driver-app.md)) | Full chain: create → pay → accept → pickup → drop-off → completed |
 | M7 | **Timeline + push**: timeline UI, Expo push on every transition | Each status change reaches the client's phone as a push |
 | M8 | **Live tracking**: WebSocket hub, driver location during an active job only | The client watches the driver move on the map |
 | M9 | **Closing the loop**: ratings, history, earnings, driver payouts (Accounts v2) | The driver is paid out for a completed job in Stripe test mode |
