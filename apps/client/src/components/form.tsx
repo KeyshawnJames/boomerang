@@ -30,11 +30,14 @@ export function Button({
   onPress,
   busy = false,
   disabled = false,
+  secondary = false,
 }: {
   label: string;
   onPress: () => void;
   busy?: boolean;
   disabled?: boolean;
+  // Outlined, for an action that shouldn't look like the main one.
+  secondary?: boolean;
 }) {
   return (
     <Pressable
@@ -42,9 +45,13 @@ export function Button({
       accessibilityState={{ disabled: busy || disabled, busy }}
       disabled={busy || disabled}
       onPress={onPress}
-      className={`items-center rounded-sm bg-primary px-4 py-4 ${busy || disabled ? "opacity-60" : ""}`}
+      className={`items-center rounded-sm px-4 py-4 ${secondary ? "border border-line" : "bg-primary"} ${busy || disabled ? "opacity-60" : ""}`}
     >
-      <Text className="font-sans-bold text-base text-on-primary">{label}</Text>
+      <Text
+        className={`font-sans-bold text-base ${secondary ? "text-ink" : "text-on-primary"}`}
+      >
+        {label}
+      </Text>
     </Pressable>
   );
 }

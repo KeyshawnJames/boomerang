@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AutocompleteAddressData, AutocompleteAddressErrors, AutocompleteAddressResponses, BookingOptionsData, BookingOptionsErrors, BookingOptionsResponses, CreateReturnData, CreateReturnErrors, CreateReturnResponses, EligibilityQuestionsData, EligibilityQuestionsResponses, GetReturnData, GetReturnErrors, GetReturnResponses, HealthData, HealthResponses, ListRetailersData, ListRetailersResponses, LoginData, LoginErrors, LoginResponses, MeData, MeResponses, PayForReturnData, PayForReturnErrors, PayForReturnResponses, PresignUploadData, PresignUploadErrors, PresignUploadResponses, RegisterData, RegisterErrors, RegisterResponses, ResolveAddressData, ResolveAddressErrors, ResolveAddressResponses, UpdateMeData, UpdateMeErrors, UpdateMeResponses } from './types.gen';
+import type { AutocompleteAddressData, AutocompleteAddressErrors, AutocompleteAddressResponses, BookingOptionsData, BookingOptionsErrors, BookingOptionsResponses, CancelReturnData, CancelReturnErrors, CancelReturnResponses, CreateReturnData, CreateReturnErrors, CreateReturnResponses, EligibilityQuestionsData, EligibilityQuestionsResponses, GetReturnData, GetReturnErrors, GetReturnResponses, HealthData, HealthResponses, ListRetailersData, ListRetailersResponses, LoginData, LoginErrors, LoginResponses, MeData, MeResponses, PayForReturnData, PayForReturnErrors, PayForReturnResponses, PresignUploadData, PresignUploadErrors, PresignUploadResponses, RegisterData, RegisterErrors, RegisterResponses, ResolveAddressData, ResolveAddressErrors, ResolveAddressResponses, UpdateMeData, UpdateMeErrors, UpdateMeResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -157,6 +157,15 @@ export const payForReturn = <ThrowOnError extends boolean = false>(options: Opti
         'Content-Type': 'application/json',
         ...options.headers
     }
+});
+
+/**
+ * Cancel Return
+ */
+export const cancelReturn = <ThrowOnError extends boolean = false>(options: Options<CancelReturnData, ThrowOnError>): RequestResult<CancelReturnResponses, CancelReturnErrors, ThrowOnError> => (options.client ?? client).post<CancelReturnResponses, CancelReturnErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/returns/{return_id}/cancel',
+    ...options
 });
 
 /**

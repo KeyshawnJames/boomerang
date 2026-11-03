@@ -12,6 +12,10 @@
 
 ---
 
+## 2026-11-03
+
+- **[Claude]** A client can now cancel a return before a driver accepts it. The app asks "Are you sure?" first. If they already paid, Stripe sends the whole amount (fee and tip) back to the same card automatically; if they hadn't paid, nothing is charged. Only the client who booked the return can cancel it, and cancelling twice never refunds twice. The return screen now says "Return cancelled" instead of "Pickup booked". Cancelling after a driver accepts (tip back, fee kept) comes with drivers in M6 (ADR 0018). (#66)
+
 ## 2026-11-02
 
 - **[Claude]** After booking, the client now tips and pays in the app. They choose no tip, $1, $2, $3 or type another amount (up to $50), see the total, and pay on Stripe's own card screen, so card numbers never touch our server. The app then shows "Confirming your payment" until Stripe tells our server the payment went through, and only then says the pickup is booked. A declined card shows the bank's message and can be tried again. After 30 minutes the booking expires and the app sends them back to book again. The "Plus GST/QST" line is gone, since we don't charge those taxes yet (ADR 0018). (#65)
