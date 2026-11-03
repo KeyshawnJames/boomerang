@@ -207,13 +207,35 @@ test("cancelling a paid return asks first, then shows it cancelled", async () =>
   const [title, message, buttons] = alert.mock.calls[0];
   expect([title, message]).toEqual([
     "Cancel this return?",
-    "If you paid, you'll get the full amount back on your card.",
+    "If you paid, you'll get everything back on your card, tip included.",
   ]);
   expect(posted()).toEqual([]);
   (buttons as AlertButton[]).find((b) => b.style === "destructive")!.onPress!();
   expect(await screen.findByText("Return cancelled")).toBeTruthy();
   expect(posted()).toEqual(["/returns/ret1/cancel"]);
   expect(screen.queryByRole("button", { name: "Cancel return" })).toBeNull();
+});
+
+test("paying then cancelling shows the refund, tip included", async () => {
+  await open();
+  await fireEvent.press(await screen.findByRole("button", { name: "$2.00" }));
+  await fireEvent.press(await payButton("$6.99"));
+  replies["/returns/ret1"] = [200, { ...RETURN, status: "requested" }];
+  await fireEvent.press(
+    await screen.findByRole(
+      "button",
+      { name: "Cancel return" },
+      { timeout: 4000 },
+    ),
+  );
+  (alert.mock.calls[0][2] as AlertButton[]).find(
+    (b) => b.style === "destructive",
+  )!.onPress!();
+  expect(await screen.findByText("Return cancelled")).toBeTruthy();
+  expect(screen.getByText("Refunded")).toBeTruthy();
+  expect(screen.getByText("$6.99")).toBeTruthy();
+  // The fee alone would read as if the tip were kept.
+  expect(screen.queryByText("$4.99, all fees included")).toBeNull();
 });
 
 test("cancelling an unpaid return asks first too", async () => {
@@ -223,7 +245,7 @@ test("cancelling an unpaid return asks first too", async () => {
   );
   // A charge may still be going through, so the same promise holds either way.
   expect(alert.mock.calls[0][1]).toBe(
-    "If you paid, you'll get the full amount back on your card.",
+    "If you paid, you'll get everything back on your card, tip included.",
   );
 });
 

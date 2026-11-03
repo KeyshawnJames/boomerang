@@ -249,12 +249,17 @@ export default function Booked() {
               asap: false,
             })}
           />
-          <Row
-            label={t("review.price")}
-            value={t("review.priceLine", { price: price(data.pickup_fee) })}
-          />
-          {paid !== null && !cancelled && (
-            <Row label={t("pay.paid")} value={price(paid)} />
+          {!cancelled && (
+            <Row
+              label={t("review.price")}
+              value={t("review.priceLine", { price: price(data.pickup_fee) })}
+            />
+          )}
+          {paid !== null && (
+            <Row
+              label={cancelled ? t("cancel.refunded") : t("pay.paid")}
+              value={price(paid)}
+            />
           )}
         </>
       )}
