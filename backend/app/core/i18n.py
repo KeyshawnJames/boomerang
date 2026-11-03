@@ -107,6 +107,14 @@ MESSAGES: dict[str, dict[Locale, str]] = {
         Locale.en: "Payment isn't working right now. Try again.",
         Locale.fr: "Le paiement ne fonctionne pas pour le moment. Réessayez.",
     },
+    "cancel_closed": {
+        Locale.en: "This return is already cancelled or a driver has accepted it.",
+        Locale.fr: "Ce retour est déjà annulé ou un chauffeur l'a accepté.",
+    },
+    "refund_unavailable": {
+        Locale.en: "Cancelling isn't working right now. Try again.",
+        Locale.fr: "L'annulation ne fonctionne pas pour le moment. Réessayez.",
+    },
 }
 
 

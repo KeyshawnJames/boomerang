@@ -12,7 +12,8 @@ from app.core.i18n import api_error, request_locale
 from app.models import ReturnRequest, ReturnStatus, User, UserRole
 from app.models.base import utcnow
 from app.schemas.payment import PaymentIntentRead, PayRequest
-from app.services import payments
+from app.schemas.return_request import ReturnRead
+from app.services import payments, status
 
 router = APIRouter()
 
@@ -61,3 +62,30 @@ def pay_for_return(
     return PaymentIntentRead(
         client_secret=client_secret, total=return_request.pickup_fee + body.tip
     )
+
+
+@router.post("/returns/{return_id}/cancel", response_model=ReturnRead)
+def cancel_return(
+    return_id: uuid.UUID,
+    user: ClientUser,
+    request: Request,
+    session: SessionDep,
+    stripe_client: StripeDep,
+) -> ReturnRequest:
+    locale = request_locale(request)
+    # Locked until commit: a double tap or the webhook waits, so the money moves once.
+    return_request = session.exec(
+        select(ReturnRequest).where(ReturnRequest.id == return_id).with_for_update()
+    ).first()
+    # 404, not 403, so a client can't learn which ids exist.
+    if return_request is None or return_request.client_id != user.id:
+        raise api_error(404, "return_not_found", locale)
+    try:
+        payments.cancel(session, stripe_client, return_request, actor_id=user.id)
+    except status.InvalidTransition:
+        raise api_error(409, "cancel_closed", locale) from None
+    except stripe.StripeError as e:
+        raise api_error(502, "refund_unavailable", locale) from e
+    session.commit()
+    session.refresh(return_request)
+    return return_request

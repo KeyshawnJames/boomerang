@@ -1,3 +1,5 @@
+import uuid
+
 from sqlmodel import Session, select
 from stripe import InvalidRequestError, PaymentIntent, StripeClient
 
@@ -54,6 +56,18 @@ def start(session: Session, stripe: StripeClient, return_request: ReturnRequest,
     return intent.client_secret
 
 
+def _refund(stripe: StripeClient, intent_id: str) -> None:
+    """Gives the whole PaymentIntent back to the same card. Safe to call again."""
+    try:
+        stripe.v1.refunds.create(
+            {"payment_intent": intent_id}, {"idempotency_key": f"refund-{intent_id}"}
+        )
+    except InvalidRequestError as e:
+        # Refunded on an earlier try whose save failed, after Stripe forgot the key (24 h).
+        if e.code != "charge_already_refunded":
+            raise
+
+
 def _payment_for(session: Session, intent_id: str) -> Payment | None:
     """The payment, locked until commit along with its return, so deliveries go one at a time."""
     payment = session.exec(
@@ -81,14 +95,7 @@ def succeeded(session: Session, stripe: StripeClient, intent: PaymentIntent) -> 
     )
     # Cancelled meanwhile, already paid by another payment, or not the amount we asked for.
     if return_request.status != ReturnStatus.awaiting_payment or not paid_in_full:
-        try:
-            stripe.v1.refunds.create(
-                {"payment_intent": intent.id}, {"idempotency_key": f"refund-{intent.id}"}
-            )
-        except InvalidRequestError as e:
-            # Refunded on an earlier try whose save failed, after Stripe forgot the key (24 h).
-            if e.code != "charge_already_refunded":
-                raise
+        _refund(stripe, intent.id)
         payment.status = PaymentStatus.refunded
         session.add(payment)
         return
@@ -104,3 +111,30 @@ def failed(session: Session, intent: PaymentIntent) -> None:
     if payment is not None and payment.status == PaymentStatus.pending:
         payment.status = PaymentStatus.failed
         session.add(payment)
+
+
+def cancel(
+    session: Session, stripe: StripeClient, return_request: ReturnRequest, actor_id: uuid.UUID
+) -> None:
+    """Cancels a return no driver has accepted, refunding fee and tip in full (ADR 0018).
+
+    The caller holds the return's lock. Raises status.InvalidTransition once a driver has
+    accepted it (M6), or stripe.StripeError if the refund fails, having written nothing.
+    """
+    if return_request.status not in (ReturnStatus.awaiting_payment, ReturnStatus.requested):
+        raise status.InvalidTransition(f"{return_request.status} -> cancelled")
+    # An unpaid return has nothing to refund. A payment still going through is refunded by
+    # the webhook when it lands, since the return is no longer waiting for it.
+    if return_request.status == ReturnStatus.requested:
+        payment = session.exec(
+            select(Payment)
+            .where(
+                Payment.return_id == return_request.id,
+                Payment.status == PaymentStatus.succeeded,
+            )
+            .with_for_update()
+        ).one()
+        _refund(stripe, payment.stripe_payment_intent_id)
+        payment.status = PaymentStatus.refunded
+        session.add(payment)
+    status.transition(session, return_request, ReturnStatus.cancelled, actor_id)
