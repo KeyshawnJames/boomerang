@@ -771,7 +771,7 @@ test("a return is booked and confirmed", async () => {
   });
   expect(useDraft.getState().address).toBeNull();
   // The booking is spent: Back goes home, not to the review.
-  await fireEvent.press(screen.getByRole("button", { name: "Back" }));
+  await fireEvent.press(screen.getByRole("button", { name: "Back to home" }));
   expect(
     await screen.findByRole("button", { name: "New return" }),
   ).toBeTruthy();

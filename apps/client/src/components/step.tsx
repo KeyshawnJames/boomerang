@@ -14,10 +14,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 // The frame shared by the new-return steps.
 export function Step({
   title,
+  back,
   footer,
   children,
 }: {
   title: string;
+  // Where the top link really goes, when that isn't the step before.
+  back?: string;
   footer?: ReactNode;
   children: ReactNode;
 }) {
@@ -35,7 +38,7 @@ export function Step({
           className="self-start px-6 py-3"
         >
           <Text className="font-sans-semibold text-base text-primary">
-            {t("newReturn.back")}
+            {back ?? t("newReturn.back")}
           </Text>
         </Pressable>
         {/* "handled": a tap on an address suggestion picks it instead of only closing the keyboard. */}

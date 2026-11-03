@@ -89,6 +89,8 @@ export default function Booked() {
   return (
     <Step
       title={title}
+      // The booking flow was replaced, so Back goes home: say so.
+      back={t("booked.home")}
       footer={
         <View className="gap-3">
           {pay.isError && unpaid && (
@@ -139,6 +141,9 @@ export default function Booked() {
       )}
       {data && unpaid && !confirming && (
         <>
+          <Text className="font-sans text-base text-ink">
+            {t("pay.window")}
+          </Text>
           <SectionTitle>{t("pay.tip")}</SectionTitle>
           <Text className="font-sans text-base text-muted">
             {t("pay.tipHint")}

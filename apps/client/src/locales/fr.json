@@ -111,6 +111,7 @@
   },
   "pay": {
     "title": "Pourboire et paiement",
+    "window": "Payez dans les 30 minutes pour réserver ce ramassage.",
     "tip": "Pourboire pour le chauffeur",
     "tipHint": "Facultatif. Le chauffeur reçoit la totalité du pourboire.",
     "noTip": "Aucun pourboire",

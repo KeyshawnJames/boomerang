@@ -111,6 +111,7 @@
   },
   "pay": {
     "title": "Tip and pay",
+    "window": "Pay within 30 minutes to book this pickup.",
     "tip": "Tip your driver",
     "tipHint": "Optional. Your driver gets all of it.",
     "noTip": "No tip",

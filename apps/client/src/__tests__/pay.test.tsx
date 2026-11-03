@@ -81,6 +81,10 @@ async function paidTip() {
 test("shows the total with the chosen tip", async () => {
   await open();
   expect(await payButton("$4.99")).toBeTruthy();
+  // The return already exists, so the screen says what's left to do.
+  expect(
+    screen.getByText("Pay within 30 minutes to book this pickup."),
+  ).toBeTruthy();
   await fireEvent.press(screen.getByRole("button", { name: "$2.00" }));
   expect(screen.getByText("$6.99")).toBeTruthy();
   await fireEvent.press(await payButton("$6.99"));
