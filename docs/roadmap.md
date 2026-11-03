@@ -11,7 +11,8 @@
 
 **M1 — Backend foundation**, **M2 — Schema + auth** and **M3 — Client app bootstrap**: done
 (2026-10-29), tagged `m1`, `m2` and `m3`. **M4 — Create a return**: done (2026-11-01), tagged
-`m4`. **M5 — Payments** is next. M0 still has open chores (#3 to #6).
+`m4`. **M5 — Payments**: done (2026-11-03), tagged `m5`. **M6 — Driver app** is next. M0
+still has open chores (#3 to #6).
 
 ## Milestones
 
