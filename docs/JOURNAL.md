@@ -12,6 +12,10 @@
 
 ---
 
+## 2026-11-03
+
+- **[Claude]** Decided how the driver app works in M6 (ADR 0019). Anyone can sign up as a driver, but they see no jobs until Boomerang approves them. Drivers see one list of every paid job on the island, showing only the postal area and their pay until they accept. The first to accept gets it, one job at a time. At pickup the driver scans the label's barcode (or types the number) and photographs the package. At the counter they photograph the carrier's receipt and confirm the tracking number, and the job then closes automatically. If the client isn't home after 10 minutes, or the package isn't as booked, the client gets the tip back and the fee is kept. A driver can hand a job back before pickup. No location tracking until M8. (#21)
+
 ## 2026-11-02
 
 - **[Claude]** After booking, the client now tips and pays in the app. They choose no tip, $1, $2, $3 or type another amount (up to $50), see the total, and pay on Stripe's own card screen, so card numbers never touch our server. The app then shows "Confirming your payment" until Stripe tells our server the payment went through, and only then says the pickup is booked. A declined card shows the bank's message and can be tried again. After 30 minutes the booking expires and the app sends them back to book again. The "Plus GST/QST" line is gone, since we don't charge those taxes yet (ADR 0018). (#65)
