@@ -126,6 +126,16 @@
     "paid": "Paid",
     "bookAgain": "Book again"
   },
+  "cancel": {
+    "button": "Cancel return",
+    "confirmTitle": "Cancel this return?",
+    "confirmBody": "If you paid, you'll get everything back on your card, tip included.",
+    "keep": "Keep it",
+    "confirm": "Cancel return",
+    "title": "Return cancelled",
+    "explain": "If you paid, everything is going back to your card, tip included. It can take 5 to 10 business days to show.",
+    "refunded": "Refunded"
+  },
   "errors": {
     "generic": "Something went wrong. Check your connection and try again."
   }

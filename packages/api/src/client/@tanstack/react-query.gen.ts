@@ -3,8 +3,8 @@
 import { type DefaultError, queryOptions, type UseMutationOptions } from '@tanstack/react-query';
 
 import { client } from '../client.gen';
-import { autocompleteAddress, bookingOptions, createReturn, eligibilityQuestions, getReturn, health, listRetailers, login, me, type Options, payForReturn, presignUpload, register, resolveAddress, updateMe } from '../sdk.gen';
-import type { AutocompleteAddressData, AutocompleteAddressError, AutocompleteAddressResponse, BookingOptionsData, BookingOptionsError, BookingOptionsResponse, CreateReturnData, CreateReturnError, CreateReturnResponse, EligibilityQuestionsData, EligibilityQuestionsResponse, GetReturnData, GetReturnError, GetReturnResponse, HealthData, HealthResponse, ListRetailersData, ListRetailersResponse, LoginData, LoginError, LoginResponse, MeData, MeResponse, PayForReturnData, PayForReturnError, PayForReturnResponse, PresignUploadData, PresignUploadError, PresignUploadResponse, RegisterData, RegisterError, RegisterResponse, ResolveAddressData, ResolveAddressError, ResolveAddressResponse, UpdateMeData, UpdateMeError, UpdateMeResponse } from '../types.gen';
+import { autocompleteAddress, bookingOptions, cancelReturn, createReturn, eligibilityQuestions, getReturn, health, listRetailers, login, me, type Options, payForReturn, presignUpload, register, resolveAddress, updateMe } from '../sdk.gen';
+import type { AutocompleteAddressData, AutocompleteAddressError, AutocompleteAddressResponse, BookingOptionsData, BookingOptionsError, BookingOptionsResponse, CancelReturnData, CancelReturnError, CancelReturnResponse, CreateReturnData, CreateReturnError, CreateReturnResponse, EligibilityQuestionsData, EligibilityQuestionsResponse, GetReturnData, GetReturnError, GetReturnResponse, HealthData, HealthResponse, ListRetailersData, ListRetailersResponse, LoginData, LoginError, LoginResponse, MeData, MeResponse, PayForReturnData, PayForReturnError, PayForReturnResponse, PresignUploadData, PresignUploadError, PresignUploadResponse, RegisterData, RegisterError, RegisterResponse, ResolveAddressData, ResolveAddressError, ResolveAddressResponse, UpdateMeData, UpdateMeError, UpdateMeResponse } from '../types.gen';
 
 /**
  * Register
@@ -259,6 +259,23 @@ export const payForReturnMutation = (options?: Partial<Options<PayForReturnData>
     const mutationOptions: UseMutationOptions<PayForReturnResponse, PayForReturnError, Options<PayForReturnData>> = {
         mutationFn: async (fnOptions) => {
             const { data } = await payForReturn({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Cancel Return
+ */
+export const cancelReturnMutation = (options?: Partial<Options<CancelReturnData>>): UseMutationOptions<CancelReturnResponse, CancelReturnError, Options<CancelReturnData>> => {
+    const mutationOptions: UseMutationOptions<CancelReturnResponse, CancelReturnError, Options<CancelReturnData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await cancelReturn({
                 ...options,
                 ...fnOptions,
                 throwOnError: true

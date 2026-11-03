@@ -126,6 +126,16 @@
     "paid": "Payé",
     "bookAgain": "Réserver de nouveau"
   },
+  "cancel": {
+    "button": "Annuler le retour",
+    "confirmTitle": "Annuler ce retour?",
+    "confirmBody": "Si vous avez payé, tout vous sera remboursé sur votre carte, pourboire compris.",
+    "keep": "Le garder",
+    "confirm": "Annuler le retour",
+    "title": "Retour annulé",
+    "explain": "Si vous avez payé, tout est remboursé sur votre carte, pourboire compris. Cela peut prendre de 5 à 10 jours ouvrables.",
+    "refunded": "Remboursé"
+  },
   "errors": {
     "generic": "Un problème est survenu. Vérifiez votre connexion et réessayez."
   }

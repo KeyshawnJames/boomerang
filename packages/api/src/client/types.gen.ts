@@ -801,6 +801,36 @@ export type PayForReturnResponses = {
 
 export type PayForReturnResponse = PayForReturnResponses[keyof PayForReturnResponses];
 
+export type CancelReturnData = {
+    body?: never;
+    path: {
+        /**
+         * Return Id
+         */
+        return_id: string;
+    };
+    query?: never;
+    url: '/returns/{return_id}/cancel';
+};
+
+export type CancelReturnErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type CancelReturnError = CancelReturnErrors[keyof CancelReturnErrors];
+
+export type CancelReturnResponses = {
+    /**
+     * Successful Response
+     */
+    200: ReturnRead;
+};
+
+export type CancelReturnResponse = CancelReturnResponses[keyof CancelReturnResponses];
+
 export type HealthData = {
     body?: never;
     path?: never;
