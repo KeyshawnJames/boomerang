@@ -1,13 +1,14 @@
 import { useStripe } from "@stripe/stripe-react-native";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { payForReturn } from "api";
-import { getReturnOptions } from "api/react-query";
+import { cancelReturn, payForReturn } from "api";
+import { getReturnOptions, getReturnQueryKey } from "api/react-query";
 import * as Linking from "expo-linking";
 import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, Alert, Text, View } from "react-native";
 
+import { queryClient } from "../../api";
 import { price, slotLabel } from "../../booking";
 import { Button, Field } from "../../components/form";
 import { Choice, Row, SectionTitle, Step } from "../../components/step";
@@ -78,10 +79,40 @@ export default function Booked() {
     // Paid or cancelled meanwhile: the refetch shows it.
     onError: () => booked.refetch(),
   });
+  const cancel = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await cancelReturn({ path: { return_id: id } });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (cancelled) =>
+      queryClient.setQueryData(
+        getReturnQueryKey({ path: { return_id: id } }),
+        cancelled,
+      ),
+  });
   const unpaid = data?.status === "awaiting_payment";
+  const cancelled = data?.status === "cancelled";
   const confirming = unpaid && waiting;
-  const title =
-    data && !unpaid
+  // Before a driver accepts (ADR 0018). Not while the webhook is deciding.
+  const cancellable =
+    (unpaid && !confirming && !expired) || data?.status === "requested";
+  const confirmCancel = () =>
+    Alert.alert(
+      t("cancel.confirmTitle"),
+      unpaid ? t("cancel.confirmUnpaid") : t("cancel.confirmPaid"),
+      [
+        { text: t("cancel.keep"), style: "cancel" },
+        {
+          text: t("cancel.confirm"),
+          style: "destructive",
+          onPress: () => cancel.mutate(),
+        },
+      ],
+    );
+  const title = cancelled
+    ? t("cancel.title")
+    : data && !unpaid
       ? t("booked.title")
       : confirming
         ? t("pay.confirming")
@@ -101,6 +132,14 @@ export default function Booked() {
               {errorMessage(pay.error)}
             </Text>
           )}
+          {cancel.isError && (
+            <Text
+              accessibilityRole="alert"
+              className="font-sans text-base text-danger"
+            >
+              {errorMessage(cancel.error)}
+            </Text>
+          )}
           {expired ? (
             <Button
               label={t("pay.bookAgain")}
@@ -117,6 +156,14 @@ export default function Booked() {
             <Button
               label={t("booked.home")}
               onPress={() => router.dismissTo("/")}
+            />
+          )}
+          {cancellable && (
+            <Button
+              label={t("cancel.button")}
+              busy={cancel.isPending}
+              secondary
+              onPress={confirmCancel}
             />
           )}
         </View>
@@ -183,7 +230,7 @@ export default function Booked() {
       {data && !unpaid && (
         <>
           <Text className="font-sans text-base text-ink">
-            {t("booked.explain")}
+            {cancelled ? t("cancel.explain") : t("booked.explain")}
           </Text>
           <Row
             label={t("review.address")}
@@ -202,7 +249,9 @@ export default function Booked() {
             label={t("review.price")}
             value={t("review.priceLine", { price: price(data.pickup_fee) })}
           />
-          {paid !== null && <Row label={t("pay.paid")} value={price(paid)} />}
+          {paid !== null && !cancelled && (
+            <Row label={t("pay.paid")} value={price(paid)} />
+          )}
         </>
       )}
     </Step>

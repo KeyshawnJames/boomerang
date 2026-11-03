@@ -126,6 +126,16 @@
     "paid": "Paid",
     "bookAgain": "Book again"
   },
+  "cancel": {
+    "button": "Cancel return",
+    "confirmTitle": "Cancel this return?",
+    "confirmPaid": "You'll get the full amount back on your card.",
+    "confirmUnpaid": "Nothing has been charged.",
+    "keep": "Keep it",
+    "confirm": "Cancel return",
+    "title": "Return cancelled",
+    "explain": "If you paid, the full amount is going back to your card. It can take 5 to 10 business days to show."
+  },
   "errors": {
     "generic": "Something went wrong. Check your connection and try again."
   }

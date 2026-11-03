@@ -4,6 +4,7 @@ import {
   screen,
   waitFor,
 } from "expo-router/testing-library";
+import { Alert, type AlertButton } from "react-native";
 
 import { queryClient } from "../api";
 import RootLayout from "../app/_layout";
@@ -55,6 +56,7 @@ beforeEach(() => {
     "/retailers": [200, []],
     "/returns/ret1": [200, RETURN],
     "/returns/ret1/pay": [200, { client_secret: "pi_1_secret", total: 699 }],
+    "/returns/ret1/cancel": [200, { ...RETURN, status: "cancelled" }],
   };
   jest.clearAllMocks();
   fetchMock.mockImplementation(async (input) => {
@@ -187,4 +189,73 @@ test("a payment already going through waits for the webhook too", async () => {
   ).toBeTruthy();
   // Booked now, so the earlier error is no longer shown.
   expect(screen.queryByRole("alert")).toBeNull();
+});
+
+const alert = jest.spyOn(Alert, "alert");
+const posted = () =>
+  fetchMock.mock.calls
+    .map(([input]) => input as Request)
+    .filter((r) => r.method === "POST")
+    .map((r) => new URL(r.url).pathname);
+
+test("cancelling a paid return asks first, then shows it cancelled", async () => {
+  replies["/returns/ret1"] = [200, { ...RETURN, status: "requested" }];
+  await open();
+  await fireEvent.press(
+    await screen.findByRole("button", { name: "Cancel return" }),
+  );
+  const [title, message, buttons] = alert.mock.calls[0];
+  expect([title, message]).toEqual([
+    "Cancel this return?",
+    "You'll get the full amount back on your card.",
+  ]);
+  expect(posted()).toEqual([]);
+  (buttons as AlertButton[]).find((b) => b.style === "destructive")!.onPress!();
+  expect(await screen.findByText("Return cancelled")).toBeTruthy();
+  expect(posted()).toEqual(["/returns/ret1/cancel"]);
+  expect(screen.queryByRole("button", { name: "Cancel return" })).toBeNull();
+});
+
+test("cancelling an unpaid return says nothing was charged", async () => {
+  await open();
+  await fireEvent.press(
+    await screen.findByRole("button", { name: "Cancel return" }),
+  );
+  expect(alert.mock.calls[0][1]).toBe("Nothing has been charged.");
+});
+
+test("a failed cancel shows the server's message", async () => {
+  replies["/returns/ret1"] = [200, { ...RETURN, status: "requested" }];
+  replies["/returns/ret1/cancel"] = [
+    502,
+    { detail: "Cancelling isn't working right now. Try again." },
+  ];
+  await open();
+  await fireEvent.press(
+    await screen.findByRole("button", { name: "Cancel return" }),
+  );
+  (alert.mock.calls[0][2] as AlertButton[]).find(
+    (b) => b.style === "destructive",
+  )!.onPress!();
+  expect(
+    await screen.findByText("Cancelling isn't working right now. Try again."),
+  ).toBeTruthy();
+});
+
+test("no cancelling while the payment is being confirmed", async () => {
+  await open();
+  await fireEvent.press(await payButton("$4.99"));
+  expect(await screen.findByText("Confirming your payment")).toBeTruthy();
+  expect(screen.queryByRole("button", { name: "Cancel return" })).toBeNull();
+});
+
+test("a cancelled return says so, in French too", async () => {
+  replies["/returns/ret1"] = [200, { ...RETURN, status: "cancelled" }];
+  i18n.changeLanguage("fr");
+  await open();
+  expect(await screen.findByText("Retour annulé")).toBeTruthy();
+  expect(screen.queryByText("Ramassage réservé")).toBeNull();
+  expect(
+    screen.queryByRole("button", { name: "Annuler le retour" }),
+  ).toBeNull();
 });
