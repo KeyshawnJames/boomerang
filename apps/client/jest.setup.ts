@@ -12,3 +12,15 @@ jest.mock("expo-secure-store", () => {
     deleteItemAsync: async (key: string) => void items.delete(key),
   };
 });
+
+// Stripe's native card sheet. Its own jest mock renders StripeProvider without children.
+jest.mock("@stripe/stripe-react-native", () => {
+  const stripe = {
+    initPaymentSheet: jest.fn(async () => ({})),
+    presentPaymentSheet: jest.fn(async () => ({})),
+  };
+  return {
+    StripeProvider: ({ children }: { children: unknown }) => children,
+    useStripe: () => stripe,
+  };
+});

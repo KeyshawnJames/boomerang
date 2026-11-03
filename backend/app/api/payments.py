@@ -46,7 +46,7 @@ def pay_for_return(
     if return_request.status != ReturnStatus.awaiting_payment:
         raise api_error(409, "payment_closed", locale)
     if utcnow() - return_request.created_at >= timedelta(minutes=settings.payment_window_minutes):
-        raise api_error(409, "payment_expired", locale)
+        raise api_error(410, "payment_expired", locale)
 
     try:
         client_secret = payments.start(session, stripe_client, return_request, body.tip)

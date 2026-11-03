@@ -8,7 +8,10 @@ import {
   Manrope_800ExtraBold,
   useFonts,
 } from "@expo-google-fonts/manrope";
+import { StripeProvider } from "@stripe/stripe-react-native";
 import { QueryClientProvider } from "@tanstack/react-query";
+import Constants from "expo-constants";
+import * as Linking from "expo-linking";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
@@ -37,17 +40,28 @@ export default function RootLayout() {
   if (!ready) return null;
   return (
     <QueryClientProvider client={queryClient}>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Protected guard={signedIn}>
-          <Stack.Screen name="index" />
-          <Stack.Screen name="new-return" />
-          <Stack.Screen name="returns/[id]" />
-        </Stack.Protected>
-        <Stack.Protected guard={!signedIn}>
-          <Stack.Screen name="login" />
-          <Stack.Screen name="register" />
-        </Stack.Protected>
-      </Stack>
+      {/* The pk_test_ key is public by design; Apple/Google Pay wait for app builds (ADR 0018). */}
+      <StripeProvider
+        publishableKey={process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? ""}
+        // Expo Go needs "/--/" so the path after it reads as the deep link (Expo's Stripe docs).
+        urlScheme={
+          Constants.appOwnership === "expo"
+            ? Linking.createURL("/--/")
+            : Linking.createURL("")
+        }
+      >
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Protected guard={signedIn}>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="new-return" />
+            <Stack.Screen name="returns/[id]" />
+          </Stack.Protected>
+          <Stack.Protected guard={!signedIn}>
+            <Stack.Screen name="login" />
+            <Stack.Screen name="register" />
+          </Stack.Protected>
+        </Stack>
+      </StripeProvider>
     </QueryClientProvider>
   );
 }

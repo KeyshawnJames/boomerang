@@ -14,6 +14,7 @@
 
 ## 2026-11-02
 
+- **[Claude]** After booking, the client now tips and pays in the app. They choose no tip, $1, $2, $3 or type another amount (up to $50), see the total, and pay on Stripe's own card screen, so card numbers never touch our server. The app then shows "Confirming your payment" until Stripe tells our server the payment went through, and only then says the pickup is booked. A declined card shows the bank's message and can be tried again. After 30 minutes the booking expires and the app sends them back to book again. The "Plus GST/QST" line is gone, since we don't charge those taxes yet (ADR 0018). (#65)
 - **[Claude]** When Stripe confirms a card payment, the return is now booked and drivers will be able to see it. Stripe tells the server with a signed message, and the server ignores any message without Stripe's signature, so nobody can fake a payment. The server also checks Stripe received exactly the fee plus the tip. If the client cancelled while paying, or the amount is wrong, the money goes straight back to the card. A declined card leaves the return waiting so the client can try again, and the same message arriving twice changes nothing. (#64)
 
 ## 2026-11-01

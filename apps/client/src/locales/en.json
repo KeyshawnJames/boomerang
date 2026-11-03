@@ -99,7 +99,6 @@
     "time": "Pickup time",
     "price": "Price",
     "priceLine": "{{price}}, all fees included",
-    "taxes": "Plus GST/QST",
     "phone": "Phone number",
     "phoneHint": "The driver calls or texts it only if they can't find you.",
     "book": "Book pickup",
@@ -109,6 +108,23 @@
     "title": "Pickup booked",
     "explain": "Have the package ready for the driver.",
     "home": "Back to home"
+  },
+  "pay": {
+    "title": "Tip and pay",
+    "window": "Pay within 30 minutes to book this pickup.",
+    "tip": "Tip your driver",
+    "tipHint": "Optional. Your driver gets all of it.",
+    "noTip": "No tip",
+    "other": "Other",
+    "otherAmount": "Tip amount",
+    "otherHint": "Up to {{max}}.",
+    "fee": "Pickup fee",
+    "total": "Total",
+    "pay": "Pay {{total}}",
+    "confirming": "Confirming your payment",
+    "confirmingExplain": "This takes a few seconds. You can stay on this screen.",
+    "paid": "Paid",
+    "bookAgain": "Book again"
   },
   "errors": {
     "generic": "Something went wrong. Check your connection and try again."

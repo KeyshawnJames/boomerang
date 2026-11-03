@@ -73,9 +73,14 @@ never live keys. Tests don't need either key.
    payment".
 
    If `stripe listen` says *Permission denied*, the CLI's login has run out (it lasts 90
-   days): run `stripe login` again and pick the Boomerang sandbox.
+   days): run `stripe login` again and pick the Boomerang sandbox. If it still says so, run
+   it with the sandbox key instead: `STRIPE_API_KEY=sk_test_… stripe listen …`.
+3. `EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY`: **Developers → API keys → Publishable key**
+   (`pk_test_…`). The client app builds it in to open Stripe's card screen; it's meant to be
+   public. Metro reads it from the root `.env` when it starts, so restart Metro after
+   changing it.
 
-Both go in the root `.env`. Never commit them.
+All three go in the root `.env`. Never commit them.
 
 ## Apps
 

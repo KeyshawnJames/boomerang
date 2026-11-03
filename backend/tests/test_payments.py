@@ -140,7 +140,8 @@ def test_expired_return_is_refused(
 
     response = pay(client, token, return_id, {}, language="fr")
 
-    assert response.status_code == 409
+    # 410, not 409, so the app can tell it apart from a payment already going through.
+    assert response.status_code == 410
     assert response.json()["detail"].startswith("Cette réservation a expiré")
     assert intents.created == []
 

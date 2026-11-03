@@ -9,6 +9,10 @@ const FIELDS = ["name", "email", "password"] as const;
 export function errorMessage(error: unknown): string {
   const detail = (error as { detail?: unknown } | null)?.detail;
   if (typeof detail === "string") return detail;
+  // Stripe's card errors ("Your card was declined.") come in the phone's language.
+  const stripe = (error as { localizedMessage?: unknown } | null)
+    ?.localizedMessage;
+  if (typeof stripe === "string" && stripe) return stripe;
   if (Array.isArray(detail)) {
     const fields = detail.map(
       (e: ValidationError) => FIELDS.find((f) => f === e.loc.at(-1)) ?? "other",
