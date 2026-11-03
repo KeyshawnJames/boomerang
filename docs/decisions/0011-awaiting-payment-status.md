@@ -1,6 +1,6 @@
 # 0011. A return waits for payment before drivers can see it
 
-- **Status:** accepted. When unpaid returns expire is settled by [0018](0018-payments.md)
+- **Status:** accepted. When unpaid returns expire is settled by [0018](0018-payments.md). The driver hand-back move (`driver_assigned → requested`) is added by [0019](0019-driver-app.md)
 - **Date:** 2026-10-29
 
 ## Context

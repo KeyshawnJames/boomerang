@@ -58,7 +58,7 @@ relays it over WebSocket to the client watching that return.
 ## Status machine
 
 ```
-awaiting_payment → requested → driver_assigned → picked_up → dropped_off → completed
+awaiting_payment → requested ⇄ driver_assigned → picked_up → dropped_off → completed
         │              │              │               │
         └──────────────┴──────────────┴→ cancelled    └→ failed_dropoff
 ```
@@ -67,6 +67,8 @@ awaiting_payment → requested → driver_assigned → picked_up → dropped_off
   Stripe webhook moves it to `requested` ([ADR 0011](decisions/0011-awaiting-payment-status.md)).
 - **`failed_dropoff`**: the carrier won't take the package (e.g. a damaged label). It's
   terminal for the MVP, and the client is contacted outside the app.
+- **`driver_assigned → requested`**: a driver hands the job back before pickup, and it goes
+  back to the open list ([ADR 0019](decisions/0019-driver-app.md)).
 - **Every transition writes a `ReturnStatusEvent`.** That table is both the timeline and the
   audit trail. All transitions go through one service function that validates them
   (`app/services/status.py`), with the return's row locked so concurrent requests can't both
@@ -157,7 +159,7 @@ are accurate. The carrier question set:
 - `POST /returns/{id}/cancel`, `POST /returns/{id}/rating`
 
 **Driver**
-- `GET /driver/jobs`: nearby `requested` returns (PostGIS `ST_DWithin`).
+- `GET /driver/jobs`: every `requested` return on the island, showing only the postal area before accept ([ADR 0019](decisions/0019-driver-app.md)).
 - `POST /driver/jobs/{id}/accept`
 - `POST /returns/{id}/pickup`: label scan plus custody photo.
 - `GET /dropoff-locations?near=`: nearby carrier locations.
