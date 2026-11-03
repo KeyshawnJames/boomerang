@@ -2,6 +2,17 @@
 
 Generated from commit history by [git-cliff](https://git-cliff.org). Do not edit by hand; the human story is in `docs/JOURNAL.md`.
 
+## m5 — 2026-11-03
+
+### Features
+- cancel a return with a full refund (#73) (6d6a733)
+- **client:** tip and pay for a return (#71) (7c568f4)
+- **backend:** Stripe webhook books a paid return (#70) (39c6aed)
+- **backend:** pay for a return (#69) (689a9f7)
+
+### Docs
+- **decisions:** how the driver app works (ADR 0019) (#74) (a9add85)
+- **decisions:** how payments work (ADR 0018) (#68) (18cc26a)
 ## m4 — 2026-11-01
 
 ### Features
@@ -16,6 +27,7 @@ Generated from commit history by [git-cliff](https://git-cliff.org). Do not edit
 - **backend:** status-machine service (#51) (42f1b0b)
 
 ### Chores
+- **release:** m4 (#62) (a8bfb76)
 - **deps-dev:** bump ruff from 0.17.2 to 0.17.3 in /backend in the backend group (#54) (f6e7f74)
 ## m3 — 2026-10-30
 
