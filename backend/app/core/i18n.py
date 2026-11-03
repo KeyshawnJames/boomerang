@@ -15,6 +15,10 @@ MESSAGES: dict[str, dict[Locale, str]] = {
         Locale.en: "You don't have access to this.",
         Locale.fr: "Vous n'avez pas accès à cette ressource.",
     },
+    "driver_not_approved": {
+        Locale.en: "Your driver account hasn't been approved yet.",
+        Locale.fr: "Votre compte de chauffeur n'a pas encore été approuvé.",
+    },
     "email_taken": {
         Locale.en: "An account with this email already exists.",
         Locale.fr: "Un compte existe déjà avec ce courriel.",

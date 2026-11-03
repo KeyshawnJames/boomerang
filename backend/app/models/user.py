@@ -3,6 +3,7 @@ from datetime import datetime
 from enum import StrEnum
 from typing import Any
 
+import sqlalchemy as sa
 from sqlmodel import Field, SQLModel
 
 from app.models.base import TIMESTAMPTZ, point_column, utcnow
@@ -38,6 +39,8 @@ class DriverProfile(SQLModel, table=True):
     user_id: uuid.UUID = Field(foreign_key="users.id", primary_key=True)
     vehicle_description: str | None = None
     is_available: bool = False
+    # Only approved drivers see jobs (ADR 0019).
+    is_approved: bool = Field(default=False, sa_column_kwargs={"server_default": sa.false()})
     # Set only during an active job (ADR 0007).
     location: Any = Field(default=None, sa_column=point_column(nullable=True))
     location_updated_at: datetime | None = Field(default=None, sa_type=TIMESTAMPTZ)

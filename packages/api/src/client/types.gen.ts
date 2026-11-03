@@ -179,6 +179,38 @@ export type LoginRequest = {
 };
 
 /**
+ * MeRead
+ */
+export type MeRead = {
+    /**
+     * Id
+     */
+    id: string;
+    role: UserRole;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Email
+     */
+    email: string;
+    /**
+     * Phone
+     */
+    phone: string | null;
+    locale: Locale;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Is Approved
+     */
+    is_approved: boolean | null;
+};
+
+/**
  * PayRequest
  */
 export type PayRequest = {
@@ -523,7 +555,7 @@ export type MeResponses = {
     /**
      * Successful Response
      */
-    200: UserRead;
+    200: MeRead;
 };
 
 export type MeResponse = MeResponses[keyof MeResponses];

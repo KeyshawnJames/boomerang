@@ -7,7 +7,14 @@ from app.api.deps import CurrentUser, SessionDep
 from app.core.i18n import api_error, request_locale
 from app.core.security import DUMMY_HASH, create_access_token, hash_password, verify_password
 from app.models import DriverProfile, Locale, User, UserRole
-from app.schemas.user import LoginRequest, RegisterRequest, Token, UpdateMeRequest, UserRead
+from app.schemas.user import (
+    LoginRequest,
+    MeRead,
+    RegisterRequest,
+    Token,
+    UpdateMeRequest,
+    UserRead,
+)
 
 router = APIRouter()
 
@@ -57,9 +64,12 @@ def login(body: LoginRequest, session: SessionDep, request: Request) -> Token:
     return Token(access_token=create_access_token(user.id))
 
 
-@router.get("/me", response_model=UserRead)
-def me(user: CurrentUser) -> User:
-    return user
+@router.get("/me")
+def me(user: CurrentUser, session: SessionDep) -> MeRead:
+    is_approved = None
+    if user.role == UserRole.driver:
+        is_approved = session.get(DriverProfile, user.id).is_approved
+    return MeRead.model_validate(user, update={"is_approved": is_approved})
 
 
 @router.patch("/me", response_model=UserRead)

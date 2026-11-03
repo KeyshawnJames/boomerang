@@ -82,6 +82,16 @@ never live keys. Tests don't need either key.
 
 All three go in the root `.env`. Never commit them.
 
+### Driver accounts
+
+Drivers see no jobs until they're approved ([ADR 0019](decisions/0019-driver-app.md)). There's
+no seeded driver: the seed also runs in production, so a known password would end up there.
+To get a driver for testing:
+
+1. Register a driver: in the driver app, or at <http://localhost:8000/docs> with
+   `POST /auth/register` and `"role": "driver"`.
+2. Approve it: `uv run python -m app.drivers approve <email>` (from `backend/`).
+
 ## Apps
 
 ```bash
