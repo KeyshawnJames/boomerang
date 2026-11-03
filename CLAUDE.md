@@ -22,8 +22,8 @@ plus one FastAPI backend. A real product and a portfolio piece; the repo is **pu
 - Use `/ship` to open PRs. It runs the checks, adds the `docs/JOURNAL.md` line, and fills the
   PR template.
 - Any real decision (scope, stack, architecture, process) gets an ADR in `docs/decisions/`.
-- PR descriptions, journal lines and ADRs are written in plain English, for Keyshawn and his
-  non-technical business partner, whatever output-style plugin is active.
+- PR descriptions, journal lines and ADRs are written in plain English, for all three founders
+  (CEO, CTO, Chief Growth Officer; ADR 0020), whatever output-style plugin is active.
 - Keep `README.md` in sync when the stack, structure or status changes meaningfully.
 - Nothing business-sensitive goes in the repo. Strategy and partner material lives in
   `docs/private/` (gitignored).

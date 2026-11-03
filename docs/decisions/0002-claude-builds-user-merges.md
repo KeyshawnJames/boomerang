@@ -1,6 +1,6 @@
 # 0002. Claude builds, Keyshawn plans and merges
 
-- **Status:** accepted (supersedes the per-stack "guided / explain-as-you-go" modes)
+- **Status:** accepted (supersedes the per-stack "guided / explain-as-you-go" modes). Who the writing is for changed by [0020](0020-three-founders.md)
 - **Date:** 2026-10-23
 
 ## Context
