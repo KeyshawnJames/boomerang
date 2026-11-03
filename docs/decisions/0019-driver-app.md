@@ -51,7 +51,10 @@ What we found that shaped the choices:
   [ADR 0018](0018-payments.md)).
 - The **first driver to tap Accept gets the job**. The server locks the return while it
   changes it, so two drivers can't both win; the other sees "This job was just taken".
-- A driver has **one job at a time**.
+- A driver has **one job at a time** (a setting).
+- **Batch pickups**, where a driver collects several packages in one trip, are a goal for
+  later. M6 keeps the door open: each return records its own driver, the one-job limit is a
+  setting, and the app gets the driver's jobs in progress as a list (of one, for now).
 - After accepting, the driver sees the street address, the client's first name and phone
   number, the pickup notes, and the client's package photo and label or QR image. Only the
   driver on that job can see these, through short-lived links.
