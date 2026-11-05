@@ -1,0 +1,12 @@
+{
+  "home": {
+    "title": "Boomerang",
+    "tagline": "Driver",
+    "apiOk": "Server connected",
+    "apiDown": "Server unreachable"
+  },
+  "language": {
+    "switch": "Français",
+    "switchLabel": "Français, switch to French"
+  }
+}
