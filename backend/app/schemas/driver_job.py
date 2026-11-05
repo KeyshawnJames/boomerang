@@ -32,6 +32,7 @@ class DriverCurrentJobRead(SQLModel):
     carrier: Carrier
     label_type: LabelType
     carrier_tracking_number: str | None
+    arrived_at: datetime | None
     # Links to view the photos, valid 15 minutes: fetch the job again for fresh ones.
     label_image_url: str
     package_photo_url: str | None

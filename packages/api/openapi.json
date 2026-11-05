@@ -695,6 +695,84 @@
         }
       }
     },
+    "/driver/jobs/{job_id}/arrived": {
+      "post": {
+        "summary": "Mark Arrived",
+        "description": "The driver is at the door. A second tap keeps the first time.",
+        "operationId": "mark_arrived",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/driver/jobs/{job_id}/release": {
+      "post": {
+        "summary": "Release Job",
+        "description": "Hands the job back before pickup; it goes back to the open list.",
+        "operationId": "release_job",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "summary": "Health",
@@ -956,6 +1034,18 @@
             ],
             "title": "Carrier Tracking Number"
           },
+          "arrived_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Arrived At"
+          },
           "label_image_url": {
             "type": "string",
             "title": "Label Image Url"
@@ -985,6 +1075,7 @@
           "carrier",
           "label_type",
           "carrier_tracking_number",
+          "arrived_at",
           "label_image_url",
           "package_photo_url"
         ],

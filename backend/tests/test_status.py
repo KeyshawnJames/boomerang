@@ -14,6 +14,7 @@ ALLOWED = [
     (S.requested, S.driver_assigned),
     (S.requested, S.cancelled),
     (S.driver_assigned, S.picked_up),
+    (S.driver_assigned, S.requested),
     (S.driver_assigned, S.cancelled),
     (S.picked_up, S.dropped_off),
     (S.picked_up, S.failed_dropoff),
