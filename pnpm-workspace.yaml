@@ -6,3 +6,8 @@ packages:
 allowBuilds:
   "@parcel/watcher": false
   unrs-resolver: false
+
+# Security fixes for packages that pin a vulnerable version (Dependabot alerts).
+overrides:
+  # @hey-api/json-schema-ref-parser pins 4.2.0 (CPU blow-up on crafted YAML, fixed in 4.3.2).
+  "js-yaml@>=4 <4.3.2": 4.3.2
