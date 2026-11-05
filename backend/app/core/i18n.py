@@ -119,6 +119,14 @@ MESSAGES: dict[str, dict[Locale, str]] = {
         Locale.en: "Cancelling isn't working right now. Try again.",
         Locale.fr: "L'annulation ne fonctionne pas pour le moment. Réessayez.",
     },
+    "job_taken": {
+        Locale.en: "This job was just taken.",
+        Locale.fr: "Cette collecte vient d'être prise par un autre chauffeur.",
+    },
+    "already_on_job": {
+        Locale.en: "Finish your current job before accepting another.",
+        Locale.fr: "Terminez votre collecte en cours avant d'en accepter une autre.",
+    },
 }
 
 

@@ -601,6 +601,72 @@
         }
       }
     },
+    "/driver/jobs": {
+      "get": {
+        "summary": "List Jobs",
+        "description": "Every paid job no driver has taken, soonest pickup first (ADR 0019).",
+        "operationId": "list_jobs",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DriverJobRead"
+                  },
+                  "type": "array",
+                  "title": "Response List Jobs"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/driver/jobs/{job_id}/accept": {
+      "post": {
+        "summary": "Accept Job",
+        "operationId": "accept_job",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "summary": "Health",
@@ -794,6 +860,51 @@
           "policy_version"
         ],
         "title": "CreateReturnRequest"
+      },
+      "DriverJobRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "postal_area": {
+            "type": "string",
+            "title": "Postal Area"
+          },
+          "pickup_window_start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Pickup Window Start"
+          },
+          "pickup_window_end": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Pickup Window End"
+          },
+          "carrier": {
+            "$ref": "#/components/schemas/Carrier"
+          },
+          "label_type": {
+            "$ref": "#/components/schemas/LabelType"
+          },
+          "driver_payout": {
+            "type": "integer",
+            "title": "Driver Payout"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "postal_area",
+          "pickup_window_start",
+          "pickup_window_end",
+          "carrier",
+          "label_type",
+          "driver_payout"
+        ],
+        "title": "DriverJobRead",
+        "description": "An open job as drivers see it before accepting: nothing that identifies the client."
       },
       "EligibilityOutcome": {
         "type": "string",

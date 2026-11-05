@@ -7,7 +7,16 @@ from sqlalchemy import text
 from sqlalchemy.exc import OperationalError
 from sqlmodel import Session
 
-from app.api import addresses, auth, booking, payments, returns, uploads, webhooks
+from app.api import (
+    addresses,
+    auth,
+    booking,
+    driver_jobs,
+    payments,
+    returns,
+    uploads,
+    webhooks,
+)
 from app.core.config import settings
 from app.core.db import get_session
 
@@ -29,6 +38,7 @@ app.include_router(uploads.router)
 app.include_router(returns.router)
 app.include_router(payments.router)
 app.include_router(webhooks.router)
+app.include_router(driver_jobs.router)
 
 
 @app.get("/health")
