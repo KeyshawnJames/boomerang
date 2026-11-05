@@ -12,6 +12,10 @@
 
 ---
 
+## 2026-11-05
+
+- **[Claude]** Started the driver app: a second phone app, set up the same way as the client app, with the same look and English/French switch. For now it only shows that it can reach the server; sign-up and the job list come next. Keyshawn opened it on his phone in both languages. Both apps can run on the Mac at the same time. (#76)
+
 ## 2026-11-03
 
 - **[Claude]** Drivers now need Boomerang's approval before they can use the driver features, so strangers who sign up can't see clients' addresses (ADR 0019). A founder approves a driver with one command; until then the app can tell the driver their account is waiting. No test driver is built in, so no known password can reach production. (#75)
