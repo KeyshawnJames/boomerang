@@ -92,6 +92,11 @@ To get a driver for testing:
    `POST /auth/register` and `"role": "driver"`.
 2. Approve it: `uv run python -m app.drivers approve <email>` (from `backend/`).
 
+To give drivers a job without paying through Stripe or finding an open slot, make a paid
+pickup for any client account: `uv run python -m app.dev job <client-email>` (from `backend/`,
+local database only). It has no tip and a fake payment (`pi_dev_…`), so **cancelling it
+fails**: the full refund goes to Stripe, which doesn't know that payment.
+
 ## Apps
 
 ```bash
