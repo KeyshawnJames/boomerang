@@ -1,12 +1,39 @@
 {
   "home": {
-    "title": "Boomerang",
-    "tagline": "Driver",
-    "apiOk": "Server connected",
-    "apiDown": "Server unreachable"
+    "signOut": "Log out"
   },
   "language": {
     "switch": "Français",
     "switchLabel": "Français, switch to French"
+  },
+  "auth": {
+    "loginTitle": "Welcome back",
+    "login": "Log in",
+    "toRegister": "No account? Sign up",
+    "registerTitle": "Become a driver",
+    "register": "Sign up",
+    "toLogin": "Already have an account? Log in",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password"
+  },
+  "validation": {
+    "name": "Enter your name.",
+    "email": "Enter a valid email address.",
+    "password": "Your password must be 8 to 128 characters.",
+    "other": "Check your answers and try again."
+  },
+  "errors": {
+    "generic": "Something went wrong. Check your connection and try again."
+  },
+  "waiting": {
+    "title": "Waiting for approval",
+    "body": "Your account is waiting for approval. We'll review it soon. Tap Refresh to check again.",
+    "notDriver": "This is a client account. Sign up with another email to drive with Boomerang.",
+    "refresh": "Refresh"
+  },
+  "jobs": {
+    "title": "Jobs",
+    "body": "You're approved. Jobs will show up here soon."
   }
 }
