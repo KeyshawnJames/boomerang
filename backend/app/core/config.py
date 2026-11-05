@@ -56,6 +56,8 @@ class Settings(BaseSettings):
     payment_window_minutes: int = Field(default=30, gt=0)
     # The driver's share of the pickup fee, in percent. The tip always goes to the driver.
     driver_fee_share_percent: int = Field(default=75, ge=0, le=100)
+    # Jobs a driver can have in progress at once (ADR 0019). Batch pickups will raise it.
+    driver_max_jobs: int = Field(default=1, ge=1)
 
     @model_validator(mode="after")
     def open_before_close(self) -> Self:

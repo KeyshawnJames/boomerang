@@ -104,6 +104,36 @@ export type CreateReturnRequest = {
 };
 
 /**
+ * DriverJobRead
+ *
+ * An open job as drivers see it before accepting: nothing that identifies the client.
+ */
+export type DriverJobRead = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Postal Area
+     */
+    postal_area: string;
+    /**
+     * Pickup Window Start
+     */
+    pickup_window_start: string;
+    /**
+     * Pickup Window End
+     */
+    pickup_window_end: string;
+    carrier: Carrier;
+    label_type: LabelType;
+    /**
+     * Driver Payout
+     */
+    driver_payout: number;
+};
+
+/**
  * EligibilityOutcome
  */
 export type EligibilityOutcome = 'eligible' | 'eligible_with_warnings';
@@ -862,6 +892,54 @@ export type CancelReturnResponses = {
 };
 
 export type CancelReturnResponse = CancelReturnResponses[keyof CancelReturnResponses];
+
+export type ListJobsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/driver/jobs';
+};
+
+export type ListJobsResponses = {
+    /**
+     * Response List Jobs
+     *
+     * Successful Response
+     */
+    200: Array<DriverJobRead>;
+};
+
+export type ListJobsResponse = ListJobsResponses[keyof ListJobsResponses];
+
+export type AcceptJobData = {
+    body?: never;
+    path: {
+        /**
+         * Job Id
+         */
+        job_id: string;
+    };
+    query?: never;
+    url: '/driver/jobs/{job_id}/accept';
+};
+
+export type AcceptJobErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type AcceptJobError = AcceptJobErrors[keyof AcceptJobErrors];
+
+export type AcceptJobResponses = {
+    /**
+     * Successful Response
+     */
+    204: void;
+};
+
+export type AcceptJobResponse = AcceptJobResponses[keyof AcceptJobResponses];
 
 export type HealthData = {
     body?: never;

@@ -3,8 +3,8 @@
 import { type DefaultError, queryOptions, type UseMutationOptions } from '@tanstack/react-query';
 
 import { client } from '../client.gen';
-import { autocompleteAddress, bookingOptions, cancelReturn, createReturn, eligibilityQuestions, getReturn, health, listRetailers, login, me, type Options, payForReturn, presignUpload, register, resolveAddress, updateMe } from '../sdk.gen';
-import type { AutocompleteAddressData, AutocompleteAddressError, AutocompleteAddressResponse, BookingOptionsData, BookingOptionsError, BookingOptionsResponse, CancelReturnData, CancelReturnError, CancelReturnResponse, CreateReturnData, CreateReturnError, CreateReturnResponse, EligibilityQuestionsData, EligibilityQuestionsResponse, GetReturnData, GetReturnError, GetReturnResponse, HealthData, HealthResponse, ListRetailersData, ListRetailersResponse, LoginData, LoginError, LoginResponse, MeData, MeResponse, PayForReturnData, PayForReturnError, PayForReturnResponse, PresignUploadData, PresignUploadError, PresignUploadResponse, RegisterData, RegisterError, RegisterResponse, ResolveAddressData, ResolveAddressError, ResolveAddressResponse, UpdateMeData, UpdateMeError, UpdateMeResponse } from '../types.gen';
+import { acceptJob, autocompleteAddress, bookingOptions, cancelReturn, createReturn, eligibilityQuestions, getReturn, health, listJobs, listRetailers, login, me, type Options, payForReturn, presignUpload, register, resolveAddress, updateMe } from '../sdk.gen';
+import type { AcceptJobData, AcceptJobError, AcceptJobResponse, AutocompleteAddressData, AutocompleteAddressError, AutocompleteAddressResponse, BookingOptionsData, BookingOptionsError, BookingOptionsResponse, CancelReturnData, CancelReturnError, CancelReturnResponse, CreateReturnData, CreateReturnError, CreateReturnResponse, EligibilityQuestionsData, EligibilityQuestionsResponse, GetReturnData, GetReturnError, GetReturnResponse, HealthData, HealthResponse, ListJobsData, ListJobsResponse, ListRetailersData, ListRetailersResponse, LoginData, LoginError, LoginResponse, MeData, MeResponse, PayForReturnData, PayForReturnError, PayForReturnResponse, PresignUploadData, PresignUploadError, PresignUploadResponse, RegisterData, RegisterError, RegisterResponse, ResolveAddressData, ResolveAddressError, ResolveAddressResponse, UpdateMeData, UpdateMeError, UpdateMeResponse } from '../types.gen';
 
 /**
  * Register
@@ -276,6 +276,43 @@ export const cancelReturnMutation = (options?: Partial<Options<CancelReturnData>
     const mutationOptions: UseMutationOptions<CancelReturnResponse, CancelReturnError, Options<CancelReturnData>> = {
         mutationFn: async (fnOptions) => {
             const { data } = await cancelReturn({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const listJobsQueryKey = (options?: Options<ListJobsData>) => createQueryKey('listJobs', options);
+
+/**
+ * List Jobs
+ *
+ * Every paid job no driver has taken, soonest pickup first (ADR 0019).
+ */
+export const listJobsOptions = (options?: Options<ListJobsData>) => queryOptions<ListJobsResponse, DefaultError, ListJobsResponse, ReturnType<typeof listJobsQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await listJobs({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: listJobsQueryKey(options)
+});
+
+/**
+ * Accept Job
+ */
+export const acceptJobMutation = (options?: Partial<Options<AcceptJobData>>): UseMutationOptions<AcceptJobResponse, AcceptJobError, Options<AcceptJobData>> => {
+    const mutationOptions: UseMutationOptions<AcceptJobResponse, AcceptJobError, Options<AcceptJobData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await acceptJob({
                 ...options,
                 ...fnOptions,
                 throwOnError: true
