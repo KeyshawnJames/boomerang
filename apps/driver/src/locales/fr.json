@@ -1,12 +1,39 @@
 {
   "home": {
-    "title": "Boomerang",
-    "tagline": "Chauffeur",
-    "apiOk": "Serveur connecté",
-    "apiDown": "Serveur injoignable"
+    "signOut": "Se déconnecter"
   },
   "language": {
     "switch": "English",
     "switchLabel": "English, passer à l'anglais"
+  },
+  "auth": {
+    "loginTitle": "Bon retour",
+    "login": "Se connecter",
+    "toRegister": "Pas de compte? Inscrivez-vous",
+    "registerTitle": "Devenez chauffeur",
+    "register": "S'inscrire",
+    "toLogin": "Déjà un compte? Connectez-vous",
+    "name": "Nom",
+    "email": "Courriel",
+    "password": "Mot de passe"
+  },
+  "validation": {
+    "name": "Entrez votre nom.",
+    "email": "Entrez une adresse courriel valide.",
+    "password": "Votre mot de passe doit contenir de 8 à 128 caractères.",
+    "other": "Vérifiez vos réponses et réessayez."
+  },
+  "errors": {
+    "generic": "Un problème est survenu. Vérifiez votre connexion et réessayez."
+  },
+  "waiting": {
+    "title": "En attente d'approbation",
+    "body": "Votre compte est en attente d'approbation. Nous l'examinerons bientôt. Touchez Actualiser pour vérifier de nouveau.",
+    "notDriver": "Ce compte est un compte client. Inscrivez-vous avec un autre courriel pour devenir chauffeur Boomerang.",
+    "refresh": "Actualiser"
+  },
+  "jobs": {
+    "title": "Courses",
+    "body": "Votre compte est approuvé. Les courses s'afficheront ici bientôt."
   }
 }
