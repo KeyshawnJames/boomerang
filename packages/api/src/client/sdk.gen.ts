@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AcceptJobData, AcceptJobErrors, AcceptJobResponses, AutocompleteAddressData, AutocompleteAddressErrors, AutocompleteAddressResponses, BookingOptionsData, BookingOptionsErrors, BookingOptionsResponses, CancelReturnData, CancelReturnErrors, CancelReturnResponses, CreateReturnData, CreateReturnErrors, CreateReturnResponses, EligibilityQuestionsData, EligibilityQuestionsResponses, GetReturnData, GetReturnErrors, GetReturnResponses, HealthData, HealthResponses, ListJobsData, ListJobsResponses, ListRetailersData, ListRetailersResponses, LoginData, LoginErrors, LoginResponses, MeData, MeResponses, PayForReturnData, PayForReturnErrors, PayForReturnResponses, PresignUploadData, PresignUploadErrors, PresignUploadResponses, RegisterData, RegisterErrors, RegisterResponses, ResolveAddressData, ResolveAddressErrors, ResolveAddressResponses, UpdateMeData, UpdateMeErrors, UpdateMeResponses } from './types.gen';
+import type { AcceptJobData, AcceptJobErrors, AcceptJobResponses, AutocompleteAddressData, AutocompleteAddressErrors, AutocompleteAddressResponses, BookingOptionsData, BookingOptionsErrors, BookingOptionsResponses, CancelReturnData, CancelReturnErrors, CancelReturnResponses, CreateReturnData, CreateReturnErrors, CreateReturnResponses, EligibilityQuestionsData, EligibilityQuestionsResponses, GetReturnData, GetReturnErrors, GetReturnResponses, HealthData, HealthResponses, ListJobsData, ListJobsResponses, ListRetailersData, ListRetailersResponses, LoginData, LoginErrors, LoginResponses, MeData, MeResponses, MyJobsData, MyJobsResponses, PayForReturnData, PayForReturnErrors, PayForReturnResponses, PresignUploadData, PresignUploadErrors, PresignUploadResponses, RegisterData, RegisterErrors, RegisterResponses, ResolveAddressData, ResolveAddressErrors, ResolveAddressResponses, UpdateMeData, UpdateMeErrors, UpdateMeResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -176,6 +176,17 @@ export const cancelReturn = <ThrowOnError extends boolean = false>(options: Opti
 export const listJobs = <ThrowOnError extends boolean = false>(options?: Options<ListJobsData, ThrowOnError>): RequestResult<ListJobsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListJobsResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/driver/jobs',
+    ...options
+});
+
+/**
+ * My Jobs
+ *
+ * The caller's jobs in progress: one in M6, a list so batch pickups fit later.
+ */
+export const myJobs = <ThrowOnError extends boolean = false>(options?: Options<MyJobsData, ThrowOnError>): RequestResult<MyJobsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<MyJobsResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/driver/jobs/mine',
     ...options
 });
 

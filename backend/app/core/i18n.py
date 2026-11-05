@@ -119,6 +119,14 @@ MESSAGES: dict[str, dict[Locale, str]] = {
         Locale.en: "Cancelling isn't working right now. Try again.",
         Locale.fr: "L'annulation ne fonctionne pas pour le moment. Réessayez.",
     },
+    "photo_link_invalid": {
+        Locale.en: "This photo link has expired. Go back and open the job again.",
+        Locale.fr: "Ce lien de photo a expiré. Revenez en arrière et rouvrez la collecte.",
+    },
+    "photo_not_found": {
+        Locale.en: "This photo isn't available.",
+        Locale.fr: "Cette photo n'est pas disponible.",
+    },
     "job_taken": {
         Locale.en: "This job was just taken.",
         Locale.fr: "Cette collecte vient d'être prise par un autre chauffeur.",

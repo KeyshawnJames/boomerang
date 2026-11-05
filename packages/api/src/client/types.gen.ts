@@ -104,6 +104,57 @@ export type CreateReturnRequest = {
 };
 
 /**
+ * DriverCurrentJobRead
+ *
+ * A job the driver accepted: only that driver gets the client's details (ADR 0019).
+ */
+export type DriverCurrentJobRead = {
+    /**
+     * Id
+     */
+    id: string;
+    status: ReturnStatus;
+    /**
+     * Pickup Address
+     */
+    pickup_address: string;
+    /**
+     * Pickup Notes
+     */
+    pickup_notes: string | null;
+    /**
+     * Client First Name
+     */
+    client_first_name: string;
+    /**
+     * Client Phone
+     */
+    client_phone: string | null;
+    /**
+     * Pickup Window Start
+     */
+    pickup_window_start: string;
+    /**
+     * Pickup Window End
+     */
+    pickup_window_end: string;
+    carrier: Carrier;
+    label_type: LabelType;
+    /**
+     * Carrier Tracking Number
+     */
+    carrier_tracking_number: string | null;
+    /**
+     * Label Image Url
+     */
+    label_image_url: string;
+    /**
+     * Package Photo Url
+     */
+    package_photo_url: string | null;
+};
+
+/**
  * DriverJobRead
  *
  * An open job as drivers see it before accepting: nothing that identifies the client.
@@ -910,6 +961,24 @@ export type ListJobsResponses = {
 };
 
 export type ListJobsResponse = ListJobsResponses[keyof ListJobsResponses];
+
+export type MyJobsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/driver/jobs/mine';
+};
+
+export type MyJobsResponses = {
+    /**
+     * Response My Jobs
+     *
+     * Successful Response
+     */
+    200: Array<DriverCurrentJobRead>;
+};
+
+export type MyJobsResponse = MyJobsResponses[keyof MyJobsResponses];
 
 export type AcceptJobData = {
     body?: never;

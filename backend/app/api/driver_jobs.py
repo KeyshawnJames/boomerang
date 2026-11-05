@@ -5,9 +5,10 @@ from fastapi import APIRouter, Depends, Request
 from sqlmodel import select
 
 from app.api.deps import SessionDep, require_approved_driver
+from app.api.uploads import photo_url
 from app.core.i18n import api_error, request_locale
 from app.models import Payment, PaymentStatus, ReturnRequest, ReturnStatus, User
-from app.schemas.driver_job import DriverJobRead
+from app.schemas.driver_job import DriverCurrentJobRead, DriverJobRead
 from app.services import jobs, status
 
 router = APIRouter()
@@ -42,6 +43,37 @@ def list_jobs(session: SessionDep) -> list[DriverJobRead]:
             driver_payout=payment.driver_payout,
         )
         for job, payment in rows
+    ]
+
+
+@router.get("/driver/jobs/mine", response_model=list[DriverCurrentJobRead])
+def my_jobs(
+    driver: ApprovedDriver, request: Request, session: SessionDep
+) -> list[DriverCurrentJobRead]:
+    """The caller's jobs in progress: one in M6, a list so batch pickups fit later."""
+    rows = session.exec(
+        select(ReturnRequest, User)
+        .join(User, User.id == ReturnRequest.client_id)
+        .where(ReturnRequest.driver_id == driver.id, ReturnRequest.status.in_(jobs.IN_PROGRESS))
+        .order_by(ReturnRequest.pickup_window_start)
+    ).all()
+    return [
+        DriverCurrentJobRead(
+            id=job.id,
+            status=job.status,
+            pickup_address=job.pickup_address,
+            pickup_notes=job.pickup_notes,
+            client_first_name=next(iter(customer.name.split()), ""),
+            client_phone=customer.phone,
+            pickup_window_start=job.pickup_window_start,
+            pickup_window_end=job.pickup_window_end,
+            carrier=job.carrier,
+            label_type=job.label_type,
+            carrier_tracking_number=job.carrier_tracking_number,
+            label_image_url=photo_url(request, job.label_image_url),
+            package_photo_url=job.package_photo_url and photo_url(request, job.package_photo_url),
+        )
+        for job, customer in rows
     ]
 
 

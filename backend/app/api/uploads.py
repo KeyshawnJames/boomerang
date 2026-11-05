@@ -4,12 +4,18 @@ from pathlib import Path
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Request, Response
+from fastapi.responses import FileResponse
 from starlette.concurrency import run_in_threadpool
 
 from app.api.deps import require_role
 from app.core.config import settings
 from app.core.i18n import api_error, request_locale
-from app.core.security import create_upload_token, decode_upload_token
+from app.core.security import (
+    create_photo_token,
+    create_upload_token,
+    decode_photo_token,
+    decode_upload_token,
+)
 from app.models import User, UserRole
 from app.schemas.upload import PresignedUpload, PresignRequest
 
@@ -53,6 +59,26 @@ async def upload_file(key: str, request: Request, token: str = "") -> Response:
     except FileExistsError:
         raise api_error(403, "upload_link_invalid", locale) from None
     return Response(status_code=204)
+
+
+def photo_url(request: Request, key: str) -> str:
+    """A short-lived link to view this photo (ADR 0014; Supabase signed links at M10)."""
+    url = request.url_for("view_photo", key=key).include_query_params(token=create_photo_token(key))
+    return str(url)
+
+
+# Dev stand-in for a Supabase Storage signed download URL: the token is the only credential.
+@router.get("/uploads/{key:path}", include_in_schema=False)
+def view_photo(key: str, request: Request, token: str = "") -> FileResponse:
+    locale = request_locale(request)
+    if not decode_photo_token(token, key):
+        raise api_error(403, "photo_link_invalid", locale)
+    # The key came from our own signature, so it can't climb out of upload_dir.
+    path = settings.upload_dir / key
+    if not path.is_file():
+        raise api_error(404, "photo_not_found", locale)
+    media_type = next(t for t, ext in EXTENSIONS.items() if path.suffix == f".{ext}")
+    return FileResponse(path, media_type=media_type, headers={"Cache-Control": "no-store"})
 
 
 def is_uploaded(user: User, kind: str, key: str) -> bool:

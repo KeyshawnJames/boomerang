@@ -629,6 +629,34 @@
         ]
       }
     },
+    "/driver/jobs/mine": {
+      "get": {
+        "summary": "My Jobs",
+        "description": "The caller's jobs in progress: one in M6, a list so batch pickups fit later.",
+        "operationId": "my_jobs",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DriverCurrentJobRead"
+                  },
+                  "type": "array",
+                  "title": "Response My Jobs"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/driver/jobs/{job_id}/accept": {
       "post": {
         "summary": "Accept Job",
@@ -860,6 +888,108 @@
           "policy_version"
         ],
         "title": "CreateReturnRequest"
+      },
+      "DriverCurrentJobRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ReturnStatus"
+          },
+          "pickup_address": {
+            "type": "string",
+            "title": "Pickup Address"
+          },
+          "pickup_notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pickup Notes"
+          },
+          "client_first_name": {
+            "type": "string",
+            "title": "Client First Name"
+          },
+          "client_phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Phone"
+          },
+          "pickup_window_start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Pickup Window Start"
+          },
+          "pickup_window_end": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Pickup Window End"
+          },
+          "carrier": {
+            "$ref": "#/components/schemas/Carrier"
+          },
+          "label_type": {
+            "$ref": "#/components/schemas/LabelType"
+          },
+          "carrier_tracking_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Carrier Tracking Number"
+          },
+          "label_image_url": {
+            "type": "string",
+            "title": "Label Image Url"
+          },
+          "package_photo_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Package Photo Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "pickup_address",
+          "pickup_notes",
+          "client_first_name",
+          "client_phone",
+          "pickup_window_start",
+          "pickup_window_end",
+          "carrier",
+          "label_type",
+          "carrier_tracking_number",
+          "label_image_url",
+          "package_photo_url"
+        ],
+        "title": "DriverCurrentJobRead",
+        "description": "A job the driver accepted: only that driver gets the client's details (ADR 0019)."
       },
       "DriverJobRead": {
         "properties": {
