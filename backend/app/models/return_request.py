@@ -60,6 +60,8 @@ class ReturnRequest(SQLModel, table=True):
     package_photo_url: str | None = None
 
     carrier_tracking_number: str | None = None
+    # When the driver tapped "I've arrived" (ADR 0019); cleared if they hand the job back.
+    arrived_at: datetime | None = Field(default=None, sa_type=TIMESTAMPTZ)
 
     eligibility_outcome: EligibilityOutcome
     eligibility_attested_at: datetime = Field(sa_type=TIMESTAMPTZ)

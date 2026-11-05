@@ -341,6 +341,7 @@ def test_mine_shows_my_job_with_client_details_and_photo_links(
         "carrier": "canada_post",
         "label_type": "qr_code",
         "carrier_tracking_number": None,
+        "arrived_at": None,
     }
     label = client.get(mine["label_image_url"])
     package = client.get(mine["package_photo_url"])
@@ -389,3 +390,128 @@ def test_mine_refuses_unapproved_driver_and_client(client: TestClient, session: 
 
     assert my_jobs(client, waiting).status_code == 403
     assert my_jobs(client, client_token).status_code == 403
+
+
+# Arriving and handing the job back (#80).
+
+
+def arrived(client: TestClient, token: str, job_id: uuid.UUID, language: str = "en"):
+    headers = {**bearer(token), "Accept-Language": language}
+    return client.post(f"/driver/jobs/{job_id}/arrived", headers=headers)
+
+
+def release(client: TestClient, token: str, job_id: uuid.UUID, language: str = "en"):
+    headers = {**bearer(token), "Accept-Language": language}
+    return client.post(f"/driver/jobs/{job_id}/release", headers=headers)
+
+
+def reload(session: Session, job_id: uuid.UUID) -> ReturnRequest:
+    return session.get(ReturnRequest, job_id, populate_existing=True)
+
+
+def test_arrived_saves_the_time_once(client: TestClient, session: Session, photos: Path):
+    token, _ = driver(client, session)
+    job = accepted_job(client, session, photos, token)
+
+    assert arrived(client, token, job.id).status_code == 204
+    first = reload(session, job.id).arrived_at
+    assert arrived(client, token, job.id).status_code == 204  # a double tap
+
+    assert first is not None
+    assert reload(session, job.id).arrived_at == first
+    [mine] = my_jobs(client, token).json()
+    assert mine["arrived_at"] is not None
+
+
+def test_arrived_after_pickup_is_409(client: TestClient, session: Session, photos: Path):
+    token, driver_id = driver(client, session)
+    job = accepted_job(client, session, photos, token)
+    status.transition(session, job, ReturnStatus.picked_up, actor_id=driver_id)
+    session.flush()
+
+    en = arrived(client, token, job.id)
+    fr = arrived(client, token, job.id, language="fr")
+
+    assert (en.status_code, en.json()["detail"]) == (
+        409,
+        "This job is no longer waiting for pickup.",
+    )
+    assert fr.json()["detail"] == "Cette collecte n'est plus en attente de ramassage."
+    assert reload(session, job.id).arrived_at is None
+
+
+def test_release_reopens_the_job(client: TestClient, session: Session, photos: Path):
+    token, driver_id = driver(client, session)
+    job = accepted_job(client, session, photos, token)
+    assert arrived(client, token, job.id).status_code == 204
+    arrived_at = reload(session, job.id).arrived_at
+
+    response = release(client, token, job.id)
+
+    assert response.status_code == 204, response.text
+    job = reload(session, job.id)
+    assert (job.status, job.driver_id, job.arrived_at) == (ReturnStatus.requested, None, None)
+    last = events(session, str(job.id))[-1]
+    assert (last.status, last.actor_id) == (ReturnStatus.requested, driver_id)
+    # The history keeps that they came to the door.
+    assert last.note == f"handed back; arrived {arrived_at.isoformat()}"
+    # No money moves (ADR 0019).
+    [payment] = payments(session, str(job.id))
+    assert payment.status == PaymentStatus.succeeded
+    assert my_jobs(client, token).json() == []
+    assert [j["id"] for j in list_jobs(client, token).json()] == [str(job.id)]
+    # It's open again, so any driver, them included, can take it.
+    assert accept(client, token, job.id).status_code == 204
+    assert reload(session, job.id).arrived_at is None
+
+
+def test_release_after_pickup_is_409(client: TestClient, session: Session, photos: Path):
+    token, driver_id = driver(client, session)
+    job = accepted_job(client, session, photos, token)
+    status.transition(session, job, ReturnStatus.picked_up, actor_id=driver_id)
+    session.flush()
+
+    response = release(client, token, job.id)
+
+    assert response.status_code == 409
+    job = reload(session, job.id)
+    assert (job.status, job.driver_id) == (ReturnStatus.picked_up, driver_id)
+
+
+def test_release_twice_is_404(client: TestClient, session: Session, photos: Path):
+    # A late second tap must not unassign whoever took the job in between.
+    token, _ = driver(client, session)
+    other, other_id = driver(client, session)
+    job = accepted_job(client, session, photos, token)
+    assert release(client, token, job.id).status_code == 204
+    assert accept(client, other, job.id).status_code == 204
+
+    assert release(client, token, job.id).status_code == 404
+    assert arrived(client, token, job.id).status_code == 404
+    assert driver_of(session, job.id) == other_id
+
+
+def test_another_driver_is_refused(client: TestClient, session: Session, photos: Path):
+    token, driver_id = driver(client, session)
+    other, _ = driver(client, session)
+    job = accepted_job(client, session, photos, token)
+
+    assert arrived(client, other, job.id).status_code == 404
+    assert release(client, other, job.id).status_code == 404
+    assert arrived(client, token, uuid.uuid4()).status_code == 404
+    job = reload(session, job.id)
+    assert (job.status, job.driver_id, job.arrived_at) == (
+        ReturnStatus.driver_assigned,
+        driver_id,
+        None,
+    )
+
+
+def test_arrived_and_release_refuse_client_and_unapproved(client: TestClient, session: Session):
+    job = open_job(client, session)
+    waiting, _ = driver(client, session, approved=False)
+    client_token, _ = sign_in(client)
+
+    for token in (waiting, client_token):
+        assert arrived(client, token, job.id).status_code == 403
+        assert release(client, token, job.id).status_code == 403

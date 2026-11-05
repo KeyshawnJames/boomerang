@@ -135,6 +135,10 @@ MESSAGES: dict[str, dict[Locale, str]] = {
         Locale.en: "Finish your current job before accepting another.",
         Locale.fr: "Terminez votre collecte en cours avant d'en accepter une autre.",
     },
+    "job_not_waiting_pickup": {
+        Locale.en: "This job is no longer waiting for pickup.",
+        Locale.fr: "Cette collecte n'est plus en attente de ramassage.",
+    },
 }
 
 

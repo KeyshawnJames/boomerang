@@ -10,7 +10,8 @@ S = ReturnStatus
 TRANSITIONS: dict[ReturnStatus, set[ReturnStatus]] = {
     S.awaiting_payment: {S.requested, S.cancelled},
     S.requested: {S.driver_assigned, S.cancelled},
-    S.driver_assigned: {S.picked_up, S.cancelled},
+    # → requested: the driver hands the job back before pickup (ADR 0019).
+    S.driver_assigned: {S.picked_up, S.cancelled, S.requested},
     S.picked_up: {S.dropped_off, S.failed_dropoff},
     S.dropped_off: {S.completed},
 }

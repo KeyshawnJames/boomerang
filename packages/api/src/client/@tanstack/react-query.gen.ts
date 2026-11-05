@@ -3,8 +3,8 @@
 import { type DefaultError, queryOptions, type UseMutationOptions } from '@tanstack/react-query';
 
 import { client } from '../client.gen';
-import { acceptJob, autocompleteAddress, bookingOptions, cancelReturn, createReturn, eligibilityQuestions, getReturn, health, listJobs, listRetailers, login, me, myJobs, type Options, payForReturn, presignUpload, register, resolveAddress, updateMe } from '../sdk.gen';
-import type { AcceptJobData, AcceptJobError, AcceptJobResponse, AutocompleteAddressData, AutocompleteAddressError, AutocompleteAddressResponse, BookingOptionsData, BookingOptionsError, BookingOptionsResponse, CancelReturnData, CancelReturnError, CancelReturnResponse, CreateReturnData, CreateReturnError, CreateReturnResponse, EligibilityQuestionsData, EligibilityQuestionsResponse, GetReturnData, GetReturnError, GetReturnResponse, HealthData, HealthResponse, ListJobsData, ListJobsResponse, ListRetailersData, ListRetailersResponse, LoginData, LoginError, LoginResponse, MeData, MeResponse, MyJobsData, MyJobsResponse, PayForReturnData, PayForReturnError, PayForReturnResponse, PresignUploadData, PresignUploadError, PresignUploadResponse, RegisterData, RegisterError, RegisterResponse, ResolveAddressData, ResolveAddressError, ResolveAddressResponse, UpdateMeData, UpdateMeError, UpdateMeResponse } from '../types.gen';
+import { acceptJob, autocompleteAddress, bookingOptions, cancelReturn, createReturn, eligibilityQuestions, getReturn, health, listJobs, listRetailers, login, markArrived, me, myJobs, type Options, payForReturn, presignUpload, register, releaseJob, resolveAddress, updateMe } from '../sdk.gen';
+import type { AcceptJobData, AcceptJobError, AcceptJobResponse, AutocompleteAddressData, AutocompleteAddressError, AutocompleteAddressResponse, BookingOptionsData, BookingOptionsError, BookingOptionsResponse, CancelReturnData, CancelReturnError, CancelReturnResponse, CreateReturnData, CreateReturnError, CreateReturnResponse, EligibilityQuestionsData, EligibilityQuestionsResponse, GetReturnData, GetReturnError, GetReturnResponse, HealthData, HealthResponse, ListJobsData, ListJobsResponse, ListRetailersData, ListRetailersResponse, LoginData, LoginError, LoginResponse, MarkArrivedData, MarkArrivedError, MarkArrivedResponse, MeData, MeResponse, MyJobsData, MyJobsResponse, PayForReturnData, PayForReturnError, PayForReturnResponse, PresignUploadData, PresignUploadError, PresignUploadResponse, RegisterData, RegisterError, RegisterResponse, ReleaseJobData, ReleaseJobError, ReleaseJobResponse, ResolveAddressData, ResolveAddressError, ResolveAddressResponse, UpdateMeData, UpdateMeError, UpdateMeResponse } from '../types.gen';
 
 /**
  * Register
@@ -333,6 +333,44 @@ export const acceptJobMutation = (options?: Partial<Options<AcceptJobData>>): Us
     const mutationOptions: UseMutationOptions<AcceptJobResponse, AcceptJobError, Options<AcceptJobData>> = {
         mutationFn: async (fnOptions) => {
             const { data } = await acceptJob({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Mark Arrived
+ *
+ * The driver is at the door. A second tap keeps the first time.
+ */
+export const markArrivedMutation = (options?: Partial<Options<MarkArrivedData>>): UseMutationOptions<MarkArrivedResponse, MarkArrivedError, Options<MarkArrivedData>> => {
+    const mutationOptions: UseMutationOptions<MarkArrivedResponse, MarkArrivedError, Options<MarkArrivedData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await markArrived({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Release Job
+ *
+ * Hands the job back before pickup; it goes back to the open list.
+ */
+export const releaseJobMutation = (options?: Partial<Options<ReleaseJobData>>): UseMutationOptions<ReleaseJobResponse, ReleaseJobError, Options<ReleaseJobData>> => {
+    const mutationOptions: UseMutationOptions<ReleaseJobResponse, ReleaseJobError, Options<ReleaseJobData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await releaseJob({
                 ...options,
                 ...fnOptions,
                 throwOnError: true

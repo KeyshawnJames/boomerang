@@ -70,6 +70,7 @@ def my_jobs(
             carrier=job.carrier,
             label_type=job.label_type,
             carrier_tracking_number=job.carrier_tracking_number,
+            arrived_at=job.arrived_at,
             label_image_url=photo_url(request, job.label_image_url),
             package_photo_url=job.package_photo_url and photo_url(request, job.package_photo_url),
         )
@@ -90,4 +91,34 @@ def accept_job(
         raise api_error(409, "job_taken", locale) from None
     except jobs.AlreadyOnJob:
         raise api_error(409, "already_on_job", locale) from None
+    session.commit()
+
+
+@router.post("/driver/jobs/{job_id}/arrived", status_code=204)
+def mark_arrived(
+    job_id: uuid.UUID, driver: ApprovedDriver, request: Request, session: SessionDep
+) -> None:
+    """The driver is at the door. A second tap keeps the first time."""
+    locale = request_locale(request)
+    try:
+        jobs.arrive(session, job_id, driver.id)
+    except LookupError:
+        raise api_error(404, "return_not_found", locale) from None
+    except status.InvalidTransition:
+        raise api_error(409, "job_not_waiting_pickup", locale) from None
+    session.commit()
+
+
+@router.post("/driver/jobs/{job_id}/release", status_code=204)
+def release_job(
+    job_id: uuid.UUID, driver: ApprovedDriver, request: Request, session: SessionDep
+) -> None:
+    """Hands the job back before pickup; it goes back to the open list."""
+    locale = request_locale(request)
+    try:
+        jobs.release(session, job_id, driver.id)
+    except LookupError:
+        raise api_error(404, "return_not_found", locale) from None
+    except status.InvalidTransition:
+        raise api_error(409, "job_not_waiting_pickup", locale) from None
     session.commit()

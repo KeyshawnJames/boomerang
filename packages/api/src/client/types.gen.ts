@@ -145,6 +145,10 @@ export type DriverCurrentJobRead = {
      */
     carrier_tracking_number: string | null;
     /**
+     * Arrived At
+     */
+    arrived_at: string | null;
+    /**
      * Label Image Url
      */
     label_image_url: string;
@@ -1009,6 +1013,66 @@ export type AcceptJobResponses = {
 };
 
 export type AcceptJobResponse = AcceptJobResponses[keyof AcceptJobResponses];
+
+export type MarkArrivedData = {
+    body?: never;
+    path: {
+        /**
+         * Job Id
+         */
+        job_id: string;
+    };
+    query?: never;
+    url: '/driver/jobs/{job_id}/arrived';
+};
+
+export type MarkArrivedErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type MarkArrivedError = MarkArrivedErrors[keyof MarkArrivedErrors];
+
+export type MarkArrivedResponses = {
+    /**
+     * Successful Response
+     */
+    204: void;
+};
+
+export type MarkArrivedResponse = MarkArrivedResponses[keyof MarkArrivedResponses];
+
+export type ReleaseJobData = {
+    body?: never;
+    path: {
+        /**
+         * Job Id
+         */
+        job_id: string;
+    };
+    query?: never;
+    url: '/driver/jobs/{job_id}/release';
+};
+
+export type ReleaseJobErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ReleaseJobError = ReleaseJobErrors[keyof ReleaseJobErrors];
+
+export type ReleaseJobResponses = {
+    /**
+     * Successful Response
+     */
+    204: void;
+};
+
+export type ReleaseJobResponse = ReleaseJobResponses[keyof ReleaseJobResponses];
 
 export type HealthData = {
     body?: never;
