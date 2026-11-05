@@ -14,6 +14,8 @@ ADDRESS_AUDIENCE = "address"
 ADDRESS_TOKEN_TTL = timedelta(hours=1)
 UPLOAD_AUDIENCE = "upload"
 UPLOAD_TOKEN_TTL = timedelta(minutes=15)
+PHOTO_AUDIENCE = "photo"
+PHOTO_TOKEN_TTL = timedelta(minutes=15)
 
 password_hasher = PasswordHash.recommended()
 # Checked when the email is unknown, so login takes as long whether or not the account exists.
@@ -112,3 +114,25 @@ def decode_upload_token(token: str, key: str) -> dict[str, Any] | None:
     if payload["key"] != key:
         return None
     return {"content_type": payload["content_type"], "max_bytes": payload["max_bytes"]}
+
+
+def create_photo_token(key: str) -> str:
+    """Signs a link to view this one photo."""
+    now = datetime.now(UTC)
+    payload = {"aud": PHOTO_AUDIENCE, "key": key, "iat": now, "exp": now + PHOTO_TOKEN_TTL}
+    return jwt.encode(payload, settings.jwt_secret.get_secret_value(), algorithm=ALGORITHM)
+
+
+def decode_photo_token(token: str, key: str) -> bool:
+    """Whether the token is a valid, unexpired link to view this key."""
+    try:
+        payload = jwt.decode(
+            token,
+            settings.jwt_secret.get_secret_value(),
+            algorithms=[ALGORITHM],
+            audience=PHOTO_AUDIENCE,
+            options={"require": ["exp", "aud", "key"]},
+        )
+    except jwt.InvalidTokenError:
+        return False
+    return payload["key"] == key

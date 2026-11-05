@@ -7,6 +7,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.core.config import settings
+from app.core.security import create_photo_token
 from tests.test_auth import bearer, token_for
 
 JPEG = b"\xff\xd8\xff\xe0 not really a photo"
@@ -135,3 +136,69 @@ def test_signed_url_uploads_only_once(client: TestClient, upload_dir: Path):
 
     assert put(client, signed["url"], body=b"replaced").status_code == 403
     assert (upload_dir / signed["key"]).read_bytes() == JPEG
+
+
+# Viewing a photo (#79): the dev stand-in for a Supabase signed download link.
+
+
+def view(client: TestClient, key: str, token: str, language: str = "en"):
+    return client.get(f"/uploads/{key}?token={token}", headers={"Accept-Language": language})
+
+
+def stored(upload_dir: Path, key: str) -> str:
+    (upload_dir / key).parent.mkdir(parents=True, exist_ok=True)
+    (upload_dir / key).write_bytes(JPEG)
+    return key
+
+
+def test_photo_link_shows_its_photo(client: TestClient, upload_dir: Path):
+    key = stored(upload_dir, "u/package/a.jpg")
+
+    response = view(client, key, create_photo_token(key))
+
+    assert response.status_code == 200, response.text
+    assert response.content == JPEG
+    assert response.headers["content-type"] == "image/jpeg"
+    assert response.headers["cache-control"] == "no-store"
+
+
+def test_photo_link_works_for_its_own_photo_only(client: TestClient, upload_dir: Path):
+    mine = stored(upload_dir, "u/label/a.jpg")
+    other = stored(upload_dir, "u/package/b.jpg")
+
+    en = view(client, other, create_photo_token(mine))
+    fr = view(client, other, create_photo_token(mine), language="fr")
+
+    assert (en.status_code, en.json()["detail"]) == (
+        403,
+        "This photo link has expired. Go back and open the job again.",
+    )
+    assert (
+        fr.json()["detail"]
+        == "Ce lien de photo a expiré. Revenez en arrière et rouvrez la collecte."
+    )
+
+
+def test_expired_photo_link_is_refused(client: TestClient, upload_dir: Path):
+    key = stored(upload_dir, "u/package/a.jpg")
+    payload = jwt.decode(create_photo_token(key), options={"verify_signature": False})
+    payload["exp"] = datetime.now(UTC) - timedelta(seconds=1)
+    expired = jwt.encode(payload, settings.jwt_secret.get_secret_value(), algorithm="HS256")
+
+    assert view(client, key, expired).status_code == 403
+
+
+def test_upload_and_photo_links_dont_pass_for_each_other(client: TestClient, upload_dir: Path):
+    signed = presign(client, token_for(client, "a@example.com")).json()
+    assert put(client, signed["url"]).status_code == 204
+    key = signed["key"]
+
+    assert view(client, key, token_of(signed["url"])).status_code == 403
+    assert put(client, with_token(signed["url"], create_photo_token(key))).status_code == 403
+
+
+def test_missing_photo_or_token_is_refused(client: TestClient, upload_dir: Path):
+    gone = view(client, "u/package/gone.jpg", create_photo_token("u/package/gone.jpg"))
+
+    assert (gone.status_code, gone.json()["detail"]) == (404, "This photo isn't available.")
+    assert client.get("/uploads/u/package/gone.jpg").status_code == 403

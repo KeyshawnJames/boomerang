@@ -2,12 +2,14 @@ import threading
 import uuid
 from collections.abc import Iterator
 from datetime import timedelta
+from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import Engine, delete
 from sqlmodel import Session
 
+from app.core.config import settings
 from app.dev import make_job
 from app.drivers import approve
 from app.models import (
@@ -287,3 +289,103 @@ def test_one_driver_two_jobs_at_once(engine: Engine, race):
     assert isinstance(raised, jobs.AlreadyOnJob)
     with Session(engine) as s:
         assert s.get(ReturnRequest, second_job).driver_id is None
+
+
+# The driver's current job (#79).
+
+
+@pytest.fixture
+def photos(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    monkeypatch.setattr(settings, "upload_dir", tmp_path)
+    return tmp_path
+
+
+def my_jobs(client: TestClient, token: str):
+    return client.get("/driver/jobs/mine", headers=bearer(token))
+
+
+def accepted_job(client: TestClient, session: Session, photos: Path, token: str) -> ReturnRequest:
+    job = open_job(client, session)
+    job.package_photo_url = f"{job.client_id}/package/{uuid.uuid4()}.png"
+    job.pickup_notes = "Apt 4, buzz 12"
+    customer = session.get(User, job.client_id)
+    customer.name, customer.phone = "Alice Tremblay", "+15145550100"
+    session.add_all([job, customer])
+    session.flush()
+    for key, body in ((job.label_image_url, b"label"), (job.package_photo_url, b"package")):
+        (photos / key).parent.mkdir(parents=True, exist_ok=True)
+        (photos / key).write_bytes(body)
+    assert accept(client, token, job.id).status_code == 204
+    return job
+
+
+def test_mine_shows_my_job_with_client_details_and_photo_links(
+    client: TestClient, session: Session, photos: Path
+):
+    token, _ = driver(client, session)
+    job = accepted_job(client, session, photos, token)
+
+    response = my_jobs(client, token)
+
+    assert response.status_code == 200, response.text
+    [mine] = response.json()
+    assert {k: v for k, v in mine.items() if not k.endswith("_url")} == {
+        "id": str(job.id),
+        "status": "driver_assigned",
+        "pickup_address": "1 Place Ville-Marie, Montréal, QC H3B 2B6, Canada",
+        "pickup_notes": "Apt 4, buzz 12",
+        "client_first_name": "Alice",
+        "client_phone": "+15145550100",
+        "pickup_window_start": mine["pickup_window_start"],
+        "pickup_window_end": mine["pickup_window_end"],
+        "carrier": "canada_post",
+        "label_type": "qr_code",
+        "carrier_tracking_number": None,
+    }
+    label = client.get(mine["label_image_url"])
+    package = client.get(mine["package_photo_url"])
+    assert (label.status_code, label.content) == (200, b"label")
+    assert (package.status_code, package.headers["content-type"]) == (200, "image/png")
+
+
+def test_another_driver_gets_neither_the_job_nor_its_photos(
+    client: TestClient, session: Session, photos: Path
+):
+    first, _ = driver(client, session)
+    second, _ = driver(client, session)
+    first_job = accepted_job(client, session, photos, first)
+    second_job = accepted_job(client, session, photos, second)
+
+    [theirs] = my_jobs(client, second).json()
+
+    assert theirs["id"] == str(second_job.id)
+    # A link signed for the second driver's photo doesn't open the first driver's.
+    swapped = theirs["package_photo_url"].replace(
+        second_job.package_photo_url, first_job.package_photo_url
+    )
+    assert client.get(swapped).status_code == 403
+
+
+def test_mine_lists_only_jobs_in_progress(client: TestClient, session: Session, photos: Path):
+    token, driver_id = driver(client, session)
+    job = accepted_job(client, session, photos, token)
+    job.package_photo_url = None
+    session.add(job)
+    session.flush()
+    assert my_jobs(client, token).json()[0]["package_photo_url"] is None
+
+    status.transition(session, job, ReturnStatus.picked_up, actor_id=driver_id)
+    session.flush()
+    assert my_jobs(client, token).json()[0]["status"] == "picked_up"
+
+    status.transition(session, job, ReturnStatus.dropped_off, actor_id=driver_id)
+    session.flush()
+    assert my_jobs(client, token).json() == []
+
+
+def test_mine_refuses_unapproved_driver_and_client(client: TestClient, session: Session):
+    waiting, _ = driver(client, session, approved=False)
+    client_token, _ = sign_in(client)
+
+    assert my_jobs(client, waiting).status_code == 403
+    assert my_jobs(client, client_token).status_code == 403

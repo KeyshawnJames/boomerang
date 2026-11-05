@@ -3,8 +3,8 @@
 import { type DefaultError, queryOptions, type UseMutationOptions } from '@tanstack/react-query';
 
 import { client } from '../client.gen';
-import { acceptJob, autocompleteAddress, bookingOptions, cancelReturn, createReturn, eligibilityQuestions, getReturn, health, listJobs, listRetailers, login, me, type Options, payForReturn, presignUpload, register, resolveAddress, updateMe } from '../sdk.gen';
-import type { AcceptJobData, AcceptJobError, AcceptJobResponse, AutocompleteAddressData, AutocompleteAddressError, AutocompleteAddressResponse, BookingOptionsData, BookingOptionsError, BookingOptionsResponse, CancelReturnData, CancelReturnError, CancelReturnResponse, CreateReturnData, CreateReturnError, CreateReturnResponse, EligibilityQuestionsData, EligibilityQuestionsResponse, GetReturnData, GetReturnError, GetReturnResponse, HealthData, HealthResponse, ListJobsData, ListJobsResponse, ListRetailersData, ListRetailersResponse, LoginData, LoginError, LoginResponse, MeData, MeResponse, PayForReturnData, PayForReturnError, PayForReturnResponse, PresignUploadData, PresignUploadError, PresignUploadResponse, RegisterData, RegisterError, RegisterResponse, ResolveAddressData, ResolveAddressError, ResolveAddressResponse, UpdateMeData, UpdateMeError, UpdateMeResponse } from '../types.gen';
+import { acceptJob, autocompleteAddress, bookingOptions, cancelReturn, createReturn, eligibilityQuestions, getReturn, health, listJobs, listRetailers, login, me, myJobs, type Options, payForReturn, presignUpload, register, resolveAddress, updateMe } from '../sdk.gen';
+import type { AcceptJobData, AcceptJobError, AcceptJobResponse, AutocompleteAddressData, AutocompleteAddressError, AutocompleteAddressResponse, BookingOptionsData, BookingOptionsError, BookingOptionsResponse, CancelReturnData, CancelReturnError, CancelReturnResponse, CreateReturnData, CreateReturnError, CreateReturnResponse, EligibilityQuestionsData, EligibilityQuestionsResponse, GetReturnData, GetReturnError, GetReturnResponse, HealthData, HealthResponse, ListJobsData, ListJobsResponse, ListRetailersData, ListRetailersResponse, LoginData, LoginError, LoginResponse, MeData, MeResponse, MyJobsData, MyJobsResponse, PayForReturnData, PayForReturnError, PayForReturnResponse, PresignUploadData, PresignUploadError, PresignUploadResponse, RegisterData, RegisterError, RegisterResponse, ResolveAddressData, ResolveAddressError, ResolveAddressResponse, UpdateMeData, UpdateMeError, UpdateMeResponse } from '../types.gen';
 
 /**
  * Register
@@ -304,6 +304,26 @@ export const listJobsOptions = (options?: Options<ListJobsData>) => queryOptions
         return data;
     },
     queryKey: listJobsQueryKey(options)
+});
+
+export const myJobsQueryKey = (options?: Options<MyJobsData>) => createQueryKey('myJobs', options);
+
+/**
+ * My Jobs
+ *
+ * The caller's jobs in progress: one in M6, a list so batch pickups fit later.
+ */
+export const myJobsOptions = (options?: Options<MyJobsData>) => queryOptions<MyJobsResponse, DefaultError, MyJobsResponse, ReturnType<typeof myJobsQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await myJobs({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: myJobsQueryKey(options)
 });
 
 /**
