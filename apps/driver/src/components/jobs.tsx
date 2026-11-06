@@ -68,7 +68,11 @@ export function Jobs() {
       // Cells re-render only when data or extraData change.
       extraData={accept.isPending}
       refreshing={jobs.isRefetching}
-      onRefresh={jobs.refetch}
+      // A fresh list replaces an old "just taken" message.
+      onRefresh={() => {
+        accept.reset();
+        jobs.refetch();
+      }}
       ListHeaderComponent={
         <View className="gap-4">
           <Text className="font-sans-extrabold text-3xl text-ink">
