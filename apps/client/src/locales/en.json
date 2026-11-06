@@ -109,6 +109,18 @@
     "explain": "Have the package ready for the driver.",
     "home": "Back to home"
   },
+  "progress": {
+    "label": "Status",
+    "requested": "Looking for a driver",
+    "driver_assigned": "{{name}} is on the way",
+    "picked_up": "Picked up",
+    "dropped_off": "Dropped off at {{carrier}}",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "failed_dropoff": "Drop-off failed: we'll call you",
+    "tracking": "Tracking number",
+    "counter": "Drop-off counter"
+  },
   "pay": {
     "title": "Tip and pay",
     "window": "Pay within 30 minutes to book this pickup.",
