@@ -1,9 +1,15 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type { DriverJobRead } from "api";
-import { listJobsOptions } from "api/react-query";
+import {
+  acceptJobMutation,
+  listJobsOptions,
+  listJobsQueryKey,
+} from "api/react-query";
+import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { FlatList, Text, View } from "react-native";
 
+import { queryClient } from "../api";
 import { errorMessage } from "../errors";
 import { money, windowLabel } from "../format";
 import { useSession } from "../session";
@@ -16,6 +22,17 @@ export function Jobs() {
   const { t } = useTranslation();
   const jobs = useQuery(listJobsOptions());
   const signOut = useSession((s) => s.signOut);
+  // First tap wins on the server; a lost race comes back as 409 "This job was just
+  // taken", and the list refreshes either way so a taken job disappears.
+  const accept = useMutation({
+    ...acceptJobMutation(),
+    onSuccess: () => router.replace("/job"),
+    // Not awaited: the mutation would wait for the refetch (and its retries) first.
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: listJobsQueryKey() });
+    },
+  });
+  const error = accept.error ?? jobs.error;
 
   const card = ({ item }: { item: DriverJobRead }) => (
     <View className="gap-2 rounded-sm border border-line/20 bg-surface p-4">
@@ -31,7 +48,12 @@ export function Jobs() {
       <Text className="font-sans-bold text-base text-ink">
         {t("jobs.earn", { amount: money(item.driver_payout) })}
       </Text>
-      <Button label={t("jobs.accept")} onPress={() => {}} />
+      <Button
+        label={t("jobs.accept")}
+        onPress={() => accept.mutate({ path: { job_id: item.id } })}
+        busy={accept.isPending && accept.variables?.path.job_id === item.id}
+        disabled={accept.isPending}
+      />
     </View>
   );
 
@@ -43,6 +65,8 @@ export function Jobs() {
       data={jobs.data}
       keyExtractor={(job) => job.id}
       renderItem={card}
+      // Cells re-render only when data or extraData change.
+      extraData={accept.isPending}
       refreshing={jobs.isRefetching}
       onRefresh={jobs.refetch}
       ListHeaderComponent={
@@ -50,12 +74,12 @@ export function Jobs() {
           <Text className="font-sans-extrabold text-3xl text-ink">
             {t("jobs.title")}
           </Text>
-          {jobs.isError && (
+          {error && (
             <Text
               accessibilityRole="alert"
               className="font-sans text-base text-danger"
             >
-              {errorMessage(jobs.error)}
+              {errorMessage(error)}
             </Text>
           )}
         </View>
@@ -65,7 +89,7 @@ export function Jobs() {
           <Text className="font-sans text-base text-muted">
             {t("jobs.empty")}
           </Text>
-        ) : null
+        ) : undefined
       }
       ListFooterComponent={
         <View className="gap-4">

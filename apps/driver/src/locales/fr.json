@@ -52,5 +52,9 @@
   "time": {
     "today": "Aujourd'hui",
     "tomorrow": "Demain"
+  },
+  "job": {
+    "title": "Votre course",
+    "body": "Vous avez accepté cette course. L'adresse et les détails s'afficheront ici bientôt."
   }
 }

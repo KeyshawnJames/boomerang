@@ -1,13 +1,19 @@
-import { fireEvent, renderRouter, screen } from "expo-router/testing-library";
+import {
+  fireEvent,
+  renderRouter,
+  screen,
+  waitFor,
+} from "expo-router/testing-library";
 
 import { queryClient } from "../api";
 import RootLayout from "../app/_layout";
 import Home from "../app/index";
+import Job from "../app/job";
 import Login from "../app/login";
 import i18n from "../i18n";
 import { useSession } from "../session";
 
-const routes = { _layout: RootLayout, index: Home, login: Login };
+const routes = { _layout: RootLayout, index: Home, login: Login, job: Job };
 const driver = {
   id: "1",
   role: "driver",
@@ -97,4 +103,76 @@ test("the cards read in French", async () => {
   ).toBeTruthy();
   expect(screen.getByText("Vous gagnez 4,74 $")).toBeTruthy();
   expect(screen.getByText("Aujourd'hui, 16 h 00 – 18 h 00")).toBeTruthy();
+});
+
+const acceptPath = "/driver/jobs/job-1/accept";
+
+test("accepting a job opens the current job", async () => {
+  replies[acceptPath] = [204, null];
+  await renderRouter(routes);
+  await fireEvent.press(await screen.findByRole("button", { name: "Accept" }));
+  expect(await screen.findByText("Your job")).toBeTruthy();
+  const call = fetchMock.mock.calls.find(
+    ([input]) => new URL((input as Request).url).pathname === acceptPath,
+  );
+  expect((call![0] as Request).method).toBe("POST");
+});
+
+test("a job someone else took says so and refreshes the list", async () => {
+  replies[acceptPath] = [409, { detail: "This job was just taken." }];
+  await renderRouter(routes);
+  const accept = await screen.findByRole("button", { name: "Accept" });
+  replies["/driver/jobs"] = [200, []];
+  await fireEvent.press(accept);
+  expect(await screen.findByRole("alert")).toHaveTextContent(
+    "This job was just taken.",
+  );
+  expect(
+    await screen.findByText("No jobs right now. Pull down to refresh."),
+  ).toBeTruthy();
+  expect(screen.queryByText("Your job")).toBeNull();
+});
+
+test("already being on a job shows the server's message", async () => {
+  replies[acceptPath] = [
+    409,
+    { detail: "Finish your current job before accepting another." },
+  ];
+  await renderRouter(routes);
+  await fireEvent.press(await screen.findByRole("button", { name: "Accept" }));
+  expect(
+    await screen.findByText(
+      "Finish your current job before accepting another.",
+    ),
+  ).toBeTruthy();
+});
+
+test("every Accept is disabled while one is sending", async () => {
+  replies["/driver/jobs"] = [200, [job, { ...job, id: "job-2" }]];
+  fetchMock.mockImplementation(async (input) =>
+    new URL((input as Request).url).pathname === acceptPath
+      ? new Promise<Response>(() => {})
+      : reply(input),
+  );
+  await renderRouter(routes);
+  const [first] = await screen.findAllByRole("button", { name: "Accept" });
+  await fireEvent.press(first);
+  await waitFor(() => {
+    for (const button of screen.getAllByRole("button", { name: "Accept" }))
+      expect(button).toBeDisabled();
+  });
+});
+
+test("a network failure on accept shows the generic message", async () => {
+  await renderRouter(routes);
+  const accept = await screen.findByRole("button", { name: "Accept" });
+  fetchMock.mockImplementation(async () => {
+    throw new TypeError("Network request failed");
+  });
+  await fireEvent.press(accept);
+  expect(
+    await screen.findByText(
+      "Something went wrong. Check your connection and try again.",
+    ),
+  ).toBeTruthy();
 });

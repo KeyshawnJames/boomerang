@@ -52,5 +52,9 @@
   "time": {
     "today": "Today",
     "tomorrow": "Tomorrow"
+  },
+  "job": {
+    "title": "Your job",
+    "body": "You accepted this job. Its address and details will show here soon."
   }
 }
