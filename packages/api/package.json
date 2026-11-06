@@ -11,7 +11,7 @@
     "generate": "uv run --directory ../../backend python -c \"import json; from app.main import app; spec = json.dumps(app.openapi(), indent=2); open('../packages/api/openapi.json', 'w').write(spec + '\\n')\" && openapi-ts"
   },
   "dependencies": {
-    "@tanstack/react-query": "^5.105.0"
+    "@tanstack/react-query": "^5.105.3"
   },
   "devDependencies": {
     "@hey-api/openapi-ts": "0.99.0"
