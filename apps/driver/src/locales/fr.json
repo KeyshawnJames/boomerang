@@ -34,6 +34,27 @@
   },
   "jobs": {
     "title": "Courses",
-    "body": "Votre compte est approuvé. Les courses s'afficheront ici bientôt."
+    "empty": "Aucune course pour l'instant. Glissez vers le bas pour actualiser.",
+    "earn": "Vous gagnez {{amount}}",
+    "accept": "Accepter"
+  },
+  "carriers": {
+    "canada_post": "Postes Canada",
+    "ups": "UPS",
+    "purolator": "Purolator",
+    "fedex": "FedEx",
+    "other": "Autre transporteur"
+  },
+  "labelTypes": {
+    "printed_label": "Étiquette imprimée",
+    "qr_code": "Code QR"
+  },
+  "time": {
+    "today": "Aujourd'hui",
+    "tomorrow": "Demain"
+  },
+  "job": {
+    "title": "Votre course",
+    "body": "Vous avez accepté cette course. L'adresse et les détails s'afficheront ici bientôt."
   }
 }
