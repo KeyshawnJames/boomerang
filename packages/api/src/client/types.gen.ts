@@ -487,6 +487,18 @@ export type ReturnRead = {
      * Created At
      */
     created_at: string;
+    /**
+     * Carrier Tracking Number
+     */
+    carrier_tracking_number?: string | null;
+    /**
+     * Driver First Name
+     */
+    driver_first_name?: string | null;
+    /**
+     * Dropoff Location Name
+     */
+    dropoff_location_name?: string | null;
 };
 
 /**

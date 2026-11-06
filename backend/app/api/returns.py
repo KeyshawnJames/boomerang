@@ -15,6 +15,7 @@ from app.core.security import decode_address_token
 from app.models import (
     AnswerOutcome,
     BlockedRequestLog,
+    DropOffLocation,
     EligibilityOutcome,
     Retailer,
     ReturnRequest,
@@ -135,9 +136,19 @@ def create_return(
 @router.get("/returns/{return_id}", response_model=ReturnRead)
 def get_return(
     return_id: uuid.UUID, user: ClientUser, request: Request, session: SessionDep
-) -> ReturnRequest:
+) -> ReturnRead:
     return_request = session.get(ReturnRequest, return_id)
     # 404, not 403, so a client can't learn which ids exist.
     if return_request is None or return_request.client_id != user.id:
         raise api_error(404, "return_not_found", request_locale(request))
-    return return_request
+    driver = return_request.driver_id and session.get(User, return_request.driver_id)
+    counter = return_request.dropoff_location_id and session.get(
+        DropOffLocation, return_request.dropoff_location_id
+    )
+    return ReturnRead.model_validate(
+        return_request,
+        update={
+            "driver_first_name": next(iter(driver.name.split()), None) if driver else None,
+            "dropoff_location_name": counter.name if counter else None,
+        },
+    )

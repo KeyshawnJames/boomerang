@@ -7,13 +7,14 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import Engine, delete
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from app.core.config import settings
 from app.dev import make_job
 from app.drivers import approve
 from app.models import (
     DriverProfile,
+    DropOffLocation,
     Payment,
     PaymentStatus,
     Retailer,
@@ -515,3 +516,62 @@ def test_arrived_and_release_refuse_client_and_unapproved(client: TestClient, se
     for token in (waiting, client_token):
         assert arrived(client, token, job.id).status_code == 403
         assert release(client, token, job.id).status_code == 403
+
+
+def client_job(client: TestClient, session: Session) -> tuple[str, ReturnRequest]:
+    email = f"{uuid.uuid4()}@example.com"
+    token = token_for(client, email)
+    job = make_job(session, email)
+    session.flush()
+    return token, job
+
+
+def get_return(client: TestClient, token: str, job_id: uuid.UUID):
+    return client.get(f"/returns/{job_id}", headers=bearer(token))
+
+
+def test_client_sees_driver_first_name_tracking_and_counter(client: TestClient, session: Session):
+    client_token, job = client_job(client, session)
+    before = get_return(client, client_token, job.id).json()
+    assert (
+        before["driver_first_name"],
+        before["carrier_tracking_number"],
+        before["dropoff_location_name"],
+    ) == (None, None, None)
+    token, driver_id = driver(client, session)
+    person = session.get(User, driver_id)
+    person.name, person.phone = "Alex  Tremblay", "+15145550199"
+    session.add(person)
+    session.flush()
+
+    assert accept(client, token, job.id).status_code == 204
+    response = get_return(client, client_token, job.id)
+
+    assert response.json()["driver_first_name"] == "Alex"
+    # Only the first name: never the driver's last name, phone or email (ADR 0019).
+    for private in ("Tremblay", person.phone, person.email):
+        assert private not in response.text
+    counter = session.exec(select(DropOffLocation)).first()
+    job = reload(session, job.id)
+    job.carrier_tracking_number, job.dropoff_location_id = "1Z999", counter.id
+    session.add(job)
+    session.flush()
+    after = get_return(client, client_token, job.id).json()
+    assert (after["carrier_tracking_number"], after["dropoff_location_name"]) == (
+        "1Z999",
+        counter.name,
+    )
+    other, _ = sign_in(client)
+    assert get_return(client, other, job.id).status_code == 404
+    assert get_return(client, token, job.id).status_code == 403
+
+
+def test_hand_back_hides_the_driver_again(client: TestClient, session: Session):
+    client_token, job = client_job(client, session)
+    token, _ = driver(client, session)
+    assert accept(client, token, job.id).status_code == 204
+    assert release(client, token, job.id).status_code == 204
+
+    body = get_return(client, client_token, job.id).json()
+
+    assert (body["status"], body["driver_first_name"]) == ("requested", None)

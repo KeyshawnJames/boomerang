@@ -47,3 +47,7 @@ class ReturnRead(SQLModel):
     pickup_fee: int  # cents, all fees included, before GST/QST (ADR 0012)
     eligibility_outcome: EligibilityOutcome
     created_at: datetime
+    carrier_tracking_number: str | None = None
+    # GET /returns/{id} only. The first name alone: never the driver's last name or contacts.
+    driver_first_name: str | None = None
+    dropoff_location_name: str | None = None
