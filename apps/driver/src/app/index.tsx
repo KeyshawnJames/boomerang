@@ -4,11 +4,12 @@ import { useTranslation } from "react-i18next";
 import { ActivityIndicator, Text, View } from "react-native";
 
 import { Button } from "../components/form";
+import { Jobs } from "../components/jobs";
 import { LanguageToggle } from "../components/language-toggle";
 import { errorMessage } from "../errors";
 import { useSession } from "../session";
 
-// Approved drivers see their jobs (a placeholder until #82); other drivers wait for a
+// Approved drivers see the open jobs; other drivers wait for a
 // founder to run the approve command, then tap Refresh.
 export default function Home() {
   const { t } = useTranslation();
@@ -26,20 +27,17 @@ export default function Home() {
   const driver = me.data?.role === "driver";
   const approved = driver && me.data?.is_approved === true;
   const waiting = driver && !approved;
+  if (approved) return <Jobs />;
   return (
     <View className="flex-1 justify-center gap-4 bg-bg px-6">
       {driver && (
         <Text className="font-sans-extrabold text-3xl text-ink">
-          {approved ? t("jobs.title") : t("waiting.title")}
+          {t("waiting.title")}
         </Text>
       )}
       {me.data && (
         <Text className="font-sans text-base text-muted">
-          {approved
-            ? t("jobs.body")
-            : waiting
-              ? t("waiting.body")
-              : t("waiting.notDriver")}
+          {waiting ? t("waiting.body") : t("waiting.notDriver")}
         </Text>
       )}
       {me.isError && (

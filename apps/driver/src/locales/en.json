@@ -34,6 +34,23 @@
   },
   "jobs": {
     "title": "Jobs",
-    "body": "You're approved. Jobs will show up here soon."
+    "empty": "No jobs right now. Pull down to refresh.",
+    "earn": "You earn {{amount}}",
+    "accept": "Accept"
+  },
+  "carriers": {
+    "canada_post": "Canada Post",
+    "ups": "UPS",
+    "purolator": "Purolator",
+    "fedex": "FedEx",
+    "other": "Other carrier"
+  },
+  "labelTypes": {
+    "printed_label": "Printed label",
+    "qr_code": "QR code"
+  },
+  "time": {
+    "today": "Today",
+    "tomorrow": "Tomorrow"
   }
 }
