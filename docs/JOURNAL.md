@@ -14,6 +14,7 @@
 
 ## 2026-11-05
 
+- **[Claude]** The client's return screen now says where their return is in plain words ("Looking for a driver", "Alex is on the way", "Picked up", "Dropped off at Canada Post"…), in English and French, and refreshes every 15 seconds until it's over. It shows only the driver's first name, and the tracking number and counter once the package is dropped off. A handed-back job goes back to "Looking for a driver" (#81)
 - **[Claude]** A driver can now tap "I've arrived" (the time is saved once, for the 10-minute not-home rule later) or hand a job back before pickup: it goes straight back to the open list for other drivers, no money moves, and the history records the hand-back with the arrival time (#80)
 - **[Claude]** Once a driver accepts a job, the server now shows them that job's address, the client's first name and phone, the pickup notes, and the label and package photos. Only that driver sees them, and the photo links expire after 15 minutes (#79)
 - **[Claude]** The server can now give approved drivers the list of paid pickups nobody has taken, soonest first, showing only the postal area (like H2T), the pickup window, the carrier, label or QR, and what the driver earns, never the client's address, name or phone. A driver can accept one job at a time; if two tap Accept together, only the first gets it and the other is told it was just taken (English and French). A new developer command makes a fake paid pickup so the driver app can be tested without Stripe. (#78)
