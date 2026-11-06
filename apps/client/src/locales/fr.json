@@ -109,6 +109,19 @@
     "explain": "Préparez le colis pour le chauffeur.",
     "home": "Retour à l'accueil"
   },
+  "progress": {
+    "title": "Votre retour",
+    "label": "Statut",
+    "requested": "On cherche un chauffeur",
+    "driver_assigned": "{{name}} est en route",
+    "picked_up": "Colis ramassé",
+    "dropped_off": "Déposé chez {{carrier}}",
+    "completed": "Terminé",
+    "cancelled": "Annulé",
+    "failed_dropoff": "Échec du dépôt : nous allons vous appeler",
+    "tracking": "Numéro de suivi",
+    "counter": "Comptoir de dépôt"
+  },
   "pay": {
     "title": "Pourboire et paiement",
     "window": "Payez dans les 30 minutes pour réserver ce ramassage.",

@@ -1,6 +1,11 @@
 import { useStripe } from "@stripe/stripe-react-native";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { cancelReturn, payForReturn } from "api";
+import {
+  cancelReturn,
+  payForReturn,
+  type CreateReturnRequest,
+  type ReturnStatus,
+} from "api";
 import { getReturnOptions, getReturnQueryKey } from "api/react-query";
 import * as Linking from "expo-linking";
 import { router, useLocalSearchParams } from "expo-router";
@@ -17,6 +22,8 @@ import { errorMessage } from "../../errors";
 // ADR 0018: fixed amounts, so they don't depend on tax. The server refuses over $50.
 const TIPS = [0, 100, 200, 300];
 const MAX_TIP = 5000;
+const FINAL: ReturnStatus[] = ["completed", "cancelled", "failed_dropoff"];
+type Paid = Exclude<ReturnStatus, "awaiting_payment">;
 
 // "5", "5.50" or "5,50" in cents; NaN for anything else.
 function cents(text: string): number {
@@ -40,9 +47,13 @@ export default function Booked() {
   const [expired, setExpired] = useState(false);
   const booked = useQuery({
     ...getReturnOptions({ path: { return_id: id } }),
-    // Only the server's webhook books it (ADR 0018), so ask until it has.
-    refetchInterval: (query) =>
-      waiting && query.state.data?.status === "awaiting_payment" ? 2000 : false,
+    refetchInterval: (query) => {
+      const status = query.state.data?.status;
+      // Only the server's webhook books it (ADR 0018), so ask until it has.
+      if (status === "awaiting_payment") return waiting ? 2000 : false;
+      // Follow the driver's steps until the return is over (ADR 0019).
+      return status && !FINAL.includes(status) ? 15_000 : false;
+    },
   });
   const data = booked.data;
   const tip = choice === "other" ? cents(other) : choice;
@@ -96,6 +107,10 @@ export default function Booked() {
   const unpaid = data?.status === "awaiting_payment";
   const cancelled = data?.status === "cancelled";
   const confirming = unpaid && waiting;
+  const beforePickup =
+    data?.status === "requested" || data?.status === "driver_assigned";
+  const droppedOff =
+    data?.status === "dropped_off" || data?.status === "completed";
   // Before a driver accepts (ADR 0018). Not while the webhook is deciding.
   const cancellable =
     (unpaid && !confirming && !expired && !pay.isPending) ||
@@ -116,11 +131,13 @@ export default function Booked() {
     );
   const title = cancelled
     ? t("cancel.title")
-    : data && !unpaid
+    : beforePickup
       ? t("booked.title")
-      : confirming
-        ? t("pay.confirming")
-        : t("pay.title");
+      : data && !unpaid
+        ? t("progress.title")
+        : confirming
+          ? t("pay.confirming")
+          : t("pay.title");
   return (
     <Step
       title={title}
@@ -233,9 +250,33 @@ export default function Booked() {
       )}
       {data && !unpaid && (
         <>
-          <Text className="font-sans text-base text-ink">
-            {cancelled ? t("cancel.explain") : t("booked.explain")}
-          </Text>
+          {(cancelled || beforePickup) && (
+            <Text className="font-sans text-base text-ink">
+              {cancelled ? t("cancel.explain") : t("booked.explain")}
+            </Text>
+          )}
+          <Row
+            label={t("progress.label")}
+            // Paid here, and the server only books its three carriers.
+            value={t(`progress.${data.status as Paid}`, {
+              name: data.driver_first_name,
+              carrier: t(
+                `carriers.${data.carrier as CreateReturnRequest["carrier"]}`,
+              ),
+            })}
+          />
+          {droppedOff && data.dropoff_location_name && (
+            <Row
+              label={t("progress.counter")}
+              value={data.dropoff_location_name}
+            />
+          )}
+          {droppedOff && data.carrier_tracking_number && (
+            <Row
+              label={t("progress.tracking")}
+              value={data.carrier_tracking_number}
+            />
+          )}
           <Row
             label={t("review.address")}
             value={data.pickup_address}

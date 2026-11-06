@@ -1610,6 +1610,39 @@
             "type": "string",
             "format": "date-time",
             "title": "Created At"
+          },
+          "carrier_tracking_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Carrier Tracking Number"
+          },
+          "driver_first_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver First Name"
+          },
+          "dropoff_location_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dropoff Location Name"
           }
         },
         "type": "object",
