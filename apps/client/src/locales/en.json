@@ -110,6 +110,7 @@
     "home": "Back to home"
   },
   "progress": {
+    "title": "Your return",
     "label": "Status",
     "requested": "Looking for a driver",
     "driver_assigned": "{{name}} is on the way",

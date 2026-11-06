@@ -72,6 +72,12 @@ test.each([
 ])("%s", async (status, changes, text) => {
   await open({ status, ...changes });
   expect(await screen.findByText(text)).toBeTruthy();
+  // "Pickup booked" only until pickup; after that the title stays neutral.
+  const waiting = status === "requested" || status === "driver_assigned";
+  expect(!!screen.queryByText("Pickup booked")).toBe(waiting);
+  expect(!!screen.queryByText("Your return")).toBe(
+    !waiting && status !== "cancelled",
+  );
   const droppedOff = status === "dropped_off" || status === "completed";
   expect(!!screen.queryByText("1Z999")).toBe(droppedOff);
   expect(!!screen.queryByText("Postes Canada Mile End")).toBe(droppedOff);

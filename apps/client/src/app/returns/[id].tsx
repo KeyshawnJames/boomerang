@@ -22,7 +22,7 @@ import { errorMessage } from "../../errors";
 // ADR 0018: fixed amounts, so they don't depend on tax. The server refuses over $50.
 const TIPS = [0, 100, 200, 300];
 const MAX_TIP = 5000;
-const FINAL = ["completed", "cancelled", "failed_dropoff"];
+const FINAL: ReturnStatus[] = ["completed", "cancelled", "failed_dropoff"];
 type Paid = Exclude<ReturnStatus, "awaiting_payment">;
 
 // "5", "5.50" or "5,50" in cents; NaN for anything else.
@@ -107,6 +107,8 @@ export default function Booked() {
   const unpaid = data?.status === "awaiting_payment";
   const cancelled = data?.status === "cancelled";
   const confirming = unpaid && waiting;
+  const beforePickup =
+    data?.status === "requested" || data?.status === "driver_assigned";
   const droppedOff =
     data?.status === "dropped_off" || data?.status === "completed";
   // Before a driver accepts (ADR 0018). Not while the webhook is deciding.
@@ -129,11 +131,13 @@ export default function Booked() {
     );
   const title = cancelled
     ? t("cancel.title")
-    : data && !unpaid
+    : beforePickup
       ? t("booked.title")
-      : confirming
-        ? t("pay.confirming")
-        : t("pay.title");
+      : data && !unpaid
+        ? t("progress.title")
+        : confirming
+          ? t("pay.confirming")
+          : t("pay.title");
   return (
     <Step
       title={title}
@@ -246,9 +250,7 @@ export default function Booked() {
       )}
       {data && !unpaid && (
         <>
-          {(cancelled ||
-            data.status === "requested" ||
-            data.status === "driver_assigned") && (
+          {(cancelled || beforePickup) && (
             <Text className="font-sans text-base text-ink">
               {cancelled ? t("cancel.explain") : t("booked.explain")}
             </Text>
