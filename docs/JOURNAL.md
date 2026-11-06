@@ -14,6 +14,7 @@
 
 ## 2026-11-05
 
+- **[Claude]** Approved drivers now see every open job as a card in the driver app: postal area, pickup window, carrier, printed label or QR code, and what they'll earn. They pull down to refresh and tap Accept. If another driver got there first, the app says "This job was just taken" and refreshes the list. After accepting they land on a "Your job" screen, which shows the job's details in the next issue. English and French (#82)
 - **[Claude]** The client's return screen now says where their return is in plain words ("Looking for a driver", "Alex is on the way", "Picked up", "Dropped off at Canada Post"…), in English and French, and refreshes every 15 seconds until it's over. It shows only the driver's first name, and the tracking number and counter once the package is dropped off. A handed-back job goes back to "Looking for a driver" (#81)
 - **[Claude]** A driver can now tap "I've arrived" (the time is saved once, for the 10-minute not-home rule later) or hand a job back before pickup: it goes straight back to the open list for other drivers, no money moves, and the history records the hand-back with the arrival time (#80)
 - **[Claude]** Once a driver accepts a job, the server now shows them that job's address, the client's first name and phone, the pickup notes, and the label and package photos. Only that driver sees them, and the photo links expire after 15 minutes (#79)
