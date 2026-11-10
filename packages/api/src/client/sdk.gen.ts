@@ -171,7 +171,7 @@ export const cancelReturn = <ThrowOnError extends boolean = false>(options: Opti
 /**
  * List Jobs
  *
- * Every paid job no driver has taken, soonest pickup first (ADR 0019).
+ * Every paid job no driver has taken whose window hasn't ended, soonest first (ADR 0019).
  */
 export const listJobs = <ThrowOnError extends boolean = false>(options?: Options<ListJobsData, ThrowOnError>): RequestResult<ListJobsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListJobsResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
