@@ -1,33 +1,36 @@
 import { useQuery } from "@tanstack/react-query";
-import { meOptions } from "api/react-query";
+import { meOptions, myJobsOptions } from "api/react-query";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, Text, View } from "react-native";
 
+import { CurrentJob } from "../components/current-job";
 import { Button } from "../components/form";
 import { Jobs } from "../components/jobs";
 import { LanguageToggle } from "../components/language-toggle";
 import { errorMessage } from "../errors";
 import { useSession } from "../session";
 
-// Approved drivers see the open jobs; other drivers wait for a
-// founder to run the approve command, then tap Refresh.
+// Approved drivers see their job in progress, else the open jobs; other drivers wait
+// for a founder to run the approve command, then tap Refresh.
 export default function Home() {
   const { t } = useTranslation();
   const me = useQuery(meOptions());
   const signOut = useSession((s) => s.signOut);
+  // No data means the first load failed: say only that, since we don't know who they are.
+  const driver = me.data?.role === "driver";
+  const approved = driver && me.data?.is_approved === true;
+  const waiting = driver && !approved;
+  const mine = useQuery({ ...myJobsOptions(), enabled: approved });
 
-  if (me.isPending) {
+  if (me.isPending || (approved && mine.isPending)) {
     return (
       <View className="flex-1 items-center justify-center bg-bg">
         <ActivityIndicator />
       </View>
     );
   }
-  // No data means the first load failed: say only that, since we don't know who they are.
-  const driver = me.data?.role === "driver";
-  const approved = driver && me.data?.is_approved === true;
-  const waiting = driver && !approved;
-  if (approved) return <Jobs />;
+  const job = mine.data?.[0];
+  if (approved) return job ? <CurrentJob job={job} /> : <Jobs />;
   return (
     <View className="flex-1 justify-center gap-4 bg-bg px-6">
       {driver && (

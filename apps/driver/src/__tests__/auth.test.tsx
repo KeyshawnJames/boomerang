@@ -34,6 +34,8 @@ beforeEach(async () => {
     "/me": [200, driver],
     "/auth/login": [200, { access_token: "tok", token_type: "bearer" }],
     "/auth/register": [201, driver],
+    "/driver/jobs/mine": [200, []],
+    "/driver/jobs": [200, []],
   };
   fetchMock.mockClear();
   // A fresh Response per call: a body can only be read once.

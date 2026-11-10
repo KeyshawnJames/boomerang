@@ -4,8 +4,8 @@ import {
   acceptJobMutation,
   listJobsOptions,
   listJobsQueryKey,
+  myJobsQueryKey,
 } from "api/react-query";
-import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { FlatList, Text, View } from "react-native";
 
@@ -26,7 +26,9 @@ export function Jobs() {
   // taken", and the list refreshes either way so a taken job disappears.
   const accept = useMutation({
     ...acceptJobMutation(),
-    onSuccess: () => router.replace("/job"),
+    // Returned, so Accept stays busy until the home screen can switch to the job.
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: myJobsQueryKey() }),
     // Not awaited: the mutation would wait for the refetch (and its retries) first.
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: listJobsQueryKey() });

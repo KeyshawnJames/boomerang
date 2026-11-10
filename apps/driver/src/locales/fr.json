@@ -55,6 +55,15 @@
   },
   "job": {
     "title": "Votre course",
-    "body": "Vous avez accepté cette course. L'adresse et les détails s'afficheront ici bientôt."
+    "client": "Client : {{name}}",
+    "photo": "Photo du colis",
+    "call": "Appeler {{name}}",
+    "maps": "Voir l'itinéraire",
+    "arrive": "Je suis sur place",
+    "arrivedAt": "Sur place depuis {{time}}",
+    "handBack": "Rendre cette course",
+    "handBackTitle": "Rendre cette course?",
+    "handBackBody": "Elle retourne dans la liste pour un autre chauffeur, et vous ne recevrez rien pour celle-ci.",
+    "keep": "Garder la course"
   }
 }
