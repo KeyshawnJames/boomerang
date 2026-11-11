@@ -12,6 +12,10 @@
 
 ---
 
+## 2026-11-10
+
+- **[Claude]** The driver app now shows the job you accepted: address, notes, client's first name, window, carrier and package photo, with Call, Open in Maps, "I've arrived" and "Hand this job back" (asks first). It opens on that job whenever you have one in progress. Keyshawn tested it on his phone (#83)
+
 ## 2026-11-05
 
 - **[Claude]** Approved drivers now see every open job as a card in the driver app: postal area, pickup window, carrier, printed label or QR code, and what they'll earn. They pull down to refresh and tap Accept. If another driver got there first, the app says "This job was just taken" and refreshes the list. After accepting they land on a "Your job" screen, which shows the job's details in the next issue. English and French (#82)
