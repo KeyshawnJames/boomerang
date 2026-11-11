@@ -291,7 +291,7 @@ export const listJobsQueryKey = (options?: Options<ListJobsData>) => createQuery
 /**
  * List Jobs
  *
- * Every paid job no driver has taken, soonest pickup first (ADR 0019).
+ * Every paid job no driver has taken whose window hasn't ended, soonest first (ADR 0019).
  */
 export const listJobsOptions = (options?: Options<ListJobsData>) => queryOptions<ListJobsResponse, DefaultError, ListJobsResponse, ReturnType<typeof listJobsQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {

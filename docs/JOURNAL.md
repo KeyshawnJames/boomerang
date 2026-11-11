@@ -12,6 +12,10 @@
 
 ---
 
+## 2026-11-10
+
+- **[Claude]** Drivers no longer see or accept jobs whose pickup window has ended. A job whose window has started but not ended still shows. What happens to a paid return nobody took in time is left for a later business decision (#106)
+
 ## 2026-11-05
 
 - **[Claude]** Approved drivers now see every open job as a card in the driver app: postal area, pickup window, carrier, printed label or QR code, and what they'll earn. They pull down to refresh and tap Accept. If another driver got there first, the app says "This job was just taken" and refreshes the list. After accepting they land on a "Your job" screen, which shows the job's details in the next issue. English and French (#82)
