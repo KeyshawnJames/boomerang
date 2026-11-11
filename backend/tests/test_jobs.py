@@ -24,6 +24,7 @@ from app.models import (
     User,
     UserRole,
 )
+from app.models.base import utcnow
 from app.services import jobs, status
 from app.services.jobs import postal_area
 from tests.test_auth import bearer, token_for
@@ -156,6 +157,28 @@ def test_list_hides_requested_return_without_succeeded_payment(
     token, _ = driver(client, session)
 
     assert list_jobs(client, token).json() == []
+
+
+def test_list_hides_ended_window_keeps_started_one(client: TestClient, session: Session):
+    now = utcnow()
+    ended = open_job(client, session)
+    ended.pickup_window_start, ended.pickup_window_end = now - timedelta(hours=2), now
+    started = open_job(client, session)
+    started.pickup_window_start = now - timedelta(hours=1)
+    session.flush()
+    token, _ = driver(client, session)
+
+    assert [j["id"] for j in list_jobs(client, token).json()] == [str(started.id)]
+
+
+def test_accept_ended_window_is_409(client: TestClient, session: Session):
+    job = open_job(client, session)
+    job.pickup_window_end = utcnow() - timedelta(minutes=1)
+    session.flush()
+    token, _ = driver(client, session)
+
+    assert accept(client, token, job.id).status_code == 409
+    assert driver_of(session, job.id) is None
 
 
 def test_accept_assigns_driver(client: TestClient, session: Session):

@@ -8,6 +8,7 @@ from app.api.deps import SessionDep, require_approved_driver
 from app.api.uploads import photo_url
 from app.core.i18n import api_error, request_locale
 from app.models import Payment, PaymentStatus, ReturnRequest, ReturnStatus, User
+from app.models.base import utcnow
 from app.schemas.driver_job import DriverCurrentJobRead, DriverJobRead
 from app.services import jobs, status
 
@@ -22,13 +23,14 @@ ApprovedDriver = Annotated[User, Depends(require_approved_driver)]
     dependencies=[Depends(require_approved_driver)],
 )
 def list_jobs(session: SessionDep) -> list[DriverJobRead]:
-    """Every paid job no driver has taken, soonest pickup first (ADR 0019)."""
+    """Every paid job no driver has taken whose window hasn't ended, soonest first (ADR 0019)."""
     rows = session.exec(
         select(ReturnRequest, Payment)
         .join(Payment, Payment.return_id == ReturnRequest.id)
         .where(
             ReturnRequest.status == ReturnStatus.requested,
             Payment.status == PaymentStatus.succeeded,
+            ReturnRequest.pickup_window_end > utcnow(),
         )
         .order_by(ReturnRequest.pickup_window_start)
     ).all()

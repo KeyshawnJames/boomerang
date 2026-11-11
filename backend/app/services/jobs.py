@@ -39,6 +39,8 @@ def accept(session: Session, return_id: uuid.UUID, driver_id: uuid.UUID) -> None
         raise LookupError(return_id)
     if job.driver_id == driver_id:
         return  # a double tap: it's already theirs
+    if job.pickup_window_end <= utcnow():
+        raise status.InvalidTransition("pickup window has ended")
     in_progress = session.exec(
         select(func.count())
         .select_from(ReturnRequest)
