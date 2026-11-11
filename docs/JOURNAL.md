@@ -14,6 +14,7 @@
 
 ## 2026-11-10
 
+- **[Claude]** The driver app now shows the job you accepted: address, notes, client's first name, window, carrier and package photo, with Call, Open in Maps, "I've arrived" and "Hand this job back" (asks first). It opens on that job whenever you have one in progress. Keyshawn tested it on his phone (#83)
 - **[Claude]** Drivers no longer see or accept jobs whose pickup window has ended. A job whose window has started but not ended still shows. What happens to a paid return nobody took in time is left for a later business decision (#106)
 
 ## 2026-11-05

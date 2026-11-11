@@ -13,7 +13,7 @@ export function money(cents: number): string {
   });
 }
 
-function time(iso: string): string {
+export function time(iso: string): string {
   return new Date(iso).toLocaleTimeString(locale(), {
     timeZone: ZONE,
     hour: "numeric",

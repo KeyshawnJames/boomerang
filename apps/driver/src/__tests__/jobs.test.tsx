@@ -8,12 +8,11 @@ import {
 import { queryClient } from "../api";
 import RootLayout from "../app/_layout";
 import Home from "../app/index";
-import Job from "../app/job";
 import Login from "../app/login";
 import i18n from "../i18n";
 import { useSession } from "../session";
 
-const routes = { _layout: RootLayout, index: Home, login: Login, job: Job };
+const routes = { _layout: RootLayout, index: Home, login: Login };
 const driver = {
   id: "1",
   role: "driver",
@@ -51,7 +50,11 @@ beforeEach(() => {
   });
   i18n.changeLanguage("en");
   useSession.getState().signIn("tok");
-  replies = { "/me": [200, driver], "/driver/jobs": [200, [job]] };
+  replies = {
+    "/me": [200, driver],
+    "/driver/jobs": [200, [job]],
+    "/driver/jobs/mine": [200, []],
+  };
   fetchMock.mockClear();
   fetchMock.mockImplementation(async (input) => reply(input));
 });
@@ -110,8 +113,28 @@ const acceptPath = "/driver/jobs/job-1/accept";
 test("accepting a job opens the current job", async () => {
   replies[acceptPath] = [204, null];
   await renderRouter(routes);
-  await fireEvent.press(await screen.findByRole("button", { name: "Accept" }));
-  expect(await screen.findByText("Your job")).toBeTruthy();
+  const accept = await screen.findByRole("button", { name: "Accept" });
+  replies["/driver/jobs/mine"] = [
+    200,
+    [
+      {
+        ...job,
+        status: "driver_assigned",
+        pickup_address: "1 Place Ville-Marie, Montréal, QC H3B 2B6",
+        pickup_notes: null,
+        client_first_name: "Sam",
+        client_phone: null,
+        carrier_tracking_number: null,
+        arrived_at: null,
+        label_image_url: "http://api/uploads/label.jpg",
+        package_photo_url: null,
+      },
+    ],
+  ];
+  await fireEvent.press(accept);
+  expect(
+    await screen.findByText("1 Place Ville-Marie, Montréal, QC H3B 2B6"),
+  ).toBeTruthy();
   const call = fetchMock.mock.calls.find(
     ([input]) => new URL((input as Request).url).pathname === acceptPath,
   );
@@ -130,7 +153,6 @@ test("a job someone else took says so and refreshes the list", async () => {
   expect(
     await screen.findByText("No jobs right now. Pull down to refresh."),
   ).toBeTruthy();
-  expect(screen.queryByText("Your job")).toBeNull();
 });
 
 test("already being on a job shows the server's message", async () => {

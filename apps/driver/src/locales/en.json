@@ -55,6 +55,15 @@
   },
   "job": {
     "title": "Your job",
-    "body": "You accepted this job. Its address and details will show here soon."
+    "client": "Client: {{name}}",
+    "photo": "Package photo",
+    "call": "Call {{name}}",
+    "maps": "Open in Maps",
+    "arrive": "I've arrived",
+    "arrivedAt": "You arrived at {{time}}",
+    "handBack": "Hand this job back",
+    "handBackTitle": "Hand this job back?",
+    "handBackBody": "It goes back on the list for another driver, and you won't be paid for it.",
+    "keep": "Keep the job"
   }
 }
